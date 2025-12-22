@@ -18,7 +18,7 @@ model
 view
 - game-renderer 	# render game: entities, player, background, etc.
 - camera 		# manage what to render using pyscroll
-  *pyscroll
+  * pyscroll
 - sprite-loader 	# load character and enemy sprites
 - map-loader 		# load map from file
     * pytmx
