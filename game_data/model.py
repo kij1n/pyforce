@@ -1,7 +1,7 @@
-from physics import PhysicsEngine
-from json_manager import JSONManager
-import entities
+from .physics import PhysicsEngine
+from .json_manager import JSONManager
+from . import entities
 
 class Model:
     def __init__(self):
-        pass
+        self.settings = JSONManager()
