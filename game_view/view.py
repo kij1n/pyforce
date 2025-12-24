@@ -7,7 +7,7 @@ from .ui import GameUI
 class View:
     def __init__(self, settings : dict):
         self.settings = settings
-        self.size = (settings['size_x'], settings['size_y'])
+        self.size = (settings["screen"]['size_x'], settings["screen"]['size_y'])
 
         pygame.display.set_caption("Pyforce")
         self.screen = pygame.display.set_mode(self.size)
@@ -16,6 +16,11 @@ class View:
 
         self.ui = GameUI()
         self.map = MapLoader(self.size)
+
+    def render(self, target):
+        self.render_map(target)
+
+        pygame.display.flip()
 
     def render_map(self, target):
         self.map.set_center(target)
