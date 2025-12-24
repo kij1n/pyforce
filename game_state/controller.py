@@ -17,7 +17,10 @@ class Controller:
         self.running = True
 
         while self.running:
-            self.view.render_map((400,700))
+            self.view.render_map(
+                self.model.get_center_pos()
+            )
+            
             self.input_handler.handle(self)
 
             self.fps.tick(60)

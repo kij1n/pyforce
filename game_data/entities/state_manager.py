@@ -1,3 +1,3 @@
 class StateManager:
-    def __init__(self):
-        pass
+    def __init__(self, entity):
+        self.entity = entity

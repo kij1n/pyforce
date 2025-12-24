@@ -1,10 +1,12 @@
 {
     "screen": {
-    "size_x": 1066,
-    "size_y": 600
+        "size_x": 1066,
+        "size_y": 600
     },
     "player_info": {
         "start_x": 300,
-        "start_y": 400
+        "start_y": 600,
+        "movement_speed": 5,
+        "jump_height": 10
     }
 }
