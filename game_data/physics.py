@@ -26,9 +26,9 @@ class PhysicsEngine:
             body,
             [
                 (0,0),
-                (obj.width,0),
+                (0,obj.height),
                 (obj.width,obj.height),
-                (0,obj.height)
+                (obj.width,0)
             ]
         )
         return [shape, body]

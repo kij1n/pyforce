@@ -28,7 +28,7 @@ class Model:
     def get_where(self):
         return self.where
 
-    def _create_where(self) -> dict:
+    def _create_where(self):
         return self.entities.get_where()
 
     def insert_ents_to_sim(self):

@@ -29,7 +29,8 @@ class Controller:
                 self.model.get_where()
             )
 
-            self.model.physics.sim.step(0.1)
+            self.model.physics.sim.step(0.01)
+            self.model.update()
 
             self.input_handler.handle(self)
 

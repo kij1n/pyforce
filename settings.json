@@ -11,7 +11,7 @@
         "object_layer_name": "platform_collisions"
     },
     "physics": {
-        "gravity": 900
+        "gravity": 500
     },
     "player_info": {
         "sprites_paths": {
@@ -34,7 +34,7 @@
                 "assets/player/jump4.png"
             ]
         },
-        "start_x": 300,
+        "start_x": 900,
         "start_y": 300,
         "movement_speed": 5,
         "jump_height": 10,
