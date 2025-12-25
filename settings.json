@@ -4,8 +4,11 @@
         "size_y": 600
     },
     "map": {
+        "size_x": 4800,
+        "size_y": 912,
         "tile_size": 48,
-        "map_path": "assets/map/map.tmx"
+        "map_path": "assets/map/map.tmx",
+        "object_layer_name": "platform_collisions"
     },
     "physics": {
         "gravity": 900
@@ -32,7 +35,7 @@
             ]
         },
         "start_x": 300,
-        "start_y": 600,
+        "start_y": 300,
         "movement_speed": 5,
         "jump_height": 10,
         "hitbox_x": 24,

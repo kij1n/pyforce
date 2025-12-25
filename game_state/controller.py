@@ -4,11 +4,16 @@ from game_view import View
 from game_data import Model
 
 from .input_handler import InputHandler
+from .json_manager import JSONManager
 
 class Controller:
     def __init__(self):
-        self.model = Model()
-        self.view = View(self.model.settings.s)
+        self.settings = JSONManager()
+        self.settings = self.settings.s
+
+
+        self.view = View(self.settings)
+        self.model = Model(self.settings)
 
         self.fps = pygame.time.Clock()
         self.input_handler = InputHandler()
@@ -20,7 +25,8 @@ class Controller:
 
         while self.running:
             self.view.render(
-                self.model.get_center_pos()
+                self.model.get_center_pos(),
+                self.model.get_where()
             )
 
             self.input_handler.handle(self)

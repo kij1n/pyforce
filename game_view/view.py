@@ -18,20 +18,24 @@ class View:
         self.ui = GameUI()
 
         self.sprite_loader = SpriteLoader(self.settings)
-        self.entity_renderer = EntityRenderer(self.settings)
+        self.entity_renderer = EntityRenderer()
         self.map_renderer = MapRenderer(self.size, self.settings)
 
-    def render(self, target):
+    def render(self, target, where : list[tuple[tuple[int,int], str]]):
         self.map_renderer.render(target, self.screen)
+        self.entity_renderer.render(where, self.sprite_loader, self.screen)
 
         pygame.display.flip()
 
 
 
 class EntityRenderer:
-    def __init__(self, settings : dict):
-        pass
-
+    @staticmethod
+    def render(where : list[tuple[tuple[int,int], str]], sprite_loader, screen):
+        for entity in where:
+            position, sprite_name = entity
+            sprite = sprite_loader.get_sprite(sprite_name)
+            screen.blit(sprite, position)
 
 class MapRenderer:
     def __init__(self, size, settings : dict):
@@ -39,7 +43,6 @@ class MapRenderer:
 
     def render(self, target, screen):
         self.map.draw(target, screen)
-        pygame.display.flip()
 
 
 class MapLoader:
@@ -70,27 +73,39 @@ class MapLoader:
 
 class SpriteLoader:
     def __init__(self, settings : dict):
-        self.player = self.load_player(settings)
-        self.enemies = {}
+        self.sprites = (
+            self.load_player(settings) |
+            self.load_enemies(settings)
+        )
 
-    @staticmethod
-    def load_player(settings : dict):
+    def load_player(self, settings : dict):
         player = {}
         for sprite_type in settings["player_info"]["sprites_paths"].keys():
+            index = 1
             for sprite_location in settings["player_info"]["sprites_paths"][sprite_type]:
-
-                # create absolute path to the sprite
-                script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-                path = os.path.join(script_dir, sprite_location)
-
-                if os.name == "nt":
-                    path = path.replace("/", "\\")
-
+                path = self._get_path(sprite_location)
 
                 sprite = pygame.image.load(path).convert_alpha()
-                if sprite_type not in player.keys():
-                    player[sprite_type] = [sprite]
-                else:
-                    player[sprite_type].append(sprite)
+                sprite_name = "player_" + sprite_type + str(index)
+                player[sprite_name] = sprite
+
+                index += 1
 
         return player
+
+    def load_enemies(self, settings : dict):
+        return {}
+
+    def get_sprite(self, sprite_name) -> pygame.Surface:
+        return self.sprites[sprite_name]
+
+    @staticmethod
+    def _get_path(sprite_location):
+        # create absolute path to the sprite
+        script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        path = os.path.join(script_dir, sprite_location)
+
+        if os.name == "nt":
+            path = path.replace("/", "\\")
+
+        return path
