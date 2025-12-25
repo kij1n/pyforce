@@ -3,6 +3,13 @@
         "size_x": 1066,
         "size_y": 600
     },
+    "map": {
+        "tile_size": 48,
+        "map_path": "assets/map/map.tmx"
+    },
+    "physics": {
+        "gravity": 900
+    },
     "player_info": {
         "sprites_paths": {
             "idle": [

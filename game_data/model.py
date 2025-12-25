@@ -6,6 +6,7 @@ class Model:
     def __init__(self):
         self.settings = JSONManager()
         self.entities = entities.EntityManager(self.settings.s)
+        self.physics = PhysicsEngine(self.settings.s)
 
     def get_center_pos(self) -> tuple[int, int]:
         player_pos = self.entities.get_player_pos()

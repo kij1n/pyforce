@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="100" height="19" tilewidth="48" tileheight="48" infinite="0" nextlayerid="6" nextobjectid="29">
- <tileset firstgid="1" source="../tiled projects/pyforce-maps/platformer_assets_scaled.tsx"/>
+ <tileset firstgid="1" name="platformer_assets_scaled" tilewidth="48" tileheight="48" tilecount="256" columns="16">
+  <image source="world_tileset_scaled.png" width="768" height="768"/>
+ </tileset>
  <tileset firstgid="257" name="underground_tileset" tilewidth="48" tileheight="48" tilecount="2" columns="2">
-  <image source="../homework4 assets/platforms/underground_tileset.png" width="96" height="48"/>
+  <image source="underground_tileset.png" width="96" height="48"/>
  </tileset>
  <layer id="5" name="background" width="100" height="19">
   <data encoding="csv">
