@@ -10,12 +10,21 @@ class EntityManager:
         }
 
     def get_player_pos(self):
-        return self.player.position
+        pos = self.player.get_position()
+        return (
+            pos[0], pos[1]
+        )
 
     def get_where(self):
         where = [self.player.state_manager.get_where()]
 
         for enemy in self.enemies.values():
-            where.append(enemy.state_manager.get_where())
+            where.append(enemy.state_manager.get_where(player_pos=self.player.get_position()))
 
         return where
+
+    def get_entities(self):
+        return [
+            self.player,
+            # self.enemies.values()
+        ]

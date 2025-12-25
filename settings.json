@@ -38,7 +38,9 @@
         "start_y": 300,
         "movement_speed": 5,
         "jump_height": 10,
-        "hitbox_x": 24,
-        "hitbox_y": 31
+        "hitbox_x": 60,
+        "hitbox_y": 76,
+        "mass": 50,
+        "moment": 1
     }
 }

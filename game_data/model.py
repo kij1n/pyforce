@@ -7,6 +7,7 @@ class Model:
 
         self.entities = entities.EntityManager(self.settings)
         self.physics = PhysicsEngine(self.settings)
+        self.insert_ents_to_sim()
 
         self.where = self._create_where()
 
@@ -24,8 +25,13 @@ class Model:
         )
         return center_x, player_pos[1]
 
-    def get_where(self) -> dict:
+    def get_where(self):
         return self.where
 
     def _create_where(self) -> dict:
         return self.entities.get_where()
+
+    def insert_ents_to_sim(self):
+        ents = self.entities.get_entities()
+        for ent in ents:
+            self.physics.sim.add(ent.body, ent.shape)

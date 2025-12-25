@@ -29,6 +29,8 @@ class Controller:
                 self.model.get_where()
             )
 
+            self.model.physics.sim.step(0.1)
+
             self.input_handler.handle(self)
 
             self.fps.tick(60)
