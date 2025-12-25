@@ -1,4 +1,5 @@
 from .state_manager import StateManager
+from pymunk import Body, Poly
 
 class Player:
     def __init__(self, settings : dict):
@@ -22,3 +23,6 @@ class Player:
                     self.position[0] + self.movement_speed,
                     self.position[1]
                 )
+
+    def get_state(self):
+        return self.state_manager.state

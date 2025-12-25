@@ -4,9 +4,31 @@
         "size_y": 600
     },
     "player_info": {
+        "sprites_paths": {
+            "idle": [
+                "assets/player/idle1.png",
+                "assets/player/idle2.png"
+            ],
+            "run": [
+                "assets/player/run1.png",
+                "assets/player/run2.png",
+                "assets/player/run3.png",
+                "assets/player/run4.png",
+                "assets/player/run5.png",
+                "assets/player/run6.png"
+            ],
+            "jump": [
+                "assets/player/jump1.png",
+                "assets/player/jump2.png",
+                "assets/player/jump3.png",
+                "assets/player/jump4.png"
+            ]
+        },
         "start_x": 300,
         "start_y": 600,
         "movement_speed": 5,
-        "jump_height": 10
+        "jump_height": 10,
+        "hitbox_x": 24,
+        "hitbox_y": 31
     }
 }

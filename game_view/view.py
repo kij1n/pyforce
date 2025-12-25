@@ -1,6 +1,7 @@
 import pygame
 import pytmx
 import pyscroll
+import os
 from .ui import GameUI
 
 
@@ -15,16 +16,30 @@ class View:
         pygame.init()
 
         self.ui = GameUI()
-        self.map = MapLoader(self.size)
+
+        self.sprite_loader = SpriteLoader(self.settings)
+        self.entity_renderer = EntityRenderer(self.settings)
+        self.map_renderer = MapRenderer(self.size)
 
     def render(self, target):
-        self.render_map(target)
+        self.map_renderer.render(target, self.screen)
 
         pygame.display.flip()
 
-    def render_map(self, target):
+
+
+class EntityRenderer:
+    def __init__(self, settings : dict):
+        pass
+
+
+class MapRenderer:
+    def __init__(self, size):
+        self.map = MapLoader(size)
+
+    def render(self, target, screen):
         self.map.set_center(target)
-        self.map.draw(self.screen)
+        self.map.draw(screen)
         pygame.display.flip()
 
 
@@ -44,3 +59,31 @@ class MapLoader:
 
     def draw(self, surface):
         self.group.draw(surface)
+
+
+class SpriteLoader:
+    def __init__(self, settings : dict):
+        self.player = self.load_player(settings)
+        self.enemies = {}
+
+    @staticmethod
+    def load_player(settings : dict):
+        player = {}
+        for sprite_type in settings["player_info"]["sprites_paths"].keys():
+            for sprite_location in settings["player_info"]["sprites_paths"][sprite_type]:
+
+                # create absolute path to the sprite
+                script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                path = os.path.join(script_dir, sprite_location)
+
+                if os.name == "nt":
+                    path = path.replace("/", "\\")
+
+
+                sprite = pygame.image.load(path).convert_alpha()
+                if sprite_type not in player.keys():
+                    player[sprite_type] = [sprite]
+                else:
+                    player[sprite_type].append(sprite)
+
+        return player
