@@ -34,4 +34,5 @@ class Model:
     def insert_ents_to_sim(self):
         ents = self.entities.get_entities()
         for ent in ents:
-            self.physics.sim.add(ent.body, ent.shape)
+            body, shape = ent.get_collision_box()
+            self.physics.sim.add(body, shape)

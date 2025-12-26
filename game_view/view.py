@@ -4,6 +4,9 @@ import pyscroll
 import os
 from .ui import GameUI
 
+import pymunk
+import pymunk.pygame_util
+
 
 class View:
     def __init__(self, settings : dict):
@@ -21,12 +24,18 @@ class View:
         self.entity_renderer = EntityRenderer()
         self.map_renderer = MapRenderer(self.size, self.settings)
 
-    def render(self, target, where : list[tuple[tuple[int,int], str]]):
+    def render(self, target, where : list[tuple[tuple[int,int], str]], sim):
         self.map_renderer.render(target, self.screen)
         self.entity_renderer.render(where, self.sprite_loader, self.screen)
 
-        pygame.display.flip()
+        # DEBUG: draw physics shapes
+        temp_sim = sim
 
+
+        # draw_options = pymunk.pygame_util.DrawOptions(self.screen)
+        # sim.debug_draw(draw_options)
+
+        pygame.display.flip()
 
 
 class EntityRenderer:
@@ -35,7 +44,10 @@ class EntityRenderer:
         for entity in where:
             position, sprite_name = entity
             sprite = sprite_loader.get_sprite(sprite_name)
-            screen.blit(sprite, position)
+            sprite.rect.center = position
+
+            # sprite.move(position)
+            screen.blit(sprite.image, sprite.rect)
 
 class MapRenderer:
     def __init__(self, size, settings : dict):
@@ -60,9 +72,6 @@ class MapLoader:
         self.map_layer = pyscroll.BufferedRenderer(map_data, size)
         self.group = pyscroll.PyscrollGroup(map_layer=self.map_layer)
 
-    def add_sprite(self, sprite):
-        self.group.add(sprite)
-
     def set_center(self, target):
         self.group.center(target)
 
@@ -85,18 +94,19 @@ class SpriteLoader:
             for sprite_location in settings["player_info"]["sprites_paths"][sprite_type]:
                 path = self._get_path(sprite_location)
 
-                sprite = pygame.image.load(path).convert_alpha()
-                sprite_name = "player_" + sprite_type + str(index)
-                player[sprite_name] = sprite
+                image = pygame.image.load(path).convert_alpha()
+                sprite = Sprite(image)
 
+                sprite_name = "player_" + sprite_type + str(index)
                 index += 1
 
+                player[sprite_name] = sprite
         return player
 
     def load_enemies(self, settings : dict):
         return {}
 
-    def get_sprite(self, sprite_name) -> pygame.Surface:
+    def get_sprite(self, sprite_name):
         return self.sprites[sprite_name]
 
     @staticmethod
@@ -109,3 +119,15 @@ class SpriteLoader:
             path = path.replace("/", "\\")
 
         return path
+
+
+class Sprite(pygame.sprite.Sprite):
+    def __init__(self, image: pygame.Surface):
+        super().__init__()
+        self.image = image
+        self.rect = self.image.get_rect()
+
+    def move(self, position: tuple[int, int]):
+        dx = position[0] - self.rect.centerx
+        dy = position[1] - self.rect.centery
+        self.rect = self.rect.move(dx, dy)

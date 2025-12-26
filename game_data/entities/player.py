@@ -35,20 +35,23 @@ class Player:
             moment=moment,
             body_type=Body.DYNAMIC
         )
-        self.body.position = Vec2d(
+        self.body.position = Vec2d(  # position of center of mass
             self.settings["player_info"]["start_x"],
             self.settings["player_info"]["start_y"]
         )
+
+        hitbox_x = self.settings["player_info"]["hitbox_x"]
+        hitbox_y = self.settings["player_info"]["hitbox_y"]
+
         self.shape = Poly(
             self.body,
-            [
-                (0,0),
-                (0, self.settings["player_info"]["hitbox_y"]),
-                (self.settings["player_info"]["hitbox_x"], self.settings["player_info"]["hitbox_y"]),
-                (self.settings["player_info"]["hitbox_x"], 0)
+            [  # vertices relative to center of mass
+                (-hitbox_x / 2, hitbox_y / 2),
+                (-hitbox_x / 2, -hitbox_y / 2),
+                (hitbox_x / 2, -hitbox_y / 2),
+                (hitbox_x / 2, hitbox_y / 2)
             ]
         )
-
 
     def get_collision_box(self):
         return [self.body, self.shape]

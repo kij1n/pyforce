@@ -26,7 +26,8 @@ class Controller:
         while self.running:
             self.view.render(
                 self.model.get_center_pos(),
-                self.model.get_where()
+                self.model.get_where(),
+                self.model.physics.sim
             )
 
             self.model.physics.sim.step(0.01)

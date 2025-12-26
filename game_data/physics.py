@@ -29,7 +29,8 @@ class PhysicsEngine:
                 (0,obj.height),
                 (obj.width,obj.height),
                 (obj.width,0)
-            ]
+            ],
+            radius=0
         )
         return [shape, body]
 
