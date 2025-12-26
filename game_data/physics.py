@@ -19,7 +19,7 @@ class PhysicsEngine:
             self._add_collision_obj(obj)
 
     @staticmethod
-    def _create_shape_body(obj):
+    def _create_shape_body(obj, settings):
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
         body.position = pymunk.Vec2d(obj.x, obj.y)
         shape = pymunk.Poly(
@@ -32,10 +32,11 @@ class PhysicsEngine:
             ],
             radius=0
         )
+        shape.friction = settings["physics"]['friction']
         return [shape, body]
 
     def _add_collision_obj(self, obj):
-        add = self._create_shape_body(obj)
+        add = self._create_shape_body(obj, self.settings)
         self.sim.add(add[1], add[0])
 
     def _get_object_layer(self):

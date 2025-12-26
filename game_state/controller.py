@@ -32,4 +32,6 @@ class Controller:
             self.model.physics.sim.step(0.01)
             self.model.update()
 
+            self.input_handler.handle(self)
+
             self.fps.tick(60)

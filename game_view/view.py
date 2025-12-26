@@ -135,17 +135,28 @@ class Sprite(pygame.sprite.Sprite):
         self.image = image
 
     def get_relative_pos(self, position: tuple[int, int], settings, player_pos):
-        abs_camera_pos = player_pos
+        abs_camera_pos, rel_camera_pos = self._calc_camera_pos(settings, player_pos)
+
         d_vector = (
             position[0] - abs_camera_pos[0],
             position[1] - abs_camera_pos[1]
-        )
-        rel_camera_pos = (
-            settings["screen"]['size_x'] // 2,
-            settings["screen"]['size_y'] // 2
         )
         relative_pos = (
             rel_camera_pos[0] + d_vector[0],
             rel_camera_pos[1] + d_vector[1]
         )
         return relative_pos
+
+    @staticmethod
+    def _calc_camera_pos(settings, player_pos):
+        abs_camera_pos = (
+            settings["screen"]['size_x'] // 2
+            if player_pos[0] < settings["screen"]['size_x'] // 2
+            else player_pos[0],
+            player_pos[1]
+        )
+        rel_camera_pos = (
+            settings["screen"]['size_x'] // 2,
+            settings["screen"]['size_y'] // 2
+        )
+        return abs_camera_pos, rel_camera_pos

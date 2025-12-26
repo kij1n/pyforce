@@ -32,7 +32,7 @@ class Player:
 
         self.body = Body(
             mass=mass,
-            moment=moment,
+            moment=float('inf') if moment is None else moment,
             body_type=Body.DYNAMIC
         )
         self.body.position = Vec2d(  # position of center of mass
@@ -52,6 +52,7 @@ class Player:
                 (hitbox_x / 2, hitbox_y / 2)
             ]
         )
+        self.shape.friction = self.settings["player_info"]["friction"]
 
     def get_collision_box(self):
         return [self.body, self.shape]

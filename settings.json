@@ -11,7 +11,8 @@
         "object_layer_name": "platform_collisions"
     },
     "physics": {
-        "gravity": 500
+        "gravity": 500,
+        "friction": 1.0
     },
     "player_info": {
         "sprites_paths": {
@@ -34,13 +35,14 @@
                 "assets/player/jump4.png"
             ]
         },
-        "start_x": 2000,
+        "start_x": 200,
         "start_y": 300,
         "movement_speed": 5,
         "jump_height": 10,
         "hitbox_x": 60,
         "hitbox_y": 76,
         "mass": 50,
-        "moment": 1
+        "moment": null,
+        "friction": 1.0
     }
 }
