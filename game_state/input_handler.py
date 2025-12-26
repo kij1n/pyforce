@@ -11,4 +11,3 @@ class InputHandler:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 controller.running = False
-                pygame.quit()

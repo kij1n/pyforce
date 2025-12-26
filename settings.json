@@ -1,7 +1,6 @@
 {
     "debug": {
-        "show_hitboxes": true,
-        "static_bodies_list": false
+        "show_hitboxes": false
     },
     "screen": {
         "size_x": 1066,

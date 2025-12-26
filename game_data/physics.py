@@ -5,10 +5,6 @@ import os
 class PhysicsEngine:
     def __init__(self, settings: dict):
         self.settings = settings
-
-        if self.settings["debug"]["static_bodies_list"]:
-            self.bodies_list = []
-
         self.sim = pymunk.Space()
         self._prepare_space()
 
@@ -26,9 +22,6 @@ class PhysicsEngine:
     def _add_collision_obj(self, obj):
         add = self._create_shape_body(obj, self.settings)
         self.sim.add(add[1], add[0])
-
-        if self.settings["debug"]["static_bodies_list"]:
-            self.bodies_list.append(add[1])
 
     def _get_object_layer(self):
         script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
