@@ -22,6 +22,8 @@ class Controller:
     def run(self):
         self.running = True
 
+        initial_pos = self.model.physics.bodies_list[0].position if self.settings["debug"]["static_bodies_list"] else None
+
         while self.running:
             self.view.render(
                 self.model.get_center_pos(),
@@ -29,7 +31,14 @@ class Controller:
                 self.model.physics.sim
             )
 
-            self.model.physics.sim.step(0.01)
+            # DEBUG
+            if initial_pos is not None:
+                if initial_pos != self.model.physics.bodies_list[0].position:
+                    print("Position changed from", initial_pos, "to", self.model.physics.sim.bodies_list[0].position)
+
+
+
+            self.model.physics.sim.step(self.settings["physics"]['time_step'])
             self.model.update()
 
             self.input_handler.handle(self)

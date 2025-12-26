@@ -8,6 +8,31 @@ import pymunk
 import pymunk.pygame_util
 
 
+def convert_abs_to_rel(position, abs_camera_pos, rel_camera_pos):
+    d_vector = (
+        position[0] - abs_camera_pos[0],
+        position[1] - abs_camera_pos[1]
+    )
+    relative_pos = (
+        rel_camera_pos[0] + d_vector[0],
+        rel_camera_pos[1] + d_vector[1]
+    )
+    return relative_pos
+
+def calc_camera_pos(settings, player_pos):
+    abs_camera_pos = (
+        settings["screen"]['size_x'] // 2
+        if player_pos[0] < settings["screen"]['size_x'] // 2
+        else player_pos[0],
+        player_pos[1]
+    )
+    rel_camera_pos = (
+        settings["screen"]['size_x'] // 2,
+        settings["screen"]['size_y'] // 2
+    )
+    return abs_camera_pos, rel_camera_pos
+
+
 class View:
     def __init__(self, settings : dict):
         self.settings = settings
@@ -28,10 +53,19 @@ class View:
         self.map_renderer.render(player_pos, self.screen)
         self.entity_renderer.render(where, self.sprite_loader, self.screen, self.settings, player_pos)
 
-        # DEBUG: draw physics shapes
-        # temp_sim = sim
-        # draw_options = pymunk.pygame_util.DrawOptions(self.screen)
-        # sim.debug_draw(draw_options)
+        # --- DEBUG DRAWING START ---
+        if self.settings["debug"]['show_hitboxes']:
+            abs_camera_pos, rel_camera_pos = calc_camera_pos(self.settings, player_pos)
+            vector = (
+                rel_camera_pos[0] - abs_camera_pos[0],
+                rel_camera_pos[1] - abs_camera_pos[1]
+            )
+
+            draw_options = pymunk.pygame_util.DrawOptions(self.screen)
+            draw_options.transform = pymunk.Transform.translation(vector[0], vector[1])
+
+            sim.debug_draw(draw_options)
+        # --- DEBUG DRAWING END ---
 
         pygame.display.flip()
 
@@ -39,14 +73,16 @@ class View:
 class EntityRenderer:
     @staticmethod
     def render(where : list[tuple[tuple[int,int], str]], sprite_loader, screen, settings, player_pos):
+        abs_camera_pos, rel_camera_pos = calc_camera_pos(settings, player_pos)
         for entity in where:
             position, sprite_name = entity
             sprite = sprite_loader.get_sprite(sprite_name)
 
             # calculate relative position
-            relative_pos = sprite.get_relative_pos(position, settings, player_pos)
+            relative_pos = convert_abs_to_rel(position, abs_camera_pos, rel_camera_pos)
+            sprite.set_position(relative_pos)
 
-            screen.blit(sprite.image, relative_pos)
+            screen.blit(sprite.image, sprite.rect)
 
 
 class MapRenderer:
@@ -67,7 +103,6 @@ class MapLoader:
         if os.name == "nt":
             path = path.replace("/", "\\")
 
-
         tmx_data = pytmx.load_pygame(path)
         map_data = pyscroll.data.TiledMapData(tmx_data)
 
@@ -79,7 +114,9 @@ class MapLoader:
             self.settings["screen"]['size_x'] // 2
             if target[0] < self.settings["screen"]['size_x'] // 2
             else target[0],
-            target[1]
+            self.settings["screen"]['size_y'] // 2
+            if target[1] < self.settings["screen"]['size_y'] // 2
+            else target[1]
         )
         self.group.center(target)
 
@@ -133,30 +170,7 @@ class Sprite(pygame.sprite.Sprite):
     def __init__(self, image: pygame.Surface):
         super().__init__()
         self.image = image
+        self.rect = self.image.get_rect()
 
-    def get_relative_pos(self, position: tuple[int, int], settings, player_pos):
-        abs_camera_pos, rel_camera_pos = self._calc_camera_pos(settings, player_pos)
-
-        d_vector = (
-            position[0] - abs_camera_pos[0],
-            position[1] - abs_camera_pos[1]
-        )
-        relative_pos = (
-            rel_camera_pos[0] + d_vector[0],
-            rel_camera_pos[1] + d_vector[1]
-        )
-        return relative_pos
-
-    @staticmethod
-    def _calc_camera_pos(settings, player_pos):
-        abs_camera_pos = (
-            settings["screen"]['size_x'] // 2
-            if player_pos[0] < settings["screen"]['size_x'] // 2
-            else player_pos[0],
-            player_pos[1]
-        )
-        rel_camera_pos = (
-            settings["screen"]['size_x'] // 2,
-            settings["screen"]['size_y'] // 2
-        )
-        return abs_camera_pos, rel_camera_pos
+    def set_position(self, position):
+        self.rect.center = position

@@ -77,7 +77,6 @@
  </layer>
  <objectgroup id="2" name="platform_collisions">
   <object id="6" type="terrain" x="0" y="720" width="576" height="192"/>
-  <object id="7" type="terrain" x="532" y="1284"/>
   <object id="9" type="terrain" x="720" y="720" width="1104" height="192"/>
   <object id="10" type="terrain" x="864" y="576" width="48" height="48"/>
   <object id="11" type="terrain" x="1008" y="528" width="48" height="48"/>

@@ -1,4 +1,8 @@
 {
+    "debug": {
+        "show_hitboxes": true,
+        "static_bodies_list": false
+    },
     "screen": {
         "size_x": 1066,
         "size_y": 600
@@ -12,7 +16,9 @@
     },
     "physics": {
         "gravity": 500,
-        "friction": 1.0
+        "friction": 1.0,
+        "time_step": 0.016,
+        "radius": 1
     },
     "player_info": {
         "sprites_paths": {
