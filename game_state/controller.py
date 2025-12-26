@@ -11,7 +11,6 @@ class Controller:
         self.settings = JSONManager()
         self.settings = self.settings.s
 
-
         self.view = View(self.settings)
         self.model = Model(self.settings)
 
@@ -32,7 +31,5 @@ class Controller:
 
             self.model.physics.sim.step(0.01)
             self.model.update()
-
-            self.input_handler.handle(self)
 
             self.fps.tick(60)

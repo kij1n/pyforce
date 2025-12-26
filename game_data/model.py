@@ -9,21 +9,16 @@ class Model:
         self.physics = PhysicsEngine(self.settings)
         self.insert_ents_to_sim()
 
+        # Initial where, tuple[tuple[int,int], str]
+        # absolute world position and sprite name to be rendered
         self.where = self._create_where()
 
     def update(self):
-
-
         self.where = self.entities.get_where()
 
     def get_center_pos(self) -> tuple[int, int]:
         player_pos = self.entities.get_player_pos()
-        center_x = (
-            self.settings["screen"]['size_x'] // 2
-            if player_pos[0] < self.settings["screen"]['size_x'] // 2
-            else player_pos[0]
-        )
-        return center_x, player_pos[1]
+        return player_pos
 
     def get_where(self):
         return self.where
