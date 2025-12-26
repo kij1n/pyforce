@@ -34,7 +34,7 @@
                 "assets/player/jump4.png"
             ]
         },
-        "start_x": 900,
+        "start_x": 500,
         "start_y": 300,
         "movement_speed": 5,
         "jump_height": 10,
