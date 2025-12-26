@@ -20,12 +20,19 @@ def convert_abs_to_rel(position, abs_camera_pos, rel_camera_pos):
     return relative_pos
 
 def calc_camera_pos(settings, player_pos):
-    abs_camera_pos = (
-        settings["screen"]['size_x'] // 2
-        if player_pos[0] < settings["screen"]['size_x'] // 2
-        else player_pos[0],
-        player_pos[1]
-    )
+    x = player_pos[0]
+    y = player_pos[1]
+
+    if x < settings["screen"]['size_x'] // 2:
+        x = settings["screen"]['size_x'] // 2
+    elif x > settings["map"]['size_x'] - settings["screen"]['size_x'] // 2:
+        x = settings["map"]['size_x'] - settings["screen"]['size_x'] // 2
+    if y < settings["screen"]['size_y'] // 2:
+        y = settings["screen"]['size_y'] // 2
+    elif y > settings["map"]['size_y'] - settings["screen"]['size_y'] // 2:
+        y = settings["map"]['size_y'] - settings["screen"]['size_y'] // 2
+
+    abs_camera_pos = (x, y)
     rel_camera_pos = (
         settings["screen"]['size_x'] // 2,
         settings["screen"]['size_y'] // 2

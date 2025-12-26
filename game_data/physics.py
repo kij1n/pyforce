@@ -55,7 +55,7 @@ class PhysicsEngine:
 
         body.position = pymunk.Vec2d(
             x + h_width,
-            y + h_height*2
+            y + h_height
         )
 
         vertices = [
