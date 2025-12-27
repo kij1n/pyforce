@@ -4,6 +4,9 @@
     "debug": {
         "show_hitboxes": false
     },
+    "sprites": {
+        "inversion_indicator": "inv_"
+    },
     "screen": {
         "size_x": 1066,
         "size_y": 600

@@ -83,13 +83,27 @@ class EntityRenderer:
         abs_camera_pos, rel_camera_pos = calc_camera_pos(settings, player_pos)
         for entity in where:
             position, sprite_name = entity
+
+            is_inverted = False
+            inv_indicator = settings["sprites"]["inversion_indicator"]
+
+            if sprite_name.startswith(inv_indicator):
+                print("inverted")
+                is_inverted = True
+                sprite_name = sprite_name[len(inv_indicator):]
+
             sprite = sprite_loader.get_sprite(sprite_name)
+
+            if is_inverted:
+                image = sprite.invert_copy()
+            else:
+                image = sprite.image
 
             # calculate relative position
             relative_pos = convert_abs_to_rel(position, abs_camera_pos, rel_camera_pos)
             sprite.set_position(relative_pos)
 
-            screen.blit(sprite.image, sprite.rect)
+            screen.blit(image, sprite.rect)
 
 
 class MapRenderer:
@@ -181,3 +195,6 @@ class Sprite(pygame.sprite.Sprite):
 
     def set_position(self, position):
         self.rect.center = position
+
+    def invert_copy(self):
+        return pygame.transform.flip(self.image, True, False)

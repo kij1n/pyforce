@@ -8,13 +8,15 @@ class StateManager:
     def get_where(self, player_pos : tuple[int, int] = None) -> tuple[tuple[int,int], str]:
         if player_pos is None:
             sprite_name = self.entity.get_sprite_name(self.state.get_state(), 0)
+
+            if self.state.movement_direction is not None and self.state.movement_direction == "left":
+                inv_indicator = self.entity.settings["sprites"]["inversion_indicator"]
+                sprite_name = inv_indicator + sprite_name
+
             return (
                 self.entity.get_position()
             ), sprite_name
-        # else:
-        #     return (
-        #         self.entity.get_position()
-        #     ), self.entity.get_sprite_name(self.state, 0)
+        return None
 
     def apply_horizontal_velocity(self, direction: str):
         if self.state.get_state() == "idle":
@@ -24,6 +26,9 @@ class StateManager:
 
         if direction == "left":
             movement *= -1
+            self.state.movement_direction = direction
+        else:
+            self.state.movement_direction = direction
 
         velocity = Vec2d(
             movement,
@@ -31,12 +36,11 @@ class StateManager:
         )
         self.entity.shape.body.velocity = velocity
 
-        print(f"Applied horizontal velocity: {velocity} to entity at position {self.entity.get_position()}, propert: {self.entity.shape.body.velocity}")
-
 class State:
     def __init__(self, state, position: Vec2d):
         self.state = state
         self.start_pos = position
+        self.movement_direction = None
 
     def change_state(self, new_state, position: Vec2d, entity):
         self.state = new_state
