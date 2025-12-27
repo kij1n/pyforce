@@ -1,4 +1,6 @@
 {
+    "title": "Pyforce",
+    "fps": 60,
     "debug": {
         "show_hitboxes": false
     },
@@ -15,7 +17,7 @@
     },
     "physics": {
         "gravity": 500,
-        "friction": 1.0,
+        "friction": 0.8,
         "time_step": 0.016,
         "radius": 1
     },
@@ -42,12 +44,12 @@
         },
         "start_x": 200,
         "start_y": 300,
-        "movement_speed": 5,
+        "move_horizontal": 10000,
         "jump_height": 10,
         "hitbox_x": 60,
         "hitbox_y": 76,
         "mass": 50,
         "moment": null,
-        "friction": 1.0
+        "friction": 0
     }
 }

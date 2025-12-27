@@ -7,10 +7,7 @@ class Player:
         self.settings = settings
 
         self._prepare_collision_box()
-
         self.state_manager = StateManager(self)
-
-        self.movement_speed = settings["player_info"]["movement_speed"]
 
         self.sprite_names = {
             "idle": [

@@ -14,6 +14,7 @@ class Model:
         self.where = self._create_where()
 
     def update(self):
+        self.physics.sim.step(self.settings["physics"]['time_step'])
         self.where = self.entities.get_where()
 
     def get_center_pos(self) -> tuple[int, int]:
@@ -31,3 +32,6 @@ class Model:
         for ent in ents:
             body, shape = ent.get_collision_box()
             self.physics.sim.add(body, shape)
+
+    def move_player(self, direction: str):
+        self.entities.move_player(direction)

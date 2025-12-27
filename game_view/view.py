@@ -45,7 +45,7 @@ class View:
         self.settings = settings
         self.size = (settings["screen"]['size_x'], settings["screen"]['size_y'])
 
-        pygame.display.set_caption("Pyforce")
+        pygame.display.set_caption(self.settings["title"])
         self.screen = pygame.display.set_mode(self.size)
 
         pygame.init()

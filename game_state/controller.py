@@ -15,7 +15,7 @@ class Controller:
         self.model = Model(self.settings)
 
         self.fps = pygame.time.Clock()
-        self.input_handler = InputHandler()
+        self.input_handler = InputHandler(self)
 
         self.running = False
 
@@ -29,11 +29,10 @@ class Controller:
                 self.model.physics.sim
             )
 
-            self.model.physics.sim.step(self.settings["physics"]['time_step'])
             self.model.update()
 
-            self.input_handler.handle(self)
+            self.input_handler.handle()
 
-            self.fps.tick(60)
+            self.fps.tick(self.settings["fps"])
 
         pygame.quit()

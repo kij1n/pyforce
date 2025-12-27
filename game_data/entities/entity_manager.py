@@ -9,6 +9,9 @@ class EntityManager:
             # 'enemy2': Enemy(settings),
         }
 
+    def move_player(self, direction: str):
+        self.player.state_manager.apply_force(direction)
+
     def get_player_pos(self):
         pos = self.player.get_position()
         return (
