@@ -30,8 +30,8 @@ class Model:
     def insert_ents_to_sim(self):
         ents = self.entities.get_entities()
         for ent in ents:
-            body, shape = ent.get_collision_box()
-            self.physics.sim.add(body, shape)
+            body, shape, feet = ent.get_collision_box()
+            self.physics.sim.add(body, shape, feet)
 
     def move_player(self, direction: str):
         self.entities.move_player(direction)

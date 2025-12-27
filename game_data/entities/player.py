@@ -39,20 +39,51 @@ class Player:
 
         hitbox_x = self.settings["player_info"]["hitbox_x"]
         hitbox_y = self.settings["player_info"]["hitbox_y"]
+        feet_y = self.settings["player_info"]["feet_hitbox_y"]
 
+        h_y = hitbox_y / 2
+        h_x = hitbox_x / 2
+
+        vertical_shift = self._calc_vertical_shift(
+            hitbox_y / 2,
+            -hitbox_y / 2 - feet_y
+        )
+
+        # main body shape
         self.shape = Poly(
             self.body,
             [  # vertices relative to center of mass
-                (-hitbox_x / 2, hitbox_y / 2),
-                (-hitbox_x / 2, -hitbox_y / 2),
-                (hitbox_x / 2, -hitbox_y / 2),
-                (hitbox_x / 2, hitbox_y / 2)
+                (-h_x, h_y + vertical_shift),
+                (-h_x, -h_y + vertical_shift),
+                (h_x, -h_y + vertical_shift),
+                (h_x, h_y + vertical_shift)
             ]
         )
         self.shape.friction = self.settings["player_info"]["friction"]
 
+
+
+        # feet shape to allow better horizontal movement on ground
+        self.feet = Poly(
+            self.body,
+            [
+                (-h_x, -h_y + vertical_shift),
+                (-h_x, -h_y - feet_y + vertical_shift),
+                (h_x, -h_y - feet_y + vertical_shift),
+                (h_x, -h_y + vertical_shift)
+            ]
+        )
+        self.feet.friction = self.settings["player_info"]["feet_friction"]
+
+    @staticmethod
+    def _calc_vertical_shift(a, b):
+        # formula: a + x = -(b + x)
+        # this equation ensures the center of mass is in (0,0)
+        # where <a,b> is the range of y values of the hitbox
+        return  (a+b) / (-2)
+
     def get_collision_box(self):
-        return [self.body, self.shape]
+        return [self.body, self.shape, self.feet]
 
     def get_sprite_name(self, state, index):
         sprite_name = self.name + "_" + self.sprite_names[state][index]

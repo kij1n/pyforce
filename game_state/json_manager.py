@@ -14,5 +14,7 @@ class JSONManager:
             self.s = json.load(f)
 
     def save(self):
+        if len(self.s.items()) == 0:
+            return
         with open(self.path, 'w') as f:
             json.dump(self.s, f, indent=4)

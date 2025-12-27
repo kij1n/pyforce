@@ -17,7 +17,7 @@
     },
     "physics": {
         "gravity": 500,
-        "friction": 0.8,
+        "friction": 1.0,
         "time_step": 0.016,
         "radius": 1
     },
@@ -44,12 +44,15 @@
         },
         "start_x": 200,
         "start_y": 300,
-        "move_horizontal": 10000,
+        "move_horizontal": 250,
         "jump_height": 10,
         "hitbox_x": 60,
-        "hitbox_y": 76,
+        "hitbox_y": 66,
+        "feet_hitbox_x": 60,
+        "feet_hitbox_y": 10,
         "mass": 50,
         "moment": null,
-        "friction": 0
+        "friction": 1,
+        "feet_friction": 1
     }
 }

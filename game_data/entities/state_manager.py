@@ -16,18 +16,22 @@ class StateManager:
         #         self.entity.get_position()
         #     ), self.entity.get_sprite_name(self.state, 0)
 
-    def apply_force(self, direction: str):
+    def apply_horizontal_velocity(self, direction: str):
         if self.state.get_state() == "idle":
             self.state.change_state("run", self.entity.get_position(), self.entity)
 
-        force = Vec2d(self.entity.settings["player_info"]["move_horizontal"], 0)
+        movement = self.entity.settings["player_info"]["move_horizontal"]
+
         if direction == "left":
-            self.entity.body.force = Vec2d(-force.x, force.y)
-        elif direction == "right":
-            self.entity.body.force = Vec2d(force.x, force.y)
+            movement *= -1
 
-        print(f"Force: {self.entity.body.force}, Vel: {self.entity.body.velocity}, Mass: {self.entity.body.mass}")
+        velocity = Vec2d(
+            movement,
+            self.entity.shape.body.velocity.y
+        )
+        self.entity.shape.body.velocity = velocity
 
+        print(f"Applied horizontal velocity: {velocity} to entity at position {self.entity.get_position()}, propert: {self.entity.shape.body.velocity}")
 
 class State:
     def __init__(self, state, position: Vec2d):
