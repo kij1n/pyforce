@@ -9,8 +9,34 @@ class EntityManager:
             # 'enemy2': Enemy(settings),
         }
 
+    def update_ground_contact(self, entities_touching_ground: list):
+        for entity in self.get_entities():
+            identifier = getattr(entity.feet, 'id', None)
+
+            # if identifier is not None:
+            #     print("identifier is not none yay")
+
+            if identifier in entities_touching_ground:
+                entity.state_manager.state.set_on_ground(True)
+                print("set true")
+            else:
+                entity.state_manager.state.set_on_ground(False)
+                print("set false")
+
+    def update_timers(self):
+        for entity in self.get_entities():
+            entity.state_manager.state.append_time()
+
+    def update_entity_states(self):
+        for entity in self.get_entities():
+            if entity.shape.body.velocity == (0, 0) and not entity.state_manager.state.get_state() == "idle":
+                entity.state_manager.state.change_state("idle", entity.get_position(), entity)
+
     def move_player(self, direction: str):
-        self.player.state_manager.apply_horizontal_velocity(direction)
+        if direction in ["left", "right"]:
+            self.player.state_manager.apply_horizontal_velocity(direction)
+        else:
+            self.player.state_manager.apply_vertical_push()
 
     def get_player_pos(self):
         pos = self.player.get_position()

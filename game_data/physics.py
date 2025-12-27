@@ -7,6 +7,39 @@ class PhysicsEngine:
         self.settings = settings
         self.sim = pymunk.Space()
         self._prepare_space()
+        self._set_collision_handlers()
+
+        # stores entity ids touching the ground
+        self.entities_touching_ground = []
+
+    def _set_collision_handlers(self):
+        self.sim.on_collision(
+            self.settings["physics"]['collision_types']['player'],
+            self.settings["physics"]['collision_types']['platform'],
+            begin=self._entity_touching_ground,
+            separate=self._entity_leaving_ground
+        )
+
+    def _entity_touching_ground(self, arbiter, space, data):
+        identifier = getattr(arbiter.shapes[0], 'id', None)
+        if identifier is None:
+            return True
+
+        if identifier not in self.entities_touching_ground:
+            self.entities_touching_ground.append(identifier)
+        print("touching ground")
+        return True
+
+    def _entity_leaving_ground(self, arbiter, space, data):
+        identifier = getattr(arbiter.shapes[0], 'id', None)
+        if identifier is None:
+            return True
+
+        identifier = arbiter.shapes[0].id
+        if identifier in self.entities_touching_ground:
+            self.entities_touching_ground.remove(identifier)
+        print("stopped touching ground")
+        return True
 
     def _prepare_space(self):
         self.sim.gravity = pymunk.Vec2d(0, self.settings["physics"]['gravity'])
@@ -51,13 +84,6 @@ class PhysicsEngine:
             y + h_height
         )
 
-        vertices = [
-            (-h_width, h_height),
-            (-h_width, -h_height),
-            (h_width, -h_height),
-            (h_width, h_height)
-        ]
-
         shape = pymunk.Poly(
             body,
             [
@@ -69,4 +95,5 @@ class PhysicsEngine:
             radius=settings["physics"]['radius']
         )
         shape.friction = settings["physics"]['friction']
+        shape.collision_type = settings["physics"]['collision_types']['platform']
         return [shape, body]

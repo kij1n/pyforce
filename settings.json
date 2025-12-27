@@ -2,10 +2,17 @@
     "title": "Pyforce",
     "fps": 60,
     "debug": {
-        "show_hitboxes": false
+        "show_hitboxes": true
     },
     "sprites": {
-        "inversion_indicator": "inv_"
+        "inversion_indicator": "inv_",
+        "cycle_lengths": {
+            "player": {
+                "idle": 40,
+                "run": 20,
+                "jump": 30
+            }
+        }
     },
     "screen": {
         "size_x": 1066,
@@ -22,7 +29,11 @@
         "gravity": 500,
         "friction": 1.0,
         "time_step": 0.016,
-        "radius": 1
+        "radius": 1,
+        "collision_types": {
+            "player": 1,
+            "platform": 2
+        }
     },
     "player_info": {
         "sprites_paths": {
@@ -48,14 +59,15 @@
         "start_x": 200,
         "start_y": 300,
         "move_horizontal": 250,
-        "jump_height": 10,
+        "jump_force": 20000,
         "hitbox_x": 60,
         "hitbox_y": 66,
         "feet_hitbox_x": 60,
         "feet_hitbox_y": 10,
         "mass": 50,
         "moment": null,
-        "friction": 1,
-        "feet_friction": 1
+        "friction": 0,
+        "feet_friction": 1,
+        "id": 1
     }
 }

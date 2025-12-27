@@ -16,6 +16,9 @@ class Model:
     def update(self):
         self.physics.sim.step(self.settings["physics"]['time_step'])
         self.where = self.entities.get_where()
+        self.entities.update_entity_states()
+        self.entities.update_timers()
+        self.entities.update_ground_contact(self.physics.entities_touching_ground)
 
     def get_center_pos(self) -> tuple[int, int]:
         player_pos = self.entities.get_player_pos()

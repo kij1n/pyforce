@@ -20,3 +20,5 @@ class InputHandler:
             self.controller.model.move_player('left')
         if keys[pygame.K_d]:
             self.controller.model.move_player('right')
+        if keys[pygame.K_w]:
+            self.controller.model.move_player('up')
