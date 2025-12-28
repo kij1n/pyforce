@@ -28,11 +28,11 @@ class StateManager:
 
     def apply_vertical_push(self):
         # enemies will not jump, so this is only for player
-        if not self.state.can_jump():
+        if not self.state.can_jump(self.entity.shape.body):
             return
 
-        if self.state.get_state() == "idle":
-            self.state.change_state("jump", self.entity.get_position(), self.entity)
+        if self.state.get_state() != "jump":
+            self.state.change_state("jump", self.entity.get_position(), self.entity, settings=self.entity.settings)
 
         force = Vec2d(
             0,
@@ -59,13 +59,19 @@ class State:
     def __init__(self, state, position: Vec2d):
         self.state = state
         self.start_pos = position
+
         self.start_time = 0
         self.current_time = 0
+
+        self.start_y = None
+        self.highest_y = None
+        self.achieved_highest_y = False
+
         self.movement_direction = None
         self.is_on_ground = False
 
-    def can_jump(self) -> bool:
-        return self.is_on_ground
+    def can_jump(self, body) -> bool:
+        return self.is_on_ground and body.velocity.y >= 0
 
     def set_on_ground(self, is_on_ground: bool):
         self.is_on_ground = is_on_ground
@@ -89,7 +95,42 @@ class State:
             rest_of_time = time_elapsed % full_cycle
 
             return int(rest_of_time // cycle_length)
+        elif self.state == "jump":
+            current_y = current_position.y
+            end_y = self.highest_y
+
+            h_total_sprites = int(total_sprites // 2)
+
+            if current_y <= end_y and not self.achieved_highest_y:
+                self.achieved_highest_y = True
+                return h_total_sprites - 1
+
+            current_dist = abs(self.start_y - current_y)
+            total_dist = abs(end_y - self.start_y)
+
+            cycle_length = total_dist / h_total_sprites
+
+            if current_dist >= total_dist:
+                index = 0
+            else:
+                index = int(current_dist // cycle_length)
+
+            # debug
+            # print(f"current_dist {current_dist} total_dist: {total_dist} index: {
+            # index if not self.achieved_highest_y else self._reverse_index(index + h_total_sprites, total_sprites)
+            # }, achieved_highest_y: {self.achieved_highest_y}")
+
+            if not self.achieved_highest_y:
+                return index
+            else:
+                index = self._reverse_index(index, total_sprites)
+                return index
+
         return 0
+
+    @staticmethod
+    def _reverse_index(index, total_sprites):
+        return total_sprites - 1 - index
 
     def append_time(self):
         if self.state == "idle":
@@ -100,14 +141,31 @@ class State:
             self.movement_direction = direction
             self.start_pos = position
 
-    def change_state(self, new_state, position: Vec2d, entity):
+    def change_state(self, new_state, position: Vec2d, entity, settings=None):
         self.state = new_state
-        self.start_pos = position
 
-        self.start_time = 0
-        self.current_time = 0
+        if new_state == "run":
+            self.start_pos = position
+
+        elif new_state == "idle":
+            self.start_time = 0
+            self.current_time = 0
+
+        elif new_state == "jump":
+            self.achieved_highest_y = False
+            self.start_y = position.y
+            self.highest_y = self._calc_highest_y(position.y, settings)
 
         entity.body.activate()
+
+    @staticmethod
+    def _calc_highest_y(current_y, settings):
+        J = settings["player_info"]["jump_force"]
+        g = settings["physics"]["gravity"]
+        m = settings["player_info"]["mass"]
+        y_0 = current_y
+        highest_y = abs(J**2 / (2*g*m**2) - y_0)
+        return highest_y
 
     def get_state(self):
         return self.state

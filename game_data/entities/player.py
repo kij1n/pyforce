@@ -19,8 +19,8 @@ class Player:
                 "run4", "run5", "run6"
             ],
             "jump": [
-                "jump1", "jump2"
-                         "jump3", "jump4"
+                "jump1", "jump2",
+                "jump3", "jump4"
             ]
         }
 

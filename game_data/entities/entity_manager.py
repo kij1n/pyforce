@@ -13,15 +13,10 @@ class EntityManager:
         for entity in self.get_entities():
             identifier = getattr(entity.feet, 'id', None)
 
-            # if identifier is not None:
-            #     print("identifier is not none yay")
-
             if identifier in entities_touching_ground:
                 entity.state_manager.state.set_on_ground(True)
-                print("set true")
             else:
                 entity.state_manager.state.set_on_ground(False)
-                print("set false")
 
     def update_timers(self):
         for entity in self.get_entities():

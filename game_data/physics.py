@@ -27,7 +27,6 @@ class PhysicsEngine:
 
         if identifier not in self.entities_touching_ground:
             self.entities_touching_ground.append(identifier)
-        print("touching ground")
         return True
 
     def _entity_leaving_ground(self, arbiter, space, data):
@@ -38,7 +37,6 @@ class PhysicsEngine:
         identifier = arbiter.shapes[0].id
         if identifier in self.entities_touching_ground:
             self.entities_touching_ground.remove(identifier)
-        print("stopped touching ground")
         return True
 
     def _prepare_space(self):

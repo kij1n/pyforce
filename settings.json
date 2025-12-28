@@ -2,7 +2,7 @@
     "title": "Pyforce",
     "fps": 60,
     "debug": {
-        "show_hitboxes": true
+        "show_hitboxes": false
     },
     "sprites": {
         "inversion_indicator": "inv_",
