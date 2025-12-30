@@ -1,3 +1,4 @@
+from shared import Where
 from .player import Player
 from .enemy import Enemy
 
@@ -39,7 +40,7 @@ class EntityManager:
             pos[0], pos[1]
         )
 
-    def get_where(self):
+    def get_where_array(self) -> list[Where]:
         where = [self.player.state_manager.get_where()]
 
         for enemy in self.enemies.values():

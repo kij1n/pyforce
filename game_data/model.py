@@ -1,3 +1,4 @@
+from shared import Where
 from .physics import PhysicsEngine
 from . import entities
 
@@ -9,13 +10,11 @@ class Model:
         self.physics = PhysicsEngine(self.settings)
         self.insert_ents_to_sim()
 
-        # Initial where, tuple[tuple[int,int], str]
-        # absolute world position and sprite name to be rendered
-        self.where = self._create_where()
+        self.where_array = self._create_where()
 
     def update(self):
         self.physics.sim.step(self.settings["physics"]['time_step'])
-        self.where = self.entities.get_where()
+        self.where_array = self.entities.get_where_array()
         self.entities.update_entity_states()
         self.entities.update_timers()
         self.entities.update_ground_contact(self.physics.entities_touching_ground)
@@ -24,11 +23,11 @@ class Model:
         player_pos = self.entities.get_player_pos()
         return player_pos
 
-    def get_where(self):
-        return self.where
+    def get_where_array(self) -> list[Where]:
+        return self.where_array
 
     def _create_where(self):
-        return self.entities.get_where()
+        return self.entities.get_where_array()
 
     def insert_ents_to_sim(self):
         ents = self.entities.get_entities()

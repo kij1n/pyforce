@@ -1,5 +1,7 @@
 from pymunk import Vec2d
 from enum import Enum
+from shared import Where
+
 
 class StateManager:
     def __init__(self, entity):
@@ -7,23 +9,44 @@ class StateManager:
         self.state = State('idle', self.entity.get_position())
         self.movement = self.entity.settings["player_info"]["move_horizontal"]
 
-    def get_where(self, player_pos : tuple[int, int] = None) -> tuple[tuple[int,int], str]:
+
+    def get_where(self, player_pos : tuple[int, int] = None) -> Where:
         if player_pos is None:
-            sprite_index = self.state.get_sprite_index(
-                self.entity.get_position(),
-                self.entity.get_sprite_qty(self.state.get_state()),
-                self.entity.settings["sprites"]["cycle_lengths"]["player"][self.state.get_state()]
+            # sprite_index = self.state.get_sprite_index(
+            #     self.entity.get_position(),
+            #     self.entity.get_sprite_qty(self.state.get_state()),
+            #     self.entity.settings["sprites"]["cycle_lengths"]["player"][self.state.get_state()]
+            # )
+            #
+            # sprite_name = self.entity.get_sprite_name(self.state.get_state(), sprite_index)
+            #
+            # if self.state.movement_direction == Direction.LEFT:
+            #     inv_indicator = self.entity.settings["sprites"]["inversion_indicator"]
+            #     sprite_name = inv_indicator + sprite_name
+            #
+            # arm_separator = self.entity.settings["sprites"]["arm_separator"]
+            # sprite_name = sprite_name + arm_separator + str(self.arm_deg)
+
+            # return (
+            #     self.entity.get_position()
+            # ), sprite_name
+            #
+
+            where = Where(
+                position=self.entity.get_position(),
+                name=self.entity.name,
+                sprite_index=self.state.get_sprite_index(
+                    self.entity.get_position(),
+                    self.entity.get_sprite_qty(self.state.get_state()),
+                    self.entity.settings['sprites']['cycle_lengths']['player'][self.state.get_state()]
+                ),
+                state=self.state.get_state(),
+                inversion=True if self.state.is_inverted() else False,
+                arm_deg=getattr(self.entity, 'arm_deg', None),
+                gun_name=getattr(self.entity, 'gun_held', None)
             )
 
-            sprite_name = self.entity.get_sprite_name(self.state.get_state(), sprite_index)
-
-            if self.state.movement_direction == Direction.LEFT:
-                inv_indicator = self.entity.settings["sprites"]["inversion_indicator"]
-                sprite_name = inv_indicator + sprite_name
-
-            return (
-                self.entity.get_position()
-            ), sprite_name
+            return where
         return None
 
     def apply_vertical_push(self):
@@ -69,6 +92,9 @@ class State:
 
         self.movement_direction = None
         self.is_on_ground = False
+
+    def is_inverted(self):
+        return True if self.movement_direction == Direction.LEFT else False
 
     def can_jump(self, body) -> bool:
         return self.is_on_ground and body.velocity.y >= 0

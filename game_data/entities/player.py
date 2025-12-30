@@ -24,6 +24,9 @@ class Player:
             ]
         }
 
+        self.arm_deg = 0 # 0 means pointing down, turns counter-clockwise
+        self.gun_held = 'base'
+
     def get_sprite_qty(self, state):
         return len(self.sprite_names[state])
 

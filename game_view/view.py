@@ -4,6 +4,9 @@ import pyscroll
 import os
 from .ui import GameUI
 
+from shared import Where
+from math import cos, sin, radians, sqrt
+
 import pymunk
 import pymunk.pygame_util
 
@@ -56,9 +59,9 @@ class View:
         self.entity_renderer = EntityRenderer()
         self.map_renderer = MapRenderer(self.size, self.settings)
 
-    def render(self, player_pos, where : list[tuple[tuple[int,int], str]], sim):
+    def render(self, player_pos, where_array: list[Where], sim):
         self.map_renderer.render(player_pos, self.screen)
-        self.entity_renderer.render(where, self.sprite_loader, self.screen, self.settings, player_pos)
+        self.entity_renderer.render(where_array, self.sprite_loader, self.screen, self.settings, player_pos)
 
         # DEBUG DRAWING
         if self.settings["debug"]['show_hitboxes']:
@@ -78,31 +81,157 @@ class View:
 
 
 class EntityRenderer:
-    @staticmethod
-    def render(where : list[tuple[tuple[int,int], str]], sprite_loader, screen, settings, player_pos):
+    def render(self, where_array: list[Where], sprite_loader, screen, settings, player_pos):
         abs_camera_pos, rel_camera_pos = calc_camera_pos(settings, player_pos)
-        for entity in where:
-            position, sprite_name = entity
+        for where in where_array:
+            ent_relative_pos = convert_abs_to_rel(
+                position=where.position,
+                abs_camera_pos=abs_camera_pos,
+                rel_camera_pos=rel_camera_pos
+            )
 
-            is_inverted = False
-            inv_indicator = settings["sprites"]["inversion_indicator"]
+            ent_sprite_name = where.name + '_'+ where.state + str(where.sprite_index + 1)
+            ent_sprite = sprite_loader.get_sprite(ent_sprite_name)  # Sprite instance, not pygame Surface
 
-            if sprite_name.startswith(inv_indicator):
-                is_inverted = True
-                sprite_name = sprite_name[len(inv_indicator):]
+            ent_surface, ent_rect = self._prepare_entity(ent_relative_pos, ent_sprite, where.inversion)
 
-            sprite = sprite_loader.get_sprite(sprite_name)
+            arm_surface = arm_rect = None
+            gun_surface = gun_rect = None
+            is_over = None
 
-            if is_inverted:
-                image = sprite.invert_copy()
+            if where.arm_deg is not None:
+                arm_sprite_name = where.name + '_' + 'arm'
+                arm_sprite = sprite_loader.get_sprite(arm_sprite_name)
+
+                arm_surface, arm_rect, is_over = self._prepare_arm(
+                    ent_relative_pos=ent_relative_pos,
+                    sprite=arm_sprite,
+                    is_inverted=where.inversion,
+                    deg=where.arm_deg,
+                    offset=(
+                        settings["sprites"]["arm_disp_vector_x"],
+                        settings["sprites"]["arm_disp_vector_y"]
+                    ),
+                    rotation=(
+                        settings["sprites"]["arm_rotation_x"],
+                        settings["sprites"]["arm_rotation_y"]
+                    ),
+                )
+
+                if where.gun_name is not None:
+                    gun_sprite_name = where.gun_name
+                    gun_sprite = sprite_loader.get_sprite(gun_sprite_name)
+
+                    gun_surface, gun_rect = self._prepare_gun(
+                        hand_position=self._calc_hand_position(
+                            arm_rect.center, where.arm_deg,
+                            (
+                                settings['sprites']['arm_hand_x'],
+                                settings['sprites']['arm_hand_y']
+                            )
+                        ),
+                        sprite=gun_sprite,
+                        deg=where.arm_deg,
+                        is_inverted=where.inversion,
+                        handle_position_offset=(
+                            settings['sprites']['gun_handle_offset_x'],
+                            settings['sprites']['gun_handle_offset_y']
+                        )
+                    )
+
+            if is_over is not None:
+                if is_over:
+                    screen.blit(ent_surface, ent_rect)
+                    screen.blit(arm_surface, arm_rect)
+                    screen.blit(gun_surface, gun_rect)
+                else:
+                    screen.blit(arm_surface, arm_rect)
+                    screen.blit(gun_surface, gun_rect)
+                    screen.blit(ent_surface, ent_rect)
             else:
-                image = sprite.image
+                screen.blit(ent_surface, ent_rect)
 
-            # calculate relative position
-            relative_pos = convert_abs_to_rel(position, abs_camera_pos, rel_camera_pos)
-            sprite.set_position(relative_pos)
+    @staticmethod
+    def _calc_hand_position(arm_relative_pos, deg, hand_pos):
+        length = sqrt(hand_pos[0] ** 2 + hand_pos[1] ** 2)
+        pos = (
+            arm_relative_pos[0] + length*cos(radians(deg - 90)),
+            arm_relative_pos[1] - length*sin(radians(deg - 90))
+        )
 
-            screen.blit(image, sprite.rect)
+        return pos
+
+    @staticmethod
+    def _prepare_entity(ent_relative_pos, sprite, is_inverted):
+        img = sprite.image
+        rect = img.get_rect(center=ent_relative_pos)
+
+        if is_inverted:
+            img = pygame.transform.flip(img, True, False)
+
+        return img, rect
+
+    @staticmethod
+    def _prepare_gun(hand_position, sprite, is_inverted, deg, handle_position_offset):
+        is_on_left = False
+        if deg > 180:
+            deg = 360 - deg
+            is_on_left = True
+
+        img = pygame.transform.rotate(sprite.image, deg - 90)
+        if is_on_left or is_inverted:
+            img = pygame.transform.flip(img, True, False)
+
+        rect = img.get_rect()
+
+        if is_inverted:
+            handle_position_offset = (
+                handle_position_offset[0] * (-1),
+                handle_position_offset[1]
+            )
+
+        rect.center = (
+            hand_position[0] - handle_position_offset[0],
+            hand_position[1] - handle_position_offset[1]
+        )
+
+        return img, rect
+
+
+    def _prepare_arm(self, ent_relative_pos, sprite, is_inverted, deg, offset, rotation):
+        is_on_left = False
+        if deg > 180:
+            deg = 360 - deg
+            is_on_left = True
+
+        length = sqrt(rotation[0] ** 2 + rotation[1] ** 2)
+        vector = (  # vector of rotation point's position before and after rotation
+            length * sin(radians(deg)),
+            length * (cos(radians(deg)) - 1)
+        )
+
+        if is_on_left:
+            vector = (
+                vector[0] * (-1),
+                vector[1]
+            )
+        if is_inverted:
+            offset = (
+                offset[0] * (-1), offset[1]
+            )
+
+        center_pos = (
+            ent_relative_pos[0] + offset[0] + vector[0],
+            ent_relative_pos[1] + offset[1] + vector[1]
+        )
+
+        img = pygame.transform.rotate(sprite.image, deg)
+        if is_inverted or is_on_left:  # the image need to be rotated when one of them is true, but not if both
+            img = pygame.transform.flip(img, True, False)
+
+        if is_inverted and deg not in [0, 180]:  # visual addition
+            is_on_left = not is_on_left
+        return img, img.get_rect(center=center_pos), is_on_left
 
 
 class MapRenderer:
@@ -162,8 +291,14 @@ class SpriteLoader:
                 image = pygame.image.load(path).convert_alpha()
                 sprite = Sprite(image)
 
-                sprite_name = "player_" + sprite_type + str(index)
-                index += 1
+                if sprite_type == "arm":
+                    sprite_name = "player_" + sprite_type
+                elif sprite_type == 'guns':
+                    delimiter = '\\' if os.name == "nt" else '/'
+                    sprite_name = path.split('.')[0].split(delimiter)[-1]
+                else:
+                    sprite_name = "player_" + sprite_type + str(index)
+                    index += 1
 
                 player[sprite_name] = sprite
         return player
@@ -197,3 +332,6 @@ class Sprite(pygame.sprite.Sprite):
 
     def invert_copy(self):
         return pygame.transform.flip(self.image, True, False)
+
+    def rotate_copy(self, degrees):
+        return pygame.transform.rotate(self.image, degrees)

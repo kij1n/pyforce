@@ -6,13 +6,22 @@
     },
     "sprites": {
         "inversion_indicator": "inv_",
+        "arm_separator": "-",
         "cycle_lengths": {
             "player": {
                 "idle": 40,
                 "run": 20,
                 "jump": 30
             }
-        }
+        },
+        "arm_disp_vector_x": 16,
+        "arm_disp_vector_y": 0,
+        "arm_rotation_x": 0,
+        "arm_rotation_y": -10,
+        "arm_hand_x": 20,
+        "arm_hand_y": 0,
+        "gun_handle_offset_x": 0,
+        "gun_handle_offset_y": 0
     },
     "screen": {
         "size_x": 1066,
@@ -54,6 +63,12 @@
                 "assets/player/jump2.png",
                 "assets/player/jump3.png",
                 "assets/player/jump4.png"
+            ],
+            "arm": [
+                "assets/player/arm.png"
+            ],
+            "guns": [
+                "assets/player/base.png"
             ]
         },
         "start_x": 200,
