@@ -84,72 +84,92 @@ class EntityRenderer:
     def render(self, where_array: list[Where], sprite_loader, screen, settings, player_pos):
         abs_camera_pos, rel_camera_pos = calc_camera_pos(settings, player_pos)
         for where in where_array:
-            ent_relative_pos = convert_abs_to_rel(
-                position=where.position,
+            self._handle_single_entity(
                 abs_camera_pos=abs_camera_pos,
-                rel_camera_pos=rel_camera_pos
+                rel_camera_pos=rel_camera_pos,
+                where=where,
+                sprite_loader=sprite_loader,
+                settings=settings,
+                screen=screen,
             )
 
-            ent_sprite_name = where.name + '_'+ where.state + str(where.sprite_index + 1)
-            ent_sprite = sprite_loader.get_sprite(ent_sprite_name)  # Sprite instance, not pygame Surface
+    def _handle_single_entity(self, abs_camera_pos, rel_camera_pos, where, sprite_loader, settings, screen):
+        ent_relative_pos = convert_abs_to_rel(
+            position=where.position,
+            abs_camera_pos=abs_camera_pos,
+            rel_camera_pos=rel_camera_pos
+        )
 
-            ent_surface, ent_rect = self._prepare_entity(ent_relative_pos, ent_sprite, where.inversion)
+        ent_sprite_name = where.name + '_'+ where.state + str(where.sprite_index + 1)
+        ent_sprite = sprite_loader.get_sprite(ent_sprite_name)  # Sprite instance, not pygame Surface
 
-            arm_surface = arm_rect = None
-            gun_surface = gun_rect = None
-            is_over = None
+        ent_surface, ent_rect =  self._prepare_entity(ent_relative_pos, ent_sprite, where.inversion)
 
-            if where.arm_deg is not None:
-                arm_sprite_name = where.name + '_' + 'arm'
-                arm_sprite = sprite_loader.get_sprite(arm_sprite_name)
+        if where.arm_deg is None:
+            screen.blit(ent_surface, ent_rect)
+            return
 
-                arm_surface, arm_rect, is_over = self._prepare_arm(
-                    ent_relative_pos=ent_relative_pos,
-                    sprite=arm_sprite,
-                    is_inverted=where.inversion,
-                    deg=where.arm_deg,
-                    offset=(
-                        settings["sprites"]["arm_disp_vector_x"],
-                        settings["sprites"]["arm_disp_vector_y"]
-                    ),
-                    rotation=(
-                        settings["sprites"]["arm_rotation_x"],
-                        settings["sprites"]["arm_rotation_y"]
-                    ),
-                )
+        # if we arrived here, it's a player
+        self._handle_complex_entity(
+            where=where,
+            ent_relative_pos=ent_relative_pos,
+            sprite_loader=sprite_loader,
+            settings=settings,
+            screen=screen,
+            ent_data=(ent_surface, ent_rect)
+        )
 
-                if where.gun_name is not None:
-                    gun_sprite_name = where.gun_name
-                    gun_sprite = sprite_loader.get_sprite(gun_sprite_name)
+    def _handle_complex_entity(self, where, ent_relative_pos, sprite_loader, settings, screen, ent_data):
+        arm_sprite_name = where.name + '_' + 'arm'
+        arm_sprite = sprite_loader.get_sprite(arm_sprite_name)
 
-                    gun_surface, gun_rect = self._prepare_gun(
-                        hand_position=self._calc_hand_position(
-                            arm_rect.center, where.arm_deg,
-                            (
-                                settings['sprites']['arm_hand_x'],
-                                settings['sprites']['arm_hand_y']
-                            )
-                        ),
-                        sprite=gun_sprite,
-                        deg=where.arm_deg,
-                        is_inverted=where.inversion,
-                        handle_position_offset=(
-                            settings['sprites']['gun_handle_offset_x'],
-                            settings['sprites']['gun_handle_offset_y']
-                        )
+        arm_surface, arm_rect, is_over = self._prepare_arm(
+            ent_relative_pos=ent_relative_pos,
+            sprite=arm_sprite,
+            is_inverted=where.inversion,
+            deg=where.arm_deg,
+            offset=(
+                settings["sprites"]["arm_disp_vector_x"],
+                settings["sprites"]["arm_disp_vector_y"]
+            ),
+            rotation=(
+                settings["sprites"]["arm_rotation_x"],
+                settings["sprites"]["arm_rotation_y"]
+            ),
+        )
+
+        gun_surface = gun_rect = None
+
+        if where.gun_name is not None:
+            gun_sprite_name = where.gun_name
+            gun_sprite = sprite_loader.get_sprite(gun_sprite_name)
+
+            gun_surface, gun_rect = self._prepare_gun(
+                hand_position=self._calc_hand_position(
+                    arm_rect.center, where.arm_deg,
+                    (
+                        settings['sprites']['arm_hand_x'],
+                        settings['sprites']['arm_hand_y']
                     )
+                ),
+                sprite=gun_sprite,
+                deg=where.arm_deg,
+                is_inverted=where.inversion,
+                handle_position_offset=(
+                    settings['sprites']['gun_handle_offset_x'],
+                    settings['sprites']['gun_handle_offset_y']
+                )
+            )
 
-            if is_over is not None:
-                if is_over:
-                    screen.blit(ent_surface, ent_rect)
-                    screen.blit(arm_surface, arm_rect)
-                    screen.blit(gun_surface, gun_rect)
-                else:
-                    screen.blit(arm_surface, arm_rect)
-                    screen.blit(gun_surface, gun_rect)
-                    screen.blit(ent_surface, ent_rect)
-            else:
-                screen.blit(ent_surface, ent_rect)
+        if is_over:
+            screen.blit(ent_data[0], ent_data[1])
+            screen.blit(arm_surface, arm_rect)
+            if gun_surface: screen.blit(gun_surface, gun_rect)
+        else:
+            screen.blit(arm_surface, arm_rect)
+            if gun_surface: screen.blit(gun_surface, gun_rect)
+            screen.blit(ent_data[0], ent_data[1])
+
 
     @staticmethod
     def _calc_hand_position(arm_relative_pos, deg, hand_pos):
