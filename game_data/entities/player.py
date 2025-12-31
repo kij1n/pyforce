@@ -27,6 +27,27 @@ class Player:
         self.arm_deg = 0 # 0 means pointing down, turns counter-clockwise
         self.gun_held = 'base'
 
+    def get_relative_pos(self):
+        player_abs_pos = self.get_position()
+
+        screen_w = self.settings['screen']['size_x']
+        screen_h = self.settings['screen']['size_y']
+        map_w = self.settings['map']['size_x']
+        map_h = self.settings['map']['size_y']
+
+        # Calculate where the camera wants to be (centered on player)
+        # Camera Top-Left = Player Center - Half Screen
+        cam_x = player_abs_pos[0] - (screen_w // 2)
+        cam_y = player_abs_pos[1] - (screen_h // 2)
+
+        # Clamp the camera so it doesn't show outside the map
+        cam_x = max(0, min(cam_x, map_w - screen_w))
+        cam_y = max(0, min(cam_y, map_h - screen_h))
+
+        # Relative Position = Absolute Position - Camera Position
+        return player_abs_pos[0] - cam_x, player_abs_pos[1] - cam_y
+
+
     def get_sprite_qty(self, state):
         return len(self.sprite_names[state])
 

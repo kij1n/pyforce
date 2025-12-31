@@ -38,7 +38,8 @@ class StateManager:
                 sprite_index=self.state.get_sprite_index(
                     self.entity.get_position(),
                     self.entity.get_sprite_qty(self.state.get_state()),
-                    self.entity.settings['sprites']['cycle_lengths']['player'][self.state.get_state()]
+                    self.entity.settings['sprites']['cycle_lengths']['player'][self.state.get_state()],
+                    self.entity.shape.body.velocity,
                 ),
                 state=self.state.get_state(),
                 inversion=True if self.state.is_inverted() else False,
@@ -55,7 +56,7 @@ class StateManager:
             return
 
         if self.state.get_state() != "jump":
-            self.state.change_state("jump", self.entity.get_position(), self.entity, settings=self.entity.settings)
+            self.state.change_state("jump", self.entity.get_position(), self.entity.shape.body, settings=self.entity.settings)
 
         force = Vec2d(
             0,
@@ -64,8 +65,8 @@ class StateManager:
         self.entity.shape.body.apply_impulse_at_local_point(force)
 
     def apply_horizontal_velocity(self, direction: str):
-        if self.state.get_state() == "idle" and not self.state.get_state() == "jump":
-            self.state.change_state("run", self.entity.get_position(), self.entity)
+        if self.state.get_state() != "run" and self.entity.shape.body.velocity.y == 0 and self.state.is_on_ground:
+            self.state.change_state("run", self.entity.get_position(), self.entity.shape.body)
 
         if direction == "left":
             self.state.set_direction(Direction.LEFT, position=self.entity.get_position())
@@ -99,10 +100,15 @@ class State:
     def can_jump(self, body) -> bool:
         return self.is_on_ground and body.velocity.y >= 0
 
-    def set_on_ground(self, is_on_ground: bool):
+    def set_on_ground(self, is_on_ground: bool, body):
         self.is_on_ground = is_on_ground
+        # if is_on_ground:
+        #     if body.velocity.x != 0:
+        #         self.change_state("run", body.position, body)
+        #     else:
+        #         self.change_state("idle", body.position, body)
 
-    def get_sprite_index(self, current_position: Vec2d, total_sprites: int, cycle_length: float) -> int:
+    def get_sprite_index(self, current_position: Vec2d, total_sprites: int, cycle_length: float, velocity: Vec2d) -> int:
         if total_sprites <= 1:
             return 0
 
@@ -127,7 +133,7 @@ class State:
 
             h_total_sprites = int(total_sprites // 2)
 
-            if current_y <= end_y and not self.achieved_highest_y:
+            if (current_y <= end_y or velocity.y > 0) and not self.achieved_highest_y:
                 self.achieved_highest_y = True
                 return h_total_sprites - 1
 
@@ -167,7 +173,8 @@ class State:
             self.movement_direction = direction
             self.start_pos = position
 
-    def change_state(self, new_state, position: Vec2d, entity, settings=None):
+    def change_state(self, new_state, position: Vec2d, body, settings=None):
+        # print(f"{self.state} -> {new_state}")
         self.state = new_state
 
         if new_state == "run":
@@ -182,7 +189,7 @@ class State:
             self.start_y = position.y
             self.highest_y = self._calc_highest_y(position.y, settings)
 
-        entity.body.activate()
+        body.activate()
 
     @staticmethod
     def _calc_highest_y(current_y, settings):

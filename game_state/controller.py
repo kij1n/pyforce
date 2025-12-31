@@ -29,7 +29,7 @@ class Controller:
                 self.model.physics.sim
             )
 
-            self.model.update()
+            self.model.update(pygame.mouse.get_pos())
 
             self.input_handler.handle()
 
