@@ -199,7 +199,7 @@ class EntityRenderer:
             is_on_left = True
 
         img = pygame.transform.rotate(sprite.image, deg - 90)
-        if is_on_left or is_inverted:
+        if is_on_left:
             img = pygame.transform.flip(img, True, False)
 
         rect = img.get_rect()
@@ -246,7 +246,7 @@ class EntityRenderer:
         )
 
         img = pygame.transform.rotate(sprite.image, deg)
-        if is_inverted or is_on_left:  # the image need to be rotated when one of them is true, but not if both
+        if is_on_left:
             img = pygame.transform.flip(img, True, False)
 
         if is_inverted and deg not in [0, 180]:  # visual addition
