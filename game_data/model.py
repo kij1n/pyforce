@@ -40,3 +40,6 @@ class Model:
 
     def move_player(self, direction: str):
         self.entities.move_player(direction)
+
+    def player_shoot(self):
+        body, shape = self.entities.get_bullet()

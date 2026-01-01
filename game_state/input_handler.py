@@ -12,6 +12,9 @@ class InputHandler:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.controller.running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.controller.model.player_shoot()
+
 
     def handle_keys(self):
         keys = pygame.key.get_pressed()
@@ -20,5 +23,5 @@ class InputHandler:
             self.controller.model.move_player('left')
         if keys[pygame.K_d]:
             self.controller.model.move_player('right')
-        if keys[pygame.K_w]:
+        if keys[pygame.K_w] or keys[pygame.K_SPACE]:
             self.controller.model.move_player('up')

@@ -1,8 +1,14 @@
 import math
+from math import cos, sin, radians
+
+from pymunk import Body, Shape, Circle
 
 from shared import Where
 from .player import Player
 from .enemy import Enemy
+from .weapon import Weapon
+from .weapon import Ammo
+from .weapon import Bullet
 
 class EntityManager:
     def __init__(self, settings: dict):
@@ -12,6 +18,36 @@ class EntityManager:
             # 'enemy1': Enemy(settings),
             # 'enemy2': Enemy(settings),
         }
+        self.weapons = self._load_weapons(self.settings)  # dict name: Weapon
+        self.ammo = self._load_ammo(self.settings)  # dict name: Ammo
+        self.bullets = []  # list[Bullet]
+
+    @staticmethod
+    def _load_weapons(settings):
+        weapons = {}
+
+        for name in settings["weapons"]:
+            weapon = Weapon(
+                rate_of_fire=settings["weapons"][name]["rate_of_fire"],
+                reach=settings["weapons"][name]["reach"],
+                ammo=None
+            )
+            weapons[name] = weapon
+        return weapons
+
+    @staticmethod
+    def _load_ammo(settings):
+        ammo = {}
+
+        for name in settings["ammo"]:
+            amm = Ammo(
+                velocity=settings["ammo"][name]["velocity"],
+                damage=settings["ammo"][name]["damage"],
+                bullet_mass=settings["ammo"][name]["bullet_mass"],
+                bullet_radius=settings["ammo"][name]["bullet_radius"],
+            )
+            ammo[name] = amm
+        return ammo
 
     def update_player_aim(self, mouse_pos):
         # mouse pos is in relative coordinates
@@ -34,10 +70,8 @@ class EntityManager:
 
             if identifier in entities_touching_ground:
                 entity.state_manager.state.set_on_ground(True, entity.shape.body)
-                # print('set ground contact -> True')
             else:
                 entity.state_manager.state.set_on_ground(False, entity.shape.body)
-                # print('set ground contact -> False')
 
     def update_timers(self):
         for entity in self.get_entities():
@@ -75,3 +109,34 @@ class EntityManager:
             self.player,
             # self.enemies.values()
         ]
+
+    def get_bullet(self):
+        weapon = self.weapons[self.player.gun_held]
+        ammo = self.ammo[self.player.ammo_used]
+
+        body = Body(
+            mass=ammo.bullet_mass,
+            moment=float('inf'),
+            body_type=Body.DYNAMIC
+        )
+
+        shape = Circle(body, ammo.bullet_radius)
+        shape.collision_type = self.settings['physics']['collision_types']['bullet']
+
+        self._apply_bullet_impulse(shape, self.player.arm_deg, ammo)
+        return body, shape
+
+    def _apply_bullet_impulse(self, shape, angle, ammo):
+        v = ammo.velocity
+        angle = self._convert_angle(angle)
+
+        shape.body.apply_impulse_at_local_point(
+            v*cos(radians(angle)),
+            v*sin(radians(angle))
+        )
+
+    @staticmethod
+    def _convert_angle(angle):
+        angle = (angle - 90) % 360  # due to rotated axes
+        angle = (angle + 180) % 360  # inverted Y axis
+        return angle

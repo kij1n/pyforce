@@ -26,6 +26,7 @@ class Player:
 
         self.arm_deg = 0 # 0 means pointing down, turns counter-clockwise
         self.gun_held = 'base'
+        self.ammo_used = 'base'
 
     def get_relative_pos(self):
         player_abs_pos = self.get_position()
@@ -122,3 +123,6 @@ class Player:
 
     def get_state(self):
         return self.state_manager.state
+
+    def get_gun_position(self):
+        pass

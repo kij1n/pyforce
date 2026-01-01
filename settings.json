@@ -23,6 +23,20 @@
         "gun_handle_offset_x": 0,
         "gun_handle_offset_y": 0
     },
+    "weapons": {
+        "base": {
+            "rate_of_fire": 1,
+            "reach": 100
+        }
+    },
+    "ammo": {
+        "base": {
+            "velocity": 100,
+            "damage": 10,
+            "bullet_mass": 0.01,
+            "bullet_radius": 1
+        }
+    },
     "screen": {
         "size_x": 1066,
         "size_y": 600
@@ -41,7 +55,8 @@
         "radius": 1,
         "collision_types": {
             "player": 1,
-            "platform": 2
+            "platform": 2,
+            "bullet": 3
         }
     },
     "player_info": {
