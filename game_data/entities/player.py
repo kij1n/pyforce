@@ -1,5 +1,5 @@
 from .state_manager import StateManager
-from pymunk import Body, Poly, Vec2d
+from pymunk import Body, Poly, Vec2d, ShapeFilter
 
 
 class Player:
@@ -90,6 +90,12 @@ class Player:
             ]
         )
         self.shape.friction = self.settings["player_info"]["friction"]
+        self.shape.collision_type = self.settings["physics"]["collision_types"]["player"]
+
+        self.shape.filter = ShapeFilter(
+            categories=self.settings["physics"]["collision_categories"]['player'],
+            mask=self.settings["physics"]["collision_masks"]['player']
+        )
 
         self.feet = Poly(
             self.body,
@@ -101,8 +107,12 @@ class Player:
             ]
         )
         self.feet.friction = self.settings["player_info"]["feet_friction"]
-        self.feet.collision_type = self.settings["physics"]["collision_types"]["player"]
+        self.feet.collision_type = self.settings["physics"]["collision_types"]["player_feet"]
         self.feet.id = self.settings["player_info"]["id"]
+        self.feet.filter = ShapeFilter(
+            categories=self.settings["physics"]["collision_categories"]['player_feet'],
+            mask=self.settings["physics"]["collision_masks"]['player_feet']
+        )
 
     @staticmethod
     def _calc_vertical_shift(a, b):
@@ -125,4 +135,4 @@ class Player:
         return self.state_manager.state
 
     def get_gun_position(self):
-        pass
+        return self.shape.body.position

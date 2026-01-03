@@ -14,7 +14,7 @@ class PhysicsEngine:
 
     def _set_collision_handlers(self):
         self.sim.on_collision(
-            self.settings["physics"]['collision_types']['player'],
+            self.settings["physics"]['collision_types']['player_feet'],
             self.settings["physics"]['collision_types']['platform'],
             begin=self._entity_touching_ground,
             separate=self._entity_leaving_ground
@@ -94,4 +94,8 @@ class PhysicsEngine:
         )
         shape.friction = settings["physics"]['friction']
         shape.collision_type = settings["physics"]['collision_types']['platform']
+        shape.filter = pymunk.ShapeFilter(
+            categories=settings['physics']['collision_categories']['platform'],
+            mask=settings['physics']['collision_masks']['platform']
+        )
         return [shape, body]

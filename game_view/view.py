@@ -59,9 +59,10 @@ class View:
         self.entity_renderer = EntityRenderer()
         self.map_renderer = MapRenderer(self.size, self.settings)
 
-    def render(self, player_pos, where_array: list[Where], sim):
+    def render(self, player_pos, where_array: list[Where], bullets_set, sim):
         self.map_renderer.render(player_pos, self.screen)
         self.entity_renderer.render(where_array, self.sprite_loader, self.screen, self.settings, player_pos)
+        self.entity_renderer.render_bullets(bullets_set, self.sprite_loader, self.screen, self.settings, player_pos)
 
         # DEBUG DRAWING
         if self.settings["debug"]['show_hitboxes']:
@@ -81,6 +82,29 @@ class View:
 
 
 class EntityRenderer:
+    def render_bullets(self, bullets_dict, sprite_loader, screen, settings, player_pos):
+        abs_camera_pos, rel_camera_pos = calc_camera_pos(settings, player_pos)
+        for bullet, shape in bullets_dict.values():
+            self._handle_single_bullet(
+                abs_camera_pos=abs_camera_pos,
+                rel_camera_pos=rel_camera_pos,
+                bullet=bullet,
+                pos=shape.body.position,
+                sprite_loader=sprite_loader,
+                screen=screen,
+            )
+
+    @staticmethod
+    def _handle_single_bullet(abs_camera_pos, rel_camera_pos, bullet, pos, sprite_loader, screen):
+        sprite = sprite_loader.get_sprite(bullet.name)
+        bullet_relative_pos = convert_abs_to_rel(
+            position=pos,
+            abs_camera_pos=abs_camera_pos,
+            rel_camera_pos=rel_camera_pos
+        )
+        screen.blit(sprite.image, sprite.image.get_rect(center=bullet_relative_pos))
+
+
     def render(self, where_array: list[Where], sprite_loader, screen, settings, player_pos):
         abs_camera_pos, rel_camera_pos = calc_camera_pos(settings, player_pos)
         for where in where_array:
@@ -313,7 +337,7 @@ class SpriteLoader:
 
                 if sprite_type == "arm":
                     sprite_name = "player_" + sprite_type
-                elif sprite_type == 'guns':
+                elif sprite_type in ['guns', 'bullet']:
                     delimiter = '\\' if os.name == "nt" else '/'
                     sprite_name = path.split('.')[0].split(delimiter)[-1]
                 else:

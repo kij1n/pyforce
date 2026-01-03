@@ -8,6 +8,17 @@ class Weapon:
         self.rate_of_fire = rate_of_fire
         self.reach = reach
         self.ammo = ammo
+        self.last_shot = 0  # ticks since last shot
+
+    def can_shoot(self):
+        if self.last_shot >= self.rate_of_fire:
+            self.last_shot = 0
+            return True
+
+        return False
+
+    def append_time(self):
+        self.last_shot += 1
 
 
 class Ammo:
@@ -20,9 +31,9 @@ class Ammo:
 
 @dataclass
 class Bullet:
-    pos: tuple
-    velocity: float
-    angle: float  # degrees
+    id: int
+    start_pos: Vec2d
+    pos: Vec2d  # in update check whether to remove the bullet because reach
     reach: float
     damage: float
-    mass: float
+    name: str

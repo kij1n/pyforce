@@ -25,15 +25,15 @@
     },
     "weapons": {
         "base": {
-            "rate_of_fire": 1,
+            "rate_of_fire": 10,
             "reach": 100
         }
     },
     "ammo": {
         "base": {
-            "velocity": 100,
+            "velocity": 2500,
             "damage": 10,
-            "bullet_mass": 0.01,
+            "bullet_mass": 1,
             "bullet_radius": 1
         }
     },
@@ -55,8 +55,21 @@
         "radius": 1,
         "collision_types": {
             "player": 1,
-            "platform": 2,
-            "bullet": 3
+            "player_feet": 2,
+            "platform": 3,
+            "bullet": 4
+        },
+        "collision_categories": {
+            "player": 1,
+            "player_feet": 2,
+            "platform": 4,
+            "player_bullet": 8
+        },
+        "collision_masks": {
+            "player": 4,
+            "player_feet": 4,
+            "platform": 11,
+            "player_bullet": 12
         }
     },
     "player_info": {
@@ -84,6 +97,9 @@
             ],
             "guns": [
                 "assets/player/base.png"
+            ],
+            "bullet": [
+                "assets/player/bullet.png"
             ]
         },
         "start_x": 200,

@@ -19,6 +19,7 @@ class Model:
         self.entities.update_player_aim(mouse_pos)
 
         self.where_array = self.entities.get_where_array()
+        self.entities.update_bullets()
 
         self.physics.sim.step(self.settings["physics"]['time_step'])
 
@@ -28,6 +29,9 @@ class Model:
 
     def get_where_array(self) -> list[Where]:
         return self.where_array
+
+    def get_bullets_dict(self):
+        return self.entities.bullets_dict
 
     def _create_where(self):
         return self.entities.get_where_array()
@@ -42,4 +46,10 @@ class Model:
         self.entities.move_player(direction)
 
     def player_shoot(self):
-        body, shape = self.entities.get_bullet()
+        body, shape, bullet = self.entities.get_bullet()
+
+        if body is None or shape is None or bullet is None:
+            return
+
+        self.physics.sim.add(body, shape)
+        self.entities.bullets_dict[bullet.id] = [bullet, shape]
