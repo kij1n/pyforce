@@ -83,6 +83,9 @@ class EntityManager:
         for weapon in self.weapons.values():
             weapon.append_time()
 
+        for bullet, shape in self.bullets_dict.values():
+            bullet.timer += 1
+
     def update_entity_states(self):
         for entity in self.get_entities():
             if (entity.shape.body.velocity == (0, 0) and
@@ -119,7 +122,17 @@ class EntityManager:
     def update_bullets(self):
         # for bullet, shape in self.bullets_dict.values():
         #     bullet.pos = shape.body.position
-        pass
+        to_be_removed = []
+
+        for bullet, shape in self.bullets_dict.values():
+            if bullet.timer >= self.settings['physics']['timeout']['bullet']:
+                to_be_removed.append((bullet, shape))
+            elif (bullet.start_pos - shape.body.position).length >= bullet.reach:
+                to_be_removed.append((bullet, shape))
+
+        for bullet, shape in to_be_removed:
+            shape.body.space.remove(shape, shape.body)
+            del self.bullets_dict[bullet.id]
 
     def get_bullet(self):
         if not self._can_shoot(self.weapons[self.player.gun_held]):
@@ -139,7 +152,8 @@ class EntityManager:
         self._apply_bullet_impulse(shape, self.player.arm_deg, ammo)
         return body, shape, bullet
 
-    def _can_shoot(self, weapon: Weapon):
+    @staticmethod
+    def _can_shoot(weapon: Weapon):
         if weapon.can_shoot():
             return True
         return False

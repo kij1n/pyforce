@@ -37,3 +37,4 @@ class Bullet:
     reach: float
     damage: float
     name: str
+    timer: int = 0  # ticks since shot
