@@ -14,7 +14,6 @@ class Weapon:
         if self.last_shot >= self.rate_of_fire:
             self.last_shot = 0
             return True
-
         return False
 
     def append_time(self):
@@ -33,8 +32,14 @@ class Ammo:
 class Bullet:
     id: int
     start_pos: Vec2d
-    pos: Vec2d  # in update check whether to remove the bullet because reach
+    pos: Vec2d  # in the update, check whether to remove the bullet because reach
     reach: float
     damage: float
     name: str
     timer: int = 0  # ticks since shot
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __hash__(self):
+        return hash(self.id)

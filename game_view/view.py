@@ -84,7 +84,7 @@ class View:
 class EntityRenderer:
     def render_bullets(self, bullets_dict, sprite_loader, screen, settings, player_pos):
         abs_camera_pos, rel_camera_pos = calc_camera_pos(settings, player_pos)
-        for bullet, shape in bullets_dict.values():
+        for bullet, shape in bullets_dict.items():
             self._handle_single_bullet(
                 abs_camera_pos=abs_camera_pos,
                 rel_camera_pos=rel_camera_pos,

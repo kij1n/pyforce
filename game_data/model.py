@@ -52,4 +52,4 @@ class Model:
             return
 
         self.physics.sim.add(body, shape)
-        self.entities.bullets_dict[bullet.id] = [bullet, shape]
+        self.entities.bullets_dict[bullet] = shape

@@ -26,7 +26,7 @@
     "weapons": {
         "base": {
             "rate_of_fire": 10,
-            "reach": 2000
+            "reach": 4000
         }
     },
     "ammo": {
@@ -72,7 +72,7 @@
             "player_bullet": 12
         },
         "timeout": {
-            "bullet": 600
+            "bullet": 1000
         }
     },
     "player_info": {

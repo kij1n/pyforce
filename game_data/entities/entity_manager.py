@@ -51,8 +51,8 @@ class EntityManager:
         return ammo
 
     def update_player_aim(self, mouse_pos):
-        # mouse pos is in relative coordinates
-        # so we need to use player's rel not abs position
+        # mouse pos is in relative coordinates,
+        # so we need to use the player's rel not abs position
         player_pos = self.player.get_relative_pos()
 
         vector = (
@@ -83,7 +83,7 @@ class EntityManager:
         for weapon in self.weapons.values():
             weapon.append_time()
 
-        for bullet, shape in self.bullets_dict.values():
+        for bullet, shape in self.bullets_dict.items():
             bullet.timer += 1
 
     def update_entity_states(self):
@@ -120,19 +120,19 @@ class EntityManager:
         ]
 
     def update_bullets(self):
-        # for bullet, shape in self.bullets_dict.values():
-        #     bullet.pos = shape.body.position
         to_be_removed = []
 
-        for bullet, shape in self.bullets_dict.values():
+        for bullet, shape in self.bullets_dict.items():
             if bullet.timer >= self.settings['physics']['timeout']['bullet']:
                 to_be_removed.append((bullet, shape))
+                # print("removing bullet: timer")
             elif (bullet.start_pos - shape.body.position).length >= bullet.reach:
                 to_be_removed.append((bullet, shape))
+                # print(f"removing bullet: positon: {shape.body.position}")
 
         for bullet, shape in to_be_removed:
             shape.body.space.remove(shape, shape.body)
-            del self.bullets_dict[bullet.id]
+            del self.bullets_dict[bullet]
 
     def get_bullet(self):
         if not self._can_shoot(self.weapons[self.player.gun_held]):
