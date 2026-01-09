@@ -41,32 +41,36 @@ class Player:
         mass = self.settings["player_info"]["mass"]
         moment = self.settings["player_info"]["moment"]
 
-        self.body = Body(
+        self.body = self._create_body(mass, moment, self.settings)
+        self.shape = self._create_shape(self.body, self.settings)
+        self.feet = self._create_feet(self.body, self.settings)
+
+    @staticmethod
+    def _create_body(mass, moment, settings):
+        body = Body(
             mass=mass,
             moment=float('inf') if moment is None else moment,
             body_type=Body.DYNAMIC
         )
-        self.body.position = Vec2d(  # position of the center of mass
-            self.settings["player_info"]["start_x"],
-            self.settings["player_info"]["start_y"]
+        body.position = Vec2d(  # position of the center of mass
+            settings["player_info"]["start_x"],
+            settings["player_info"]["start_y"]
         )
+        return body
 
-        hitbox_x = self.settings["player_info"]["hitbox_x"]
-        hitbox_y = self.settings["player_info"]["hitbox_y"]
-        feet_y = self.settings["player_info"]["feet_hitbox_y"]
-
-        h_y = hitbox_y / 2
-        h_x = hitbox_x / 2
+    def _create_shape(self, body, settings):
+        h_x = settings["player_info"]["hitbox_x"] // 2
+        h_y = settings["player_info"]["hitbox_y"] // 2
+        feet_y = settings["player_info"]["feet_hitbox_y"]
 
         vertical_shift = self._calc_vertical_shift(
             h_y,
             -h_y - feet_y
         )
 
-        # Body shape
-        # In Pygame: Top is negative Y (-h_y), Bottom is positive Y (h_y)
-        self.shape = Poly(
-            self.body,
+        # in pygame: Top is negative Y (-h_y), Bottom is positive Y (h_y)
+        shape = Poly(
+            body,
             [
                 (-h_x, -h_y - vertical_shift),
                 (-h_x, h_y - vertical_shift),
@@ -74,16 +78,27 @@ class Player:
                 (h_x, -h_y - vertical_shift)
             ]
         )
-        self.shape.friction = self.settings["player_info"]["friction"]
-        self.shape.collision_type = self.settings["physics"]["collision_types"]["player"]
+        shape.friction = settings["player_info"]["friction"]
+        shape.collision_type = settings["physics"]["collision_types"]["player"]
 
-        self.shape.filter = ShapeFilter(
-            categories=self.settings["physics"]["collision_categories"]['player'],
-            mask=self.settings["physics"]["collision_masks"]['player']
+        shape.filter = ShapeFilter(
+            categories=settings["physics"]["collision_categories"]['player'],
+            mask=settings["physics"]["collision_masks"]['player']
+        )
+        return shape
+
+    def _create_feet(self, body, settings):
+        h_x = settings["player_info"]["hitbox_x"] // 2
+        h_y = settings["player_info"]["hitbox_y"] // 2
+        feet_y = settings["player_info"]["feet_hitbox_y"]
+
+        vertical_shift = self._calc_vertical_shift(
+            h_y,
+            -h_y - feet_y
         )
 
-        self.feet = Poly(
-            self.body,
+        feet = Poly(
+            body,
             [
                 (-h_x, h_y - vertical_shift),
                 (-h_x, h_y + feet_y - vertical_shift),
@@ -91,13 +106,17 @@ class Player:
                 (h_x, h_y - vertical_shift)
             ]
         )
-        self.feet.friction = self.settings["player_info"]["feet_friction"]
-        self.feet.collision_type = self.settings["physics"]["collision_types"]["player_feet"]
-        self.feet.id = self.settings["player_info"]["id"]
-        self.feet.filter = ShapeFilter(
+        feet.friction = settings["player_info"]["feet_friction"]
+        feet.collision_type = settings["physics"]["collision_types"]["player_feet"]
+        feet.id = settings["player_info"]["id"]
+
+        feet.filter = ShapeFilter(
             categories=self.settings["physics"]["collision_categories"]['player_feet'],
             mask=self.settings["physics"]["collision_masks"]['player_feet']
         )
+
+        return feet
+
 
     @staticmethod
     def _calc_vertical_shift(a, b):

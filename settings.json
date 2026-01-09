@@ -45,7 +45,7 @@
         "size_x": 4800,
         "size_y": 912,
         "tile_size": 48,
-        "map_path": "assets/map/map.tmx",
+        "map_path": "assets/map/map2.tmx",
         "object_layer_name": "platform_collisions"
     },
     "physics": {
@@ -77,10 +77,38 @@
     },
     "enemy_info": {
         "goblin": {
-            "sprites_paths": {}
+            "sprites_paths": {},
+            "hitbox": [
+                30,
+                30
+            ],
+            "feet_hitbox": [
+                30,
+                30
+            ],
+            "start_positions": [
+                [
+                    100,
+                    100
+                ]
+            ]
         },
         "skeleton": {
-            "sprites_paths": {}
+            "sprites_paths": {},
+            "hitbox": [
+                30,
+                30
+            ],
+            "feet_hitbox": [
+                30,
+                30
+            ],
+            "start_positions": [
+                [
+                    300,
+                    100
+                ]
+            ]
         }
     },
     "player_info": {

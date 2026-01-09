@@ -7,3 +7,6 @@ class Enemy:
         self.skin_color = skin_color  # flying or ground
         self.settings = settings
         self.state_manager = StateManager(self)
+
+    def get_sprite_qty(self, state):
+        return len(self.settings["enemy_info"][self.name]["sprites_paths"][state])

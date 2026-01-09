@@ -17,21 +17,24 @@ def calc_camera_pos(settings, player_pos):
     x = player_pos[0]
     y = player_pos[1]
 
-    if x < settings["screen"]['size_x'] // 2:
-        x = settings["screen"]['size_x'] // 2
-    elif x > settings["map"]['size_x'] - settings["screen"]['size_x'] // 2:
-        x = settings["map"]['size_x'] - settings["screen"]['size_x'] // 2
-    if y < settings["screen"]['size_y'] // 2:
-        y = settings["screen"]['size_y'] // 2
-    elif y > settings["map"]['size_y'] - settings["screen"]['size_y'] // 2:
-        y = settings["map"]['size_y'] - settings["screen"]['size_y'] // 2
+    h_scr_x = settings['screen']['size_x'] // 2
+    max_map_x = settings['map']['size_x'] - h_scr_x
+    h_scr_y = settings['screen']['size_y'] // 2
+    max_map_y = settings['map']['size_y'] - h_scr_y
 
-    abs_camera_pos = (x, y)
+    abs_camera_pos = (
+        _clamp(h_scr_x, x, max_map_x),
+        _clamp(h_scr_y, y, max_map_y)
+    )
+
     rel_camera_pos = (
         settings["screen"]['size_x'] // 2,
         settings["screen"]['size_y'] // 2
     )
     return abs_camera_pos, rel_camera_pos
+
+def _clamp(min_val, value, max_val):
+    return max(min(value, max_val), min_val)
 
 class EntityRenderer:
     def render_bullets(self, bullets_dict, sprite_loader, screen, settings, player_pos):

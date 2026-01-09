@@ -3,7 +3,7 @@ from .entity_renderer import *
 from .sprite_loader import *
 from .map_renderer import MapRenderer
 
-from shared import Where
+import shared
 
 import pymunk
 import pymunk.pygame_util
