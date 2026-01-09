@@ -12,6 +12,18 @@
                 "idle": 40,
                 "run": 20,
                 "jump": 30
+            },
+            "goblin": {
+                "idle": 13,
+                "run": 20,
+                "jump": 30,
+                "death": 40
+            },
+            "skeleton": {
+                "idle": 7,
+                "run": 20,
+                "jump": 30,
+                "death": 40
             }
         },
         "arm_disp_vector_x": 16,
@@ -57,19 +69,25 @@
             "player": 1,
             "player_feet": 2,
             "platform": 3,
-            "bullet": 4
+            "bullet": 4,
+            "enemy": 5,
+            "enemy_feet": 6
         },
         "collision_categories": {
             "player": 1,
             "player_feet": 2,
             "platform": 4,
-            "player_bullet": 8
+            "player_bullet": 8,
+            "enemy": 16,
+            "enemy_feet": 32
         },
         "collision_masks": {
-            "player": 4,
-            "player_feet": 4,
-            "platform": 11,
-            "player_bullet": 12
+            "player": 52,
+            "player_feet": 52,
+            "platform": 59,
+            "player_bullet": 28,
+            "enemy": 31,
+            "enemy_feet": 63
         },
         "timeout": {
             "bullet": 1000
@@ -114,19 +132,21 @@
                 ]
             },
             "hitbox": [
-                30,
-                30
+                50,
+                53
             ],
             "feet_hitbox": [
-                30,
-                30
+                50,
+                10
             ],
             "start_positions": [
                 [
                     100,
-                    100
+                    500
                 ]
-            ]
+            ],
+            "friction": 0,
+            "feet_friction": 1
         },
         "skeleton": {
             "mass": 100,
@@ -202,19 +222,21 @@
                 ]
             },
             "hitbox": [
-                30,
-                30
+                50,
+                80
             ],
             "feet_hitbox": [
-                30,
-                30
+                50,
+                10
             ],
             "start_positions": [
                 [
                     300,
-                    100
+                    500
                 ]
-            ]
+            ],
+            "friction": 0,
+            "feet_friction": 1
         }
     },
     "player_info": {
@@ -247,8 +269,10 @@
                 "assets/player/bullet.png"
             ]
         },
-        "start_x": 200,
-        "start_y": 300,
+        "start_pos": [
+            200,
+            300
+        ],
         "move_horizontal": 250,
         "jump_force": 20000,
         "hitbox": [

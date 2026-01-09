@@ -43,7 +43,7 @@ class SpriteLoader:
                     sprite = Sprite(image)
 
                     delimiter = '\\' if os.name == "nt" else '/'
-                    sprite_name = enemy + path.split('.')[0].split(delimiter)[-1]
+                    sprite_name = enemy + "_" + path.split('.')[0].split(delimiter)[-1]
 
                     enemies[sprite_name] = sprite
         return enemies

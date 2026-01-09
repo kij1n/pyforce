@@ -1,8 +1,10 @@
-import pymunk
 from pymunk import Body, Vec2d, Poly, ShapeFilter
 
 
-def prepare_collision_box(name, settings):
+def prepare_collision_box(name, settings, pos=None, ent_id=None):
+    if ent_id is None:  # if id is not given, it's a player
+        ent_id = getattr(settings["player_info"], "id", 1)
+
     if name == "player":
         ent_settings = settings["player_info"]
     else:
@@ -11,19 +13,25 @@ def prepare_collision_box(name, settings):
     mass = ent_settings["mass"]
     moment = ent_settings['moment']
 
-    body = _create_body(mass, moment, ent_settings)
+    body = _create_body(mass, moment, ent_settings, pos)
     shape = _create_shape(body, ent_settings, settings, name)
-    feet = _create_feet(body, ent_settings, settings, name)
+    feet = _create_feet(body, ent_settings, settings, name, ent_id)
 
     return body, shape, feet
 
-def _create_body(mass, moment, ent_settings):
+def _create_body(mass, moment, ent_settings, pos=None):
     moment = float('inf') if moment is None else moment
     body = Body(mass=mass, moment=moment, body_type=Body.DYNAMIC)
-    body.position = Vec2d(
-        ent_settings['hitbox'][0],
-        ent_settings['hitbox'][1]
-    )
+    if pos is None:  # if position is None it's a player
+        body.position = Vec2d(
+            ent_settings['start_pos'][0],
+            ent_settings['start_pos'][1]
+        )
+    else:
+        body.position = Vec2d(
+            pos[0],
+            pos[1]
+        )
     return body
 
 def _create_shape(body, ent_settings, settings, name):
@@ -44,16 +52,13 @@ def _create_shape(body, ent_settings, settings, name):
     )
 
     shape.friction = ent_settings["friction"]
-    shape.collision_type = settings["physics"]["collision_types"][name]
+    shape.collision_type = _get_collision_type(name, settings)
 
-    shape.filter = ShapeFilter(
-        categories=settings["physics"]["collision_categories"][name],
-        mask=settings["physics"]["collision_masks"][name]
-    )
+    shape.filter = _get_collision_filter(name, settings)
 
     return shape
 
-def _create_feet(body, ent_settings, settings, name):
+def _create_feet(body, ent_settings, settings, name, ent_id):
     h_x = ent_settings["hitbox"][0] // 2
     h_y = ent_settings["hitbox"][1] // 2
     feet_y = ent_settings["feet_hitbox"][1]
@@ -73,15 +78,27 @@ def _create_feet(body, ent_settings, settings, name):
         ]
     )
     feet.friction = ent_settings["feet_friction"]
-    feet.collision_type = settings["physics"]["collision_types"]["player_feet"]
-    feet.id = ent_settings["id"]
+    feet.collision_type = _get_collision_type(name, settings, True)
+    feet.id = ent_id  # used in handling ground collisions
 
-    feet.filter = ShapeFilter(
-        categories=settings["physics"]["collision_categories"][str(name) + "_feet"],
-        mask=settings["physics"]["collision_masks"][str(name) + "_feet"]
-    )
+    feet.filter = _get_collision_filter(name, settings, True)
 
     return feet
+
+def _get_collision_type(name, settings, is_feet=False):
+    ent = name if name == 'player' else 'enemy'
+    if is_feet:
+        ent += '_feet'
+    return settings['physics']['collision_types'][ent]
+
+def _get_collision_filter(name, settings, is_feet=False):
+    ent = name if name == 'player' else 'enemy'
+    if is_feet:
+        ent += '_feet'
+    return ShapeFilter(
+        categories=settings["physics"]["collision_categories"][ent],
+        mask=settings["physics"]["collision_masks"][ent]
+    )
 
 def _calc_vertical_shift(a, b):
     # formula: a + x = -(b + x)

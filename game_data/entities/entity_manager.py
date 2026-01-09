@@ -1,27 +1,40 @@
 import math
 from math import cos, sin, radians
 
-from pymunk import Body, Shape, Circle, Vec2d, ShapeFilter
+from pymunk import Body, Circle, Vec2d, ShapeFilter
 
-from shared import Where
+import shared
 from .player import Player
 from .enemy import Enemy
-from .weapon import Weapon
-from .weapon import Ammo
-from .weapon import Bullet
+from .weapon import *
 
 
 class EntityManager:
     def __init__(self, settings: dict):
         self.settings = settings
         self.player = Player(settings)
-        self.enemies = {
-            # 'enemy1': Enemy(settings),
-            # 'enemy2': Enemy(settings),
-        }
+        self.enemies = self._load_enemies()
         self.weapons = self._load_weapons(self.settings)  # dict name: Weapon
         self.ammo = self._load_ammo(self.settings)  # dict name: Ammo
         self.bullets_dict = {}  # dict Bullet: Shape
+
+    def _load_enemies(self) -> list[Enemy]:
+        enemies = []
+
+        for enemy_type in self.settings['enemy_info'].keys():
+            ent_settings = self.settings['enemy_info'][enemy_type]
+            for pos in ent_settings['start_positions']:
+                pos = (pos[0], pos[1])
+                enemy = Enemy(
+                    name=shared.get_enemy_name(enemy_type),
+                    skin_color=shared.SkinColor.GROUND,  # to me implemented later, or not
+                    settings=self.settings,
+                    pos=pos,
+                    ent_id=len(enemies) + 2  # player's id is 1
+                )
+                enemies.append(enemy)
+
+        return enemies
 
     @staticmethod
     def _load_weapons(settings):
@@ -105,19 +118,17 @@ class EntityManager:
             pos[0], pos[1]
         )
 
-    def get_where_array(self) -> list[Where]:
+    def get_where_array(self) -> list[shared.Where]:
         where = [self.player.state_manager.get_where()]
 
-        for enemy in self.enemies.values():
+        for enemy in self.enemies:
             where.append(enemy.state_manager.get_where(player_pos=self.player.get_position()))
 
         return where
 
     def get_entities(self):
-        return [
-            self.player,
-            # self.enemies.values()
-        ]
+        ent_list = [self.player] + self.enemies
+        return ent_list
 
     def update_bullets(self):
         to_be_removed = []

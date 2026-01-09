@@ -10,24 +10,24 @@ class StateManager:
         self.movement = self.entity.settings["player_info"]["move_horizontal"]
 
     def get_where(self, player_pos: tuple[int, int] = None) -> Where:
-        if player_pos is None:
-            where = Where(
-                position=self.entity.get_position(),
-                name=self.entity.name,
-                sprite_index=self.state.get_sprite_index(
-                    self.entity.get_position(),
-                    self.entity.get_sprite_qty(self.state.get_state()),
-                    self.entity.settings['sprites']['cycle_lengths']['player'][self.state.get_state()],
-                    self.entity.shape.body.velocity,
-                ),
-                state=self.state.get_state(),
-                inversion=True if self.state.is_inverted() else False,
-                arm_deg=getattr(self.entity, 'arm_deg', None),
-                gun_name=getattr(self.entity, 'gun_held', None)
-            )
+        # if player_pos is None:
+        where = Where(
+            position=self.entity.get_position(),
+            name=getattr(self.entity.name, 'value', 'player'),
+            sprite_index=self.state.get_sprite_index(
+                self.entity.get_position(),
+                self.entity.get_sprite_qty(self.state.get_state()),
+                self.entity.settings['sprites']['cycle_lengths'][getattr(self.entity.name, 'value', 'player')][self.state.get_state()],
+                self.entity.shape.body.velocity,
+            ),
+            state=self.state.get_state(),
+            inversion=True if self.state.is_inverted() else False,
+            arm_deg=getattr(self.entity, 'arm_deg', None),
+            gun_name=getattr(self.entity, 'gun_held', None)
+        )
 
-            return where
-        return None
+        return where
+        # return None
 
     def apply_vertical_push(self):
         # enemies will not jump, so this is only for player
