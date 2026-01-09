@@ -21,7 +21,7 @@ class PhysicsEngine:
         )
 
     def _entity_touching_ground(self, arbiter, space, data):
-        identifier = getattr(arbiter.shapes[0], 'id', None)
+        identifier = getattr(arbiter.shapes[0], 'id', None)  # only feet have an id
         if identifier is None:
             return True
 
