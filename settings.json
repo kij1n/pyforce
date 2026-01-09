@@ -77,14 +77,10 @@
     },
     "enemy_info": {
         "goblin": {
-            "sprites_paths": {
-
-            }
+            "sprites_paths": {}
         },
         "skeleton": {
-            "sprites_paths": {
-
-            }
+            "sprites_paths": {}
         }
     },
     "player_info": {
