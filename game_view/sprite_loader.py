@@ -31,7 +31,23 @@ class SpriteLoader:
         return player
 
     def load_enemies(self, settings: dict):
-        return {}
+        enemies = {}
+        enemy_info = settings['enemy_info']
+
+        for enemy in enemy_info.keys():
+            for sprite_type in enemy_info[enemy]['sprites_paths'].keys():
+                for sprite_location in enemy_info[enemy]['sprites_paths'][sprite_type]:
+                    path = self._get_path(sprite_location)
+
+                    image = pygame.image.load(path).convert_alpha()
+                    sprite = Sprite(image)
+
+                    delimiter = '\\' if os.name == "nt" else '/'
+                    sprite_name = enemy + path.split('.')[0].split(delimiter)[-1]
+
+                    enemies[sprite_name] = sprite
+        return enemies
+
 
     def get_sprite(self, sprite_name):
         return self.sprites[sprite_name]

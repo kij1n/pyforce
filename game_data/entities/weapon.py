@@ -38,6 +38,9 @@ class Bullet:
     name: str
     timer: int = 0  # ticks since shot
 
+    def __del__(self):
+        del self
+
     def __eq__(self, other):
         return self.id == other.id
 

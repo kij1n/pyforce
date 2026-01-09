@@ -94,52 +94,56 @@ class State:
             return 0
 
         if self.state == "run":
-            current_x = current_position.x
-            start_x = self.start_pos.x
-
-            distance_moved = abs(current_x - start_x)
-            full_cycle = cycle_length * total_sprites
-            rest_of_dist = distance_moved % full_cycle
-
-            return int(rest_of_dist // cycle_length)
+            return self._handle_run(current_position, total_sprites, cycle_length)
         elif self.state == "idle":
-            time_elapsed = self.current_time - self.start_time
-            full_cycle = cycle_length * total_sprites
-            rest_of_time = time_elapsed % full_cycle
-
-            return int(rest_of_time // cycle_length)
+            return self._handle_idle(cycle_length, total_sprites)
         elif self.state == "jump":
-            current_y = current_position.y
-            end_y = self.highest_y
-
-            h_total_sprites = int(total_sprites // 2)
-
-            if (current_y <= end_y or velocity.y > 0) and not self.achieved_highest_y:
-                self.achieved_highest_y = True
-                return h_total_sprites - 1
-
-            current_dist = abs(self.start_y - current_y)
-            total_dist = abs(end_y - self.start_y)
-
-            cycle_length = total_dist / h_total_sprites
-
-            if current_dist >= total_dist:
-                index = 0
-            else:
-                index = int(current_dist // cycle_length)
-
-            # debug
-            # print(f"current_dist {current_dist} total_dist: {total_dist} index: {
-            # index if not self.achieved_highest_y else self._reverse_index(index + h_total_sprites, total_sprites)
-            # }, achieved_highest_y: {self.achieved_highest_y}")
-
-            if not self.achieved_highest_y:
-                return index
-            else:
-                index = self._reverse_index(index, total_sprites)
-                return index
+            return self._handle_jump(current_position, total_sprites, velocity)
 
         return 0
+
+    def _handle_run(self, current_position, total_sprites, cycle_length):
+        current_x = current_position.x
+        start_x = self.start_pos.x
+
+        distance_moved = abs(current_x - start_x)
+        full_cycle = cycle_length * total_sprites
+        rest_of_dist = distance_moved % full_cycle
+
+        return int(rest_of_dist // cycle_length)
+
+    def _handle_idle(self, cycle_length, total_sprites):
+        time_elapsed = self.current_time - self.start_time
+        full_cycle = cycle_length * total_sprites
+        rest_of_time = time_elapsed % full_cycle
+
+        return int(rest_of_time // cycle_length)
+
+    def _handle_jump(self, current_position, total_sprites, velocity):
+        current_y = current_position.y
+        end_y = self.highest_y
+
+        h_total_sprites = int(total_sprites // 2)
+
+        if (current_y <= end_y or velocity.y > 0) and not self.achieved_highest_y:
+            self.achieved_highest_y = True
+            return h_total_sprites - 1
+
+        current_dist = abs(self.start_y - current_y)
+        total_dist = abs(end_y - self.start_y)
+
+        cycle_length = total_dist / h_total_sprites
+
+        if current_dist >= total_dist:
+            index = 0
+        else:
+            index = int(current_dist // cycle_length)
+
+        if not self.achieved_highest_y:
+            return index
+        else:
+            index = self._reverse_index(index, total_sprites)
+            return index
 
     @staticmethod
     def _reverse_index(index, total_sprites):

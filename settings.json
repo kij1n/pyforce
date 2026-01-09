@@ -77,7 +77,42 @@
     },
     "enemy_info": {
         "goblin": {
-            "sprites_paths": {},
+            "mass": 100,
+            "moment": null,
+            "sprites_paths": {
+                "idle": [
+                    "assets/enemies/goblin/idle1.png",
+                    "assets/enemies/goblin/idle2.png",
+                    "assets/enemies/goblin/idle3.png",
+                    "assets/enemies/goblin/idle4.png"
+                ],
+                "run": [
+                    "assets/enemies/goblin/run1.png",
+                    "assets/enemies/goblin/run2.png",
+                    "assets/enemies/goblin/run3.png",
+                    "assets/enemies/goblin/run4.png",
+                    "assets/enemies/goblin/run5.png",
+                    "assets/enemies/goblin/run6.png",
+                    "assets/enemies/goblin/run7.png",
+                    "assets/enemies/goblin/run8.png"
+                ],
+                "attack": [
+                    "assets/enemies/goblin/attack1.png",
+                    "assets/enemies/goblin/attack2.png",
+                    "assets/enemies/goblin/attack3.png",
+                    "assets/enemies/goblin/attack4.png",
+                    "assets/enemies/goblin/attack5.png",
+                    "assets/enemies/goblin/attack6.png",
+                    "assets/enemies/goblin/attack7.png",
+                    "assets/enemies/goblin/attack8.png"
+                ],
+                "death": [
+                    "assets/enemies/goblin/death1.png",
+                    "assets/enemies/goblin/death2.png",
+                    "assets/enemies/goblin/death3.png",
+                    "assets/enemies/goblin/death4.png"
+                ]
+            },
             "hitbox": [
                 30,
                 30
@@ -94,7 +129,78 @@
             ]
         },
         "skeleton": {
-            "sprites_paths": {},
+            "mass": 100,
+            "moment": null,
+            "sprites_paths": {
+                "idle": [
+                    "assets/enemies/skeleton/idle1.png",
+                    "assets/enemies/skeleton/idle2.png",
+                    "assets/enemies/skeleton/idle3.png",
+                    "assets/enemies/skeleton/idle4.png",
+                    "assets/enemies/skeleton/idle5.png",
+                    "assets/enemies/skeleton/idle6.png",
+                    "assets/enemies/skeleton/idle7.png",
+                    "assets/enemies/skeleton/idle8.png",
+                    "assets/enemies/skeleton/idle9.png",
+                    "assets/enemies/skeleton/idle10.png",
+                    "assets/enemies/skeleton/idle11.png"
+                ],
+                "run": [
+                    "assets/enemies/skeleton/run1.png",
+                    "assets/enemies/skeleton/run2.png",
+                    "assets/enemies/skeleton/run3.png",
+                    "assets/enemies/skeleton/run4.png",
+                    "assets/enemies/skeleton/run5.png",
+                    "assets/enemies/skeleton/run6.png",
+                    "assets/enemies/skeleton/run7.png",
+                    "assets/enemies/skeleton/run8.png",
+                    "assets/enemies/skeleton/run9.png",
+                    "assets/enemies/skeleton/run10.png",
+                    "assets/enemies/skeleton/run11.png",
+                    "assets/enemies/skeleton/run12.png",
+                    "assets/enemies/skeleton/run13.png"
+                ],
+                "attack": [
+                    "assets/enemies/skeleton/attack1.png",
+                    "assets/enemies/skeleton/attack2.png",
+                    "assets/enemies/skeleton/attack3.png",
+                    "assets/enemies/skeleton/attack4.png",
+                    "assets/enemies/skeleton/attack5.png",
+                    "assets/enemies/skeleton/attack6.png",
+                    "assets/enemies/skeleton/attack7.png",
+                    "assets/enemies/skeleton/attack8.png",
+                    "assets/enemies/skeleton/attack9.png",
+                    "assets/enemies/skeleton/attack10.png",
+                    "assets/enemies/skeleton/attack11.png",
+                    "assets/enemies/skeleton/attack12.png",
+                    "assets/enemies/skeleton/attack13.png",
+                    "assets/enemies/skeleton/attack14.png",
+                    "assets/enemies/skeleton/attack15.png",
+                    "assets/enemies/skeleton/attack16.png",
+                    "assets/enemies/skeleton/attack17.png",
+                    "assets/enemies/skeleton/attack18.png"
+                ],
+                "death": [
+                    "assets/enemies/skeleton/death1.png",
+                    "assets/enemies/skeleton/death2.png",
+                    "assets/enemies/skeleton/death3.png",
+                    "assets/enemies/skeleton/death4.png",
+                    "assets/enemies/skeleton/death5.png",
+                    "assets/enemies/skeleton/death6.png",
+                    "assets/enemies/skeleton/death7.png",
+                    "assets/enemies/skeleton/death8.png",
+                    "assets/enemies/skeleton/death9.png",
+                    "assets/enemies/skeleton/death10.png",
+                    "assets/enemies/skeleton/death11.png",
+                    "assets/enemies/skeleton/death12.png",
+                    "assets/enemies/skeleton/death13.png",
+                    "assets/enemies/skeleton/death14.png",
+                    "assets/enemies/skeleton/death15.png",
+                    "assets/enemies/skeleton/death16.png",
+                    "assets/enemies/skeleton/death17.png",
+                    "assets/enemies/skeleton/death18.png"
+                ]
+            },
             "hitbox": [
                 30,
                 30
@@ -145,10 +251,14 @@
         "start_y": 300,
         "move_horizontal": 250,
         "jump_force": 20000,
-        "hitbox_x": 60,
-        "hitbox_y": 66,
-        "feet_hitbox_x": 60,
-        "feet_hitbox_y": 10,
+        "hitbox": [
+            60,
+            66
+        ],
+        "feet_hitbox": [
+            60,
+            10
+        ],
         "mass": 50,
         "moment": null,
         "friction": 0,
