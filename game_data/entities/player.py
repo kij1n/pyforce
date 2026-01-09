@@ -10,21 +10,7 @@ class Player:
         self._prepare_collision_box()
         self.state_manager = StateManager(self)
 
-        self.sprite_names = {
-            "idle": [
-                "idle1", "idle2"
-            ],
-            "run": [
-                "run1", "run2", "run3",
-                "run4", "run5", "run6"
-            ],
-            "jump": [
-                "jump1", "jump2",
-                "jump3", "jump4"
-            ]
-        }
-
-        self.arm_deg = 0 # 0 means pointing down, turns counter-clockwise
+        self.arm_deg = 0  # 0 means pointing down, turns counter-clockwise
         self.gun_held = 'base'
         self.ammo_used = 'base'
 
@@ -48,9 +34,8 @@ class Player:
         # Relative Position = Absolute Position - Camera Position
         return player_abs_pos[0] - cam_x, player_abs_pos[1] - cam_y
 
-
     def get_sprite_qty(self, state):
-        return len(self.sprite_names[state])
+        return len(self.settings["player_info"]["sprites_paths"][state])
 
     def _prepare_collision_box(self):
         mass = self.settings["player_info"]["mass"]
@@ -61,7 +46,7 @@ class Player:
             moment=float('inf') if moment is None else moment,
             body_type=Body.DYNAMIC
         )
-        self.body.position = Vec2d(  # position of center of mass
+        self.body.position = Vec2d(  # position of the center of mass
             self.settings["player_info"]["start_x"],
             self.settings["player_info"]["start_y"]
         )
@@ -123,10 +108,6 @@ class Player:
 
     def get_collision_box(self):
         return [self.body, self.shape, self.feet]
-
-    def get_sprite_name(self, state, index):
-        sprite_name = self.name + "_" + self.sprite_names[state][index]
-        return sprite_name
 
     def get_position(self) -> Vec2d:
         return self.shape.body.position

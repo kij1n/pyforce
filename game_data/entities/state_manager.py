@@ -9,29 +9,8 @@ class StateManager:
         self.state = State('idle', self.entity.get_position())
         self.movement = self.entity.settings["player_info"]["move_horizontal"]
 
-
-    def get_where(self, player_pos : tuple[int, int] = None) -> Where:
+    def get_where(self, player_pos: tuple[int, int] = None) -> Where:
         if player_pos is None:
-            # sprite_index = self.state.get_sprite_index(
-            #     self.entity.get_position(),
-            #     self.entity.get_sprite_qty(self.state.get_state()),
-            #     self.entity.settings["sprites"]["cycle_lengths"]["player"][self.state.get_state()]
-            # )
-            #
-            # sprite_name = self.entity.get_sprite_name(self.state.get_state(), sprite_index)
-            #
-            # if self.state.movement_direction == Direction.LEFT:
-            #     inv_indicator = self.entity.settings["sprites"]["inversion_indicator"]
-            #     sprite_name = inv_indicator + sprite_name
-            #
-            # arm_separator = self.entity.settings["sprites"]["arm_separator"]
-            # sprite_name = sprite_name + arm_separator + str(self.arm_deg)
-
-            # return (
-            #     self.entity.get_position()
-            # ), sprite_name
-            #
-
             where = Where(
                 position=self.entity.get_position(),
                 name=self.entity.name,
@@ -56,7 +35,8 @@ class StateManager:
             return
 
         if self.state.get_state() != "jump":
-            self.state.change_state("jump", self.entity.get_position(), self.entity.shape.body, settings=self.entity.settings)
+            self.state.change_state("jump", self.entity.get_position(), self.entity.shape.body,
+                                    settings=self.entity.settings)
 
         force = Vec2d(
             0,
@@ -78,6 +58,7 @@ class StateManager:
             self.entity.shape.body.velocity.y
         )
         self.entity.shape.body.velocity = velocity
+
 
 class State:
     def __init__(self, state, position: Vec2d):
@@ -108,7 +89,8 @@ class State:
         #     else:
         #         self.change_state("idle", body.position, body)
 
-    def get_sprite_index(self, current_position: Vec2d, total_sprites: int, cycle_length: float, velocity: Vec2d) -> int:
+    def get_sprite_index(self, current_position: Vec2d, total_sprites: int, cycle_length: float,
+                         velocity: Vec2d) -> int:
         if total_sprites <= 1:
             return 0
 
@@ -197,11 +179,12 @@ class State:
         g = settings["physics"]["gravity"]
         m = settings["player_info"]["mass"]
         y_0 = current_y
-        highest_y = abs(J**2 / (2*g*m**2) - y_0)
+        highest_y = abs(J ** 2 / (2 * g * m ** 2) - y_0)
         return highest_y
 
     def get_state(self):
         return self.state
+
 
 class Direction(Enum):
     LEFT = -1

@@ -75,6 +75,18 @@
             "bullet": 1000
         }
     },
+    "enemy_info": {
+        "goblin": {
+            "sprites_paths": {
+
+            }
+        },
+        "skeleton": {
+            "sprites_paths": {
+
+            }
+        }
+    },
     "player_info": {
         "sprites_paths": {
             "idle": [
