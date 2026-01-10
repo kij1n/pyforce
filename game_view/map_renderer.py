@@ -1,6 +1,7 @@
 import pytmx
 import pyscroll
 import os
+from loguru import logger
 
 class MapRenderer:
     def __init__(self, size, settings: dict):
@@ -12,19 +13,29 @@ class MapRenderer:
 
 class MapLoader:
     def __init__(self, size: tuple[int, int], settings: dict):
+        logger.info("Initializing map loader...")
+
         self.settings = settings
 
-        script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        path = os.path.join(script_dir, settings["map"]["map_path"])
+        try:
+            script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            path = os.path.join(script_dir, settings["map"]["map_path"])
 
-        if os.name == "nt":
-            path = path.replace("/", "\\")
+            if os.name == "nt":
+                path = path.replace("/", "\\")
 
-        tmx_data = pytmx.load_pygame(path)
-        map_data = pyscroll.data.TiledMapData(tmx_data)
+            tmx_data = pytmx.load_pygame(path)
+            map_data = pyscroll.data.TiledMapData(tmx_data)
 
-        self.map_layer = pyscroll.BufferedRenderer(map_data, size)
-        self.group = pyscroll.PyscrollGroup(map_layer=self.map_layer)
+            self.map_layer = pyscroll.BufferedRenderer(map_data, size)
+            self.group = pyscroll.PyscrollGroup(map_layer=self.map_layer)
+
+        except FileNotFoundError:
+            logger.error(f"Map file not found")
+        except Exception as e:
+            logger.error(f"Unexpected error loading map: {e}")
+
+        logger.info("Map loaded successfully.")
 
     def set_center(self, target):
         target = (

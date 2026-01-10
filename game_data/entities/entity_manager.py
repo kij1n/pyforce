@@ -8,14 +8,23 @@ from .player import Player
 from .enemy import Enemy
 from .weapon import *
 
+from loguru import logger
 
 class EntityManager:
     def __init__(self, settings: dict):
+        logger.info("Initializing entity manager...")
+
         self.settings = settings
         self.player = Player(settings)
         self.enemies = self._load_enemies()
+
+        logger.info(f"Player and enemies ({len(self.enemies)}) loaded successfully")
+
         self.weapons = self._load_weapons(self.settings)  # dict name: Weapon
         self.ammo = self._load_ammo(self.settings)  # dict name: Ammo
+
+        logger.info(f"Weapons ({len(self.weapons)}) and ammunition ({len(self.ammo)}) loaded successfully")
+
         self.bullets_dict = {}  # dict Bullet: Shape
 
     def _load_enemies(self) -> list[Enemy]:

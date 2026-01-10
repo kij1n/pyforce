@@ -3,7 +3,7 @@ from .entity_renderer import *
 from .sprite_loader import *
 from .map_renderer import MapRenderer
 
-import shared
+from loguru import logger
 
 import pymunk
 import pymunk.pygame_util
@@ -11,6 +11,8 @@ import pymunk.pygame_util
 
 class View:
     def __init__(self, settings: dict):
+        logger.info("Initializing view...")
+
         self.settings = settings
         self.size = (settings["screen"]['size_x'], settings["screen"]['size_y'])
 
@@ -20,7 +22,6 @@ class View:
         pygame.init()
 
         self.ui = GameUI()
-
         self.sprite_loader = SpriteLoader(self.settings)
         self.entity_renderer = EntityRenderer()
         self.map_renderer = MapRenderer(self.size, self.settings)

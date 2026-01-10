@@ -1,9 +1,12 @@
 import pymunk
 import pytmx
 import os
+from loguru import logger
 
 class PhysicsEngine:
     def __init__(self, settings: dict):
+        logger.info("Initializing physics engine...")
+
         self.settings = settings
         self.sim = pymunk.Space()
         self._prepare_space()
@@ -43,6 +46,8 @@ class PhysicsEngine:
         self.sim.gravity = pymunk.Vec2d(0, self.settings["physics"]['gravity'])
         self._add_map()
 
+        logger.info("Physics engine platform collision shapes added.")
+
     def _add_map(self):
         object_layer = self._get_object_layer()
 
@@ -55,14 +60,19 @@ class PhysicsEngine:
         self.sim.add(add[1], add[0])
 
     def _get_object_layer(self):
-        script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        path = os.path.join(script_dir, self.settings["map"]["map_path"])
+        try:
+            script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            path = os.path.join(script_dir, self.settings["map"]["map_path"])
 
-        if os.name == "nt":
-            path = path.replace("/", "\\")
+            if os.name == "nt":
+                path = path.replace("/", "\\")
 
-        object_layer = pytmx.TiledMap(path).get_layer_by_name(self.settings["map"]['object_layer_name'])
-        return object_layer
+            object_layer = pytmx.TiledMap(path).get_layer_by_name(self.settings["map"]['object_layer_name'])
+            return object_layer
+        except FileNotFoundError:
+            logger.error(f"Map file not found")
+        except Exception as e:
+            logger.error(f"Unexpected error loading map: {e}")
 
     @staticmethod
     def _create_shape_body(obj, settings):

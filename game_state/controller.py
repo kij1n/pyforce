@@ -6,10 +6,14 @@ from game_data import Model
 from .input_handler import InputHandler
 from .json_manager import JSONManager
 
+from loguru import logger
+
 class Controller:
     def __init__(self):
-        self.settings = JSONManager()
-        self.settings = self.settings.s
+        logger.info("Initializing controller...")
+
+        self.json_manager = JSONManager()
+        self.settings = self.json_manager.settings
 
         self.view = View(self.settings)
         self.model = Model(self.settings)

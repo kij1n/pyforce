@@ -1,9 +1,12 @@
 from shared import Where
 from .physics import PhysicsEngine
 from . import entities
+from loguru import logger
 
 class Model:
     def __init__(self, settings: dict):
+        logger.info("Initializing model...")
+
         self.settings = settings
 
         self.entities = entities.EntityManager(self.settings)
