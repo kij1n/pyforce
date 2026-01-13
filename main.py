@@ -16,7 +16,7 @@ def setup_logging():
     logger.add(
         f"logs/{datetime.datetime.now().strftime('%Y-%m-%d_session-%H-%M-%S')}.log",
         rotation="10 MB",
-        retention="1 week",
+        retention="3 days",
         format=(
             "[<red>{elapsed}</red>] >> "
             "<yellow>{level}</yellow>: "

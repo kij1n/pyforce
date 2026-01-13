@@ -14,7 +14,7 @@ def prepare_collision_box(name, settings, pos=None, ent_id=None):
     moment = ent_settings['moment']
 
     body = _create_body(mass, moment, ent_settings, pos)
-    shape = _create_shape(body, ent_settings, settings, name)
+    shape = _create_shape(body, ent_settings, settings, name, ent_id)
     feet = _create_feet(body, ent_settings, settings, name, ent_id)
 
     return body, shape, feet
@@ -34,7 +34,7 @@ def _create_body(mass, moment, ent_settings, pos=None):
         )
     return body
 
-def _create_shape(body, ent_settings, settings, name):
+def _create_shape(body, ent_settings, settings, name, ent_id):
     h_x = ent_settings['hitbox'][0] // 2
     h_y = ent_settings['hitbox'][1] // 2
     feet_y = ent_settings['feet_hitbox'][1]
@@ -53,6 +53,7 @@ def _create_shape(body, ent_settings, settings, name):
 
     shape.friction = ent_settings["friction"]
     shape.collision_type = _get_collision_type(name, settings)
+    shape.id = ent_id  # used to tell if it's a player or enemy
 
     shape.filter = _get_collision_filter(name, settings)
 

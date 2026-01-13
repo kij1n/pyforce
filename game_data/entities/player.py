@@ -1,6 +1,6 @@
 from .state_manager import StateManager
 from .entity_helper import prepare_collision_box
-from pymunk import Body, Poly, Vec2d, ShapeFilter
+from pymunk import Vec2d
 
 
 class Player:

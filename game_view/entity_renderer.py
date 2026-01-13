@@ -163,7 +163,13 @@ class EntityRenderer:
     @staticmethod
     def _prepare_entity(ent_relative_pos, sprite, is_inverted):
         img = sprite.image
-        rect = img.get_rect(center=ent_relative_pos)
+
+        pos = (
+            ent_relative_pos[0] + sprite.offset[0],
+            ent_relative_pos[1] + sprite.offset[1]
+        )
+
+        rect = img.get_rect(center=pos)
 
         if is_inverted:
             img = pygame.transform.flip(img, True, False)

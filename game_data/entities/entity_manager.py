@@ -1,9 +1,10 @@
 import math
 from math import cos, sin, radians
 
+import pymunk
 from pymunk import Body, Circle, Vec2d, ShapeFilter
 
-import shared
+from shared import *
 from .player import Player
 from .enemy import Enemy
 from .weapon import *
@@ -26,6 +27,10 @@ class EntityManager:
         logger.info(f"Weapons ({len(self.weapons)}) and ammunition ({len(self.ammo)}) loaded successfully")
 
         self.bullets_dict = {}  # dict Bullet: Shape
+        self.patrol_paths = self._load_patrol_paths # list of PatrolPaths
+
+    def _load_patrol_paths(self):
+        pass
 
     def _load_enemies(self) -> list[Enemy]:
         enemies = []
@@ -35,8 +40,8 @@ class EntityManager:
             for pos in ent_settings['start_positions']:
                 pos = (pos[0], pos[1])
                 enemy = Enemy(
-                    name=shared.get_enemy_name(enemy_type),
-                    skin_color=shared.SkinColor.GROUND,  # to me implemented later, or not
+                    name=get_enemy_name(enemy_type),
+                    skin_color=SkinColor.GROUND,  # to me implemented later, or not
                     settings=self.settings,
                     pos=pos,
                     ent_id=len(enemies) + 2  # player's id is 1
@@ -110,10 +115,88 @@ class EntityManager:
 
     def update_entity_states(self):
         for entity in self.get_entities():
-            if (entity.shape.body.velocity == (0, 0) and
-                    entity.state_manager.state.is_on_ground and
-                    not entity.state_manager.state.get_state() == "idle"):
-                entity.state_manager.state.change_state("idle", entity.get_position(), entity.shape.body)
+            if entity.name == 'player' and self._is_to_idle(entity):
+                self._change_state(entity, 'idle')
+            # new_state = self._is_proper_state(entity)
+            # if new_state is not None:
+            #     self._change_state(entity, new_state)
+
+    def _is_proper_state(self, entity):
+        # helper function dedicated to enemies
+        # possible enemy state: run, idle, attack, death
+        pass
+
+    @staticmethod
+    def _is_to_idle(entity):
+        # helper function dedicated to player
+        return (
+            entity.shape.body.velocity == (0, 0) and
+            entity.state_manager.state.is_on_ground and
+            not entity.state_manager.state.get_state() == "idle"
+        )
+
+    @staticmethod
+    def _change_state(entity, new_state: str):
+        entity.state_manager.state.change_state(
+            new_state,
+            entity.get_position(),
+            entity.shape.body
+        )
+
+    def update_enemy_action(self, sim):
+        # actions to handle: run(to player, patrol), attack
+        for enemy in self.enemies:
+            self._update_single_enemy(enemy, sim)
+            self._apply_enemy_action(enemy)
+
+    def _update_single_enemy(self, enemy: Enemy, sim: pymunk.Space):
+        # change enemy's action in accordance to rules
+        # 1. check for aggro
+        # 2. check for patrol path
+        # 3. else idle
+        if self._check_for_aggro(enemy, sim):
+            enemy.change_action(EnemyAction.AGGRO) # apply aggro and return
+        elif not enemy.update_patrol_state():
+            # returns false if a player is not on a path
+            enemy.change_action(EnemyAction.IDLE)
+
+    def _check_for_aggro(self, enemy, sim):
+        mask = self.settings['physics']['collision_masks']['line_of_sight']
+        query_filter = ShapeFilter(
+            mask=mask
+        )
+        radius = self.settings['physics']['segment_query_radius']
+
+        info = sim.segment_query_first(
+            enemy.get_position(),
+            self.player.get_position(),
+            radius=radius,
+            shape_filter=query_filter
+        )
+        shape = info.shape
+        if getattr(shape, 'id', None) == self.settings['player_info']['id']:
+            return True
+        return False
+
+
+    def _apply_enemy_action(self, enemy):
+        current_action = enemy.get_current_action()
+        if current_action == EnemyAction.AGGRO:
+            direction = self._get_direction_to_player(
+                enemy.get_position()[0],
+                self.player.get_position()[0]
+            )
+            enemy.state_manager.apply_horizontal_velocity(direction)
+        elif current_action == EnemyAction.PATROL:
+            enemy.state_manager.move_along_patrol_path()
+
+    @staticmethod
+    def _get_direction_to_player(x, player_x):
+        if x > player_x:
+            return 'left'
+        else:
+            return 'right'
+
 
     def move_player(self, direction: str):
         if direction in ["left", "right"]:
@@ -127,7 +210,7 @@ class EntityManager:
             pos[0], pos[1]
         )
 
-    def get_where_array(self) -> list[shared.Where]:
+    def get_where_array(self) -> list[Where]:
         where = [self.player.state_manager.get_where()]
 
         for enemy in self.enemies:

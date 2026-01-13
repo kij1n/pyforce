@@ -2,7 +2,7 @@
     "title": "Pyforce",
     "fps": 60,
     "debug": {
-        "show_hitboxes": true
+        "show_hitboxes": false
     },
     "sprites": {
         "inversion_indicator": "inv_",
@@ -65,6 +65,7 @@
         "friction": 1.0,
         "time_step": 0.016,
         "radius": 1,
+        "segment_query_radius": 10,
         "collision_types": {
             "player": 1,
             "player_feet": 2,
@@ -87,48 +88,203 @@
             "platform": 59,
             "player_bullet": 28,
             "enemy": 31,
-            "enemy_feet": 63
+            "enemy_feet": 63,
+            "line_of_sight": 15
         },
         "timeout": {
             "bullet": 1000
         }
     },
+    "patrol_paths": [
+        {
+            "x_range": [
+                0,
+                0
+            ],
+            "height": 0
+        }
+    ],
     "enemy_info": {
         "goblin": {
+            "move_horizontal": 200,
             "mass": 100,
             "moment": null,
             "sprites_paths": {
                 "idle": [
-                    "assets/enemies/goblin/idle1.png",
-                    "assets/enemies/goblin/idle2.png",
-                    "assets/enemies/goblin/idle3.png",
-                    "assets/enemies/goblin/idle4.png"
+                    {
+                        "path": "assets/enemies/goblin/idle1.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/idle2.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/idle3.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/idle4.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    }
                 ],
                 "run": [
-                    "assets/enemies/goblin/run1.png",
-                    "assets/enemies/goblin/run2.png",
-                    "assets/enemies/goblin/run3.png",
-                    "assets/enemies/goblin/run4.png",
-                    "assets/enemies/goblin/run5.png",
-                    "assets/enemies/goblin/run6.png",
-                    "assets/enemies/goblin/run7.png",
-                    "assets/enemies/goblin/run8.png"
+                    {
+                        "path": "assets/enemies/goblin/run1.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/run2.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/run3.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/run4.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/run5.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/run6.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/run7.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/run8.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    }
                 ],
                 "attack": [
-                    "assets/enemies/goblin/attack1.png",
-                    "assets/enemies/goblin/attack2.png",
-                    "assets/enemies/goblin/attack3.png",
-                    "assets/enemies/goblin/attack4.png",
-                    "assets/enemies/goblin/attack5.png",
-                    "assets/enemies/goblin/attack6.png",
-                    "assets/enemies/goblin/attack7.png",
-                    "assets/enemies/goblin/attack8.png"
+                    {
+                        "path": "assets/enemies/goblin/attack1.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/attack2.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/attack3.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/attack4.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/attack5.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/attack6.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/attack7.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/attack8.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    }
                 ],
                 "death": [
-                    "assets/enemies/goblin/death1.png",
-                    "assets/enemies/goblin/death2.png",
-                    "assets/enemies/goblin/death3.png",
-                    "assets/enemies/goblin/death4.png"
+                    {
+                        "path": "assets/enemies/goblin/death1.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/death2.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/death3.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/goblin/death4.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    }
                 ]
             },
             "hitbox": [
@@ -149,76 +305,437 @@
             "feet_friction": 1
         },
         "skeleton": {
+            "move_horizontal": 200,
             "mass": 100,
             "moment": null,
             "sprites_paths": {
                 "idle": [
-                    "assets/enemies/skeleton/idle1.png",
-                    "assets/enemies/skeleton/idle2.png",
-                    "assets/enemies/skeleton/idle3.png",
-                    "assets/enemies/skeleton/idle4.png",
-                    "assets/enemies/skeleton/idle5.png",
-                    "assets/enemies/skeleton/idle6.png",
-                    "assets/enemies/skeleton/idle7.png",
-                    "assets/enemies/skeleton/idle8.png",
-                    "assets/enemies/skeleton/idle9.png",
-                    "assets/enemies/skeleton/idle10.png",
-                    "assets/enemies/skeleton/idle11.png"
+                    {
+                        "path": "assets/enemies/skeleton/idle1.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/idle2.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/idle3.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/idle4.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/idle5.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/idle6.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/idle7.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/idle8.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/idle9.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/idle10.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/idle11.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    }
                 ],
                 "run": [
-                    "assets/enemies/skeleton/run1.png",
-                    "assets/enemies/skeleton/run2.png",
-                    "assets/enemies/skeleton/run3.png",
-                    "assets/enemies/skeleton/run4.png",
-                    "assets/enemies/skeleton/run5.png",
-                    "assets/enemies/skeleton/run6.png",
-                    "assets/enemies/skeleton/run7.png",
-                    "assets/enemies/skeleton/run8.png",
-                    "assets/enemies/skeleton/run9.png",
-                    "assets/enemies/skeleton/run10.png",
-                    "assets/enemies/skeleton/run11.png",
-                    "assets/enemies/skeleton/run12.png",
-                    "assets/enemies/skeleton/run13.png"
+                    {
+                        "path": "assets/enemies/skeleton/run1.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run2.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run3.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run4.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run5.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run6.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run7.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run8.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run9.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run10.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run11.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run12.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/run13.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    }
                 ],
                 "attack": [
-                    "assets/enemies/skeleton/attack1.png",
-                    "assets/enemies/skeleton/attack2.png",
-                    "assets/enemies/skeleton/attack3.png",
-                    "assets/enemies/skeleton/attack4.png",
-                    "assets/enemies/skeleton/attack5.png",
-                    "assets/enemies/skeleton/attack6.png",
-                    "assets/enemies/skeleton/attack7.png",
-                    "assets/enemies/skeleton/attack8.png",
-                    "assets/enemies/skeleton/attack9.png",
-                    "assets/enemies/skeleton/attack10.png",
-                    "assets/enemies/skeleton/attack11.png",
-                    "assets/enemies/skeleton/attack12.png",
-                    "assets/enemies/skeleton/attack13.png",
-                    "assets/enemies/skeleton/attack14.png",
-                    "assets/enemies/skeleton/attack15.png",
-                    "assets/enemies/skeleton/attack16.png",
-                    "assets/enemies/skeleton/attack17.png",
-                    "assets/enemies/skeleton/attack18.png"
+                    {
+                        "path": "assets/enemies/skeleton/attack1.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack2.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack3.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack4.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack5.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack6.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack7.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack8.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack9.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack10.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack11.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack12.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack13.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack14.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack15.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack16.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack17.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/attack18.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    }
                 ],
                 "death": [
-                    "assets/enemies/skeleton/death1.png",
-                    "assets/enemies/skeleton/death2.png",
-                    "assets/enemies/skeleton/death3.png",
-                    "assets/enemies/skeleton/death4.png",
-                    "assets/enemies/skeleton/death5.png",
-                    "assets/enemies/skeleton/death6.png",
-                    "assets/enemies/skeleton/death7.png",
-                    "assets/enemies/skeleton/death8.png",
-                    "assets/enemies/skeleton/death9.png",
-                    "assets/enemies/skeleton/death10.png",
-                    "assets/enemies/skeleton/death11.png",
-                    "assets/enemies/skeleton/death12.png",
-                    "assets/enemies/skeleton/death13.png",
-                    "assets/enemies/skeleton/death14.png",
-                    "assets/enemies/skeleton/death15.png",
-                    "assets/enemies/skeleton/death16.png",
-                    "assets/enemies/skeleton/death17.png",
-                    "assets/enemies/skeleton/death18.png"
+                    {
+                        "path": "assets/enemies/skeleton/death1.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death2.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death3.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death4.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death5.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death6.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death7.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death8.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death9.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death10.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death11.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death12.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death13.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death14.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death15.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death16.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death17.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "path": "assets/enemies/skeleton/death18.png",
+                        "offset": [
+                            0,
+                            0
+                        ]
+                    }
                 ]
             },
             "hitbox": [
@@ -242,31 +759,121 @@
     "player_info": {
         "sprites_paths": {
             "idle": [
-                "assets/player/idle1.png",
-                "assets/player/idle2.png"
+                {
+                    "path": "assets/player/idle1.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/idle2.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                }
             ],
             "run": [
-                "assets/player/run1.png",
-                "assets/player/run2.png",
-                "assets/player/run3.png",
-                "assets/player/run4.png",
-                "assets/player/run5.png",
-                "assets/player/run6.png"
+                {
+                    "path": "assets/player/run1.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/run2.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/run3.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/run4.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/run5.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/run6.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                }
             ],
             "jump": [
-                "assets/player/jump1.png",
-                "assets/player/jump2.png",
-                "assets/player/jump3.png",
-                "assets/player/jump4.png"
+                {
+                    "path": "assets/player/jump1.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/jump2.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/jump3.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/jump4.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                }
             ],
             "arm": [
-                "assets/player/arm.png"
+                {
+                    "path": "assets/player/arm.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                }
             ],
             "guns": [
-                "assets/player/base.png"
+                {
+                    "path": "assets/player/base.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                }
             ],
             "bullet": [
-                "assets/player/bullet.png"
+                {
+                    "path": "assets/player/bullet.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                }
             ]
         },
         "start_pos": [

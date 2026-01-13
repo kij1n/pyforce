@@ -7,7 +7,12 @@ class StateManager:
     def __init__(self, entity):
         self.entity = entity
         self.state = State('idle', self.entity.get_position())
-        self.movement = self.entity.settings["player_info"]["move_horizontal"]
+
+        name = getattr(self.entity.name, 'value', 'player')
+        if name == 'player':
+            self.movement = self.entity.settings['player_info']['move_horizontal']
+        else:
+            self.movement = self.entity.settings['enemy_info'][name]['move_horizontal']
 
     def get_where(self, player_pos: tuple[int, int] = None) -> Where:
         # if player_pos is None:
@@ -44,7 +49,7 @@ class StateManager:
         self.entity.shape.body.apply_impulse_at_local_point(force)
 
     def apply_horizontal_velocity(self, direction: str):
-        if self.state.get_state() != "run" and self.entity.shape.body.velocity.y == 0 and self.state.is_on_ground:
+        if self._should_run():
             self.state.change_state("run", self.entity.get_position(), self.entity.shape.body)
 
         if direction == "left":
@@ -52,12 +57,27 @@ class StateManager:
         else:
             self.state.set_direction(Direction.RIGHT, position=self.entity.get_position())
 
+        self._calc_and_apply_velocity()
+
+    def _should_run(self):
+        return (
+            self.state.get_state() != "run" and
+            self.entity.shape.body.velocity.y == 0 and
+            self.state.is_on_ground
+        )
+
+    def move_along_patrol_path(self):
+        pass
+
+    def move_to_player(self):
+        pass
+
+    def _calc_and_apply_velocity(self):
         velocity = Vec2d(
             self.movement if self.state.movement_direction == Direction.RIGHT else -self.movement,
             self.entity.shape.body.velocity.y
         )
         self.entity.shape.body.velocity = velocity
-
 
 class State:
     def __init__(self, state, position: Vec2d):
@@ -82,11 +102,6 @@ class State:
 
     def set_on_ground(self, is_on_ground: bool, body):
         self.is_on_ground = is_on_ground
-        # if is_on_ground:
-        #     if body.velocity.x != 0:
-        #         self.change_state("run", body.position, body)
-        #     else:
-        #         self.change_state("idle", body.position, body)
 
     def get_sprite_index(self, current_position: Vec2d, total_sprites: int, cycle_length: float,
                          velocity: Vec2d) -> int:

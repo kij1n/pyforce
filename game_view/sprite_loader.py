@@ -13,14 +13,17 @@ class SpriteLoader:
 
     def load_player(self, settings: dict):
         player = {}
-        for sprite_type in settings["player_info"]["sprites_paths"].keys():
+        player_info = settings['player_info']
+
+        for sprite_type in player_info["sprites_paths"].keys():
             index = 1
-            for sprite_location in settings["player_info"]["sprites_paths"][sprite_type]:
+            for sprite_info in player_info["sprites_paths"][sprite_type]:
                 try:
-                    path = self._get_path(sprite_location)
+                    path = self._get_path(sprite_info['path'])
+                    offset = sprite_info['offset']
 
                     image = pygame.image.load(path).convert_alpha()
-                    sprite = Sprite(image)
+                    sprite = Sprite(image, offset)
 
                     if sprite_type == "arm":
                         sprite_name = "player_" + sprite_type
@@ -34,11 +37,11 @@ class SpriteLoader:
                     player[sprite_name] = sprite
 
                 except FileNotFoundError:
-                    logger.error(f"File not found: {sprite_location} for player")
+                    logger.error(f"File not found: {sprite_info['path']} for player")
                 except pygame.error:
-                    logger.error(f"Pygame could not load: {sprite_location} for player")
+                    logger.error(f"Pygame could not load: {sprite_info['path']} for player")
                 except Exception as e:
-                    logger.error(f"Unexpected error loading {sprite_location} for player: {e}")
+                    logger.error(f"Unexpected error loading {sprite_info} for player: {e}")
 
 
         logger.info(f"Player sprites loading complete")
@@ -50,12 +53,13 @@ class SpriteLoader:
 
         for enemy in enemy_info.keys():
             for sprite_type in enemy_info[enemy]['sprites_paths'].keys():
-                for sprite_location in enemy_info[enemy]['sprites_paths'][sprite_type]:
+                for sprite_info in enemy_info[enemy]['sprites_paths'][sprite_type]:
                     try:
-                        path = self._get_path(sprite_location)
+                        path = self._get_path(sprite_info['path'])
+                        offset = sprite_info['offset']
 
                         image = pygame.image.load(path).convert_alpha()
-                        sprite = Sprite(image)
+                        sprite = Sprite(image, offset)
 
                         delimiter = '\\' if os.name == "nt" else '/'
                         sprite_name = enemy + "_" + path.split('.')[0].split(delimiter)[-1]
@@ -63,11 +67,11 @@ class SpriteLoader:
                         enemies[sprite_name] = sprite
 
                     except FileNotFoundError:
-                        logger.error(f"File not found: {sprite_location} for {enemy}")
+                        logger.error(f"File not found: {sprite_info['path']} for {enemy}")
                     except pygame.error:
-                        logger.error(f"Pygame could not load: {sprite_location} for {enemy}")
+                        logger.error(f"Pygame could not load: {sprite_info['path']} for {enemy}")
                     except Exception as e:
-                        logger.error(f"Unexpected error loading {sprite_location} for {enemy}: {e}")
+                        logger.error(f"Unexpected error loading {sprite_info['path']} for {enemy}: {e}")
 
             logger.info(f"{enemy} sprites loading complete")
         return enemies
@@ -89,10 +93,11 @@ class SpriteLoader:
 
 
 class Sprite(pygame.sprite.Sprite):
-    def __init__(self, image: pygame.Surface):
+    def __init__(self, image: pygame.Surface, offset):
         super().__init__()
         self.image = image
         self.rect = self.image.get_rect()
+        self.offset = offset
 
     def set_position(self, position):
         self.rect.center = position
