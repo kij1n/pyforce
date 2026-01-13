@@ -16,7 +16,7 @@ class JSONManager:
         try:
             with open(self.path, 'r') as f:
                 self.settings = json.load(f)
-                logger.debug(f"Settings successfully loaded from {self.path}")
+                logger.info(f"Settings successfully loaded from {self.path}")
 
         except FileNotFoundError:
             logger.warning("Settings file not found.")
@@ -31,7 +31,7 @@ class JSONManager:
         try:
             with open(self.path, 'w') as f:
                 json.dump(self.settings, f, indent=4)
-                logger.debug(f"Settings saved to {self.path}")
+                logger.info(f"Settings saved to {self.path}")
 
         except FileNotFoundError:
             logger.warning("Settings file not found.")
