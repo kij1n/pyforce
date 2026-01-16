@@ -31,7 +31,7 @@ class Controller:
                 self.model.get_center_pos(),
                 self.model.get_where_array(),
                 self.model.get_bullets_dict(),
-                self.model.physics.sim
+                self.model.debug_elements
             )
 
             self.model.update(pygame.mouse.get_pos())

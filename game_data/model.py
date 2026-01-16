@@ -1,4 +1,9 @@
+from dataclasses import dataclass
+
+import pymunk
+
 from shared import Where
+from .entities.patrol_path import PatrolPath
 from .physics import PhysicsEngine
 from . import entities
 from loguru import logger
@@ -14,6 +19,10 @@ class Model:
         self.insert_ents_to_sim()
 
         self.where_array = self._create_where()
+
+        self.debug_elements = DebugElements(
+            self.physics.sim, self.entities.patrol_paths
+        )
 
     def update(self, mouse_pos):
         self.entities.update_entity_states()
@@ -57,3 +66,8 @@ class Model:
 
         self.physics.sim.add(body, shape)
         self.entities.bullets_dict[bullet] = shape
+
+@dataclass
+class DebugElements:
+    sim: pymunk.Space
+    patrol_paths: list[PatrolPath]

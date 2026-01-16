@@ -1,6 +1,5 @@
 from pymunk import Vec2d
-from enum import Enum
-from shared import Where
+from shared import *
 
 
 class StateManager:
@@ -48,11 +47,11 @@ class StateManager:
         )
         self.entity.shape.body.apply_impulse_at_local_point(force)
 
-    def apply_horizontal_velocity(self, direction: str):
+    def apply_horizontal_velocity(self, direction: Direction):
         if self._should_run():
             self.state.change_state("run", self.entity.get_position(), self.entity.shape.body)
 
-        if direction == "left":
+        if direction == Direction.LEFT:
             self.state.set_direction(Direction.LEFT, position=self.entity.get_position())
         else:
             self.state.set_direction(Direction.RIGHT, position=self.entity.get_position())
@@ -65,12 +64,6 @@ class StateManager:
             self.entity.shape.body.velocity.y == 0 and
             self.state.is_on_ground
         )
-
-    def move_along_patrol_path(self):
-        pass
-
-    def move_to_player(self):
-        pass
 
     def _calc_and_apply_velocity(self):
         velocity = Vec2d(
@@ -204,6 +197,3 @@ class State:
         return self.state
 
 
-class Direction(Enum):
-    LEFT = 'left'
-    RIGHT = 'right'

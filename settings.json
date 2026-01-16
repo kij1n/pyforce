@@ -2,7 +2,9 @@
     "title": "Pyforce",
     "fps": 60,
     "debug": {
-        "show_hitboxes": false
+        "show_hitboxes": false,
+        "show_patrol_paths": true,
+        "show_fps": false
     },
     "sprites": {
         "inversion_indicator": "inv_",
@@ -124,12 +126,12 @@
                 2976,
                 4800
             ],
-            "height": 738
+            "height": 645
         }
     ],
     "enemy_info": {
         "goblin": {
-            "sight": 200,
+            "sight": 400,
             "move_horizontal": 200,
             "mass": 100,
             "moment": null,
@@ -321,7 +323,7 @@
             ],
             "start_positions": [
                 [
-                    700,
+                    730,
                     500
                 ]
             ],

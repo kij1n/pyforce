@@ -1,13 +1,10 @@
-import pymunk
-
-from game_data.entities.state_manager import Direction
-
+from shared import Direction
 
 class PatrolPath:
     def __init__(self, x_range, height):
         self.start = (x_range[0], height)
         self.end = (x_range[1], height)
-        self.enemies = []
+        self.enemies = set()
 
     def is_in(self, x, y_range: tuple[int, int]):
         return (
@@ -17,9 +14,12 @@ class PatrolPath:
 
     def is_at_end(self, x, direction):
         return (
-            (direction == Direction.LEFT and x <= self.start[0]) or
-            (direction == Direction.RIGHT and x >= self.end[0])
+            (direction == Direction.LEFT and x - 40 <= self.start[0]) or
+            (direction == Direction.RIGHT and x + 40 >= self.end[0])
         )
 
     def add_enemy(self, enemy):
-        self.enemies.append(enemy)
+        self.enemies.add(enemy)
+
+    def remove_enemy(self, enemy):
+        self.enemies.discard(enemy)

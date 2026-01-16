@@ -1,5 +1,8 @@
 import pygame
 
+from game_data.entities.state_manager import Direction
+
+
 class InputHandler:
     def __init__(self, controller):
         self.controller = controller
@@ -12,19 +15,17 @@ class InputHandler:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.controller.running = False
-            # if event.type == pygame.MOUSEBUTTONDOWN:
-            #     self.controller.model.player_shoot()
 
 
     def handle_keys(self):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_a]:
-            self.controller.model.move_player('left')
+            self.controller.model.move_player(Direction.LEFT)
         if keys[pygame.K_d]:
-            self.controller.model.move_player('right')
+            self.controller.model.move_player(Direction.RIGHT)
         if keys[pygame.K_w] or keys[pygame.K_SPACE]:
-            self.controller.model.move_player('up')
+            self.controller.model.move_player(Direction.UP)
 
         keys = pygame.mouse.get_pressed()
 

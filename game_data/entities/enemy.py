@@ -1,10 +1,11 @@
-from .state_manager import StateManager, Direction
+from .state_manager import StateManager
 from .entity_helper import prepare_collision_box
-from shared import *
 from loguru import logger
+from shared import *
+
 
 class Enemy:
-    def __init__(self, name: EnemyName, skin_color: SkinColor, settings : dict, pos, ent_id):
+    def __init__(self, name: EnemyName, skin_color: SkinColor, settings: dict, pos, ent_id):
         self.name = name
         self.skin_color = skin_color  # flying or ground
         self.settings = settings
@@ -20,6 +21,15 @@ class Enemy:
 
         # action is not state
         self.current_action = None
+
+    def __eq__(self, other):
+        return self.get_id() == other.get_id()
+
+    def __hash__(self):
+        return hash(self.get_id())
+
+    def get_id(self):
+        return self.body.id
 
     def get_sprite_qty(self, state):
         return len(self.settings["enemy_info"][self.name.value]["sprites_paths"][state])
@@ -48,15 +58,30 @@ class Enemy:
                 return True
             return False  # return false if a patrol path is not set
         if self._is_at_end_of_path():
-            logger.debug("reached patrol path end")
             self._bounce_on_path()
+        if not self._is_still_on_path():
+            self.patrol_path.remove_enemy(self)
         return True
 
+    def _is_still_on_path(self):
+        return self.patrol_path.is_in(
+            self.shape.body.position.x,
+            self._get_y_range()
+        )
+
     def _bounce_on_path(self):
+        direction = self.get_movement_direction()
+        direction = self._invert_direction(direction)
         self.state_manager.state.set_direction(
-            Direction.RIGHT if self.get_movement_direction() == Direction.LEFT else Direction.LEFT,
+            direction,
             self.get_position()
         )
+
+    @staticmethod
+    def _invert_direction(direction):
+        if direction == Direction.LEFT:
+            return Direction.RIGHT
+        return Direction.LEFT
 
     def _is_at_end_of_path(self):
         return self.patrol_path.is_at_end(
@@ -65,6 +90,11 @@ class Enemy:
         )
 
     def _set_patrol_path(self, path):
+        if path is None:
+            self.patrol_path.remove_enemy(self)
+            self.change_action(EnemyAction.IDLE)
+            return
+
         self.patrol_path = path
         path.add_enemy(self)
         self.change_action(EnemyAction.PATROL)

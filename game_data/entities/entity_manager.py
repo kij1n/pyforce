@@ -8,6 +8,7 @@ from shared import *
 from .patrol_path import PatrolPath
 from .player import Player
 from .enemy import Enemy
+from .state_manager import Direction
 from .weapon import *
 
 from loguru import logger
@@ -165,11 +166,11 @@ class EntityManager:
         # 3. else idle
         if self._check_for_aggro(enemy, sim):
             enemy.change_action(EnemyAction.AGGRO) # apply aggro and return
-        elif not enemy.update_patrol_state(self.patrol_paths):
+        elif enemy.update_patrol_state(self.patrol_paths):
             # returns false if an enemy is not on a path
-            enemy.change_action(EnemyAction.IDLE)
+            enemy.change_action(EnemyAction.PATROL)
         else:
-            pass
+            enemy.change_action(EnemyAction.IDLE)
 
     def _check_for_aggro(self, enemy, sim):
         mask = self.settings['physics']['collision_masks']['line_of_sight']
@@ -187,7 +188,7 @@ class EntityManager:
         shape = info.shape
         if getattr(shape, 'id', None) == self.settings['player_info']['id']\
            and self._in_distance(enemy, shape, self.settings):
-            # logger.debug('> found aggro')
+            logger.debug('> found aggro')
             return True
         return False
 
@@ -201,27 +202,29 @@ class EntityManager:
         current_action = enemy.get_current_action()
         direction = enemy.get_movement_direction()
 
+        # logger.debug(f"action: {current_action}, direction: {direction}")
+
         if current_action == EnemyAction.AGGRO:
             direction = self._get_direction_to_player(
                 enemy.get_position()[0],
                 self.player.get_position()[0]
             )
 
-        elif current_action == EnemyAction.PATROL:
-            enemy.state_manager.move_along_patrol_path()
+        elif current_action == EnemyAction.IDLE:
+            return
 
         enemy.state_manager.apply_horizontal_velocity(direction)
 
     @staticmethod
     def _get_direction_to_player(x, player_x):
         if x > player_x:
-            return 'left'
+            return Direction.LEFT
         else:
-            return 'right'
+            return Direction.RIGHT
 
 
-    def move_player(self, direction: str):
-        if direction in ["left", "right"]:
+    def move_player(self, direction: Direction):
+        if direction in [Direction.LEFT, Direction.RIGHT]:
             self.player.state_manager.apply_horizontal_velocity(direction)
         else:
             self.player.state_manager.apply_vertical_push()
