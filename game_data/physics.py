@@ -45,6 +45,8 @@ class PhysicsEngine:
     def _prepare_space(self):
         self.sim.gravity = pymunk.Vec2d(0, self.settings["physics"]['gravity'])
         self._add_map()
+        self.sim.collision_bias = self.settings["physics"]['collision_bias']
+        self.sim.collision_slop = self.settings["physics"]['collision_slop']
 
         logger.info("Physics engine platform collision shapes added.")
 

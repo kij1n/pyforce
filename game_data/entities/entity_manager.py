@@ -2,9 +2,10 @@ import math
 from math import cos, sin, radians
 
 import pymunk
-from pymunk import Body, Circle, Vec2d, ShapeFilter
+from pymunk import Body, Circle, ShapeFilter
 
 from shared import *
+from .patrol_path import PatrolPath
 from .player import Player
 from .enemy import Enemy
 from .weapon import *
@@ -27,10 +28,18 @@ class EntityManager:
         logger.info(f"Weapons ({len(self.weapons)}) and ammunition ({len(self.ammo)}) loaded successfully")
 
         self.bullets_dict = {}  # dict Bullet: Shape
-        self.patrol_paths = self._load_patrol_paths # list of PatrolPaths
+        self.patrol_paths = self._load_patrol_paths()  # list of PatrolPaths
 
-    def _load_patrol_paths(self):
-        pass
+        logger.info(f"Patrol paths ({len(self.patrol_paths)}) loaded successfully")
+
+    def _load_patrol_paths(self)\
+            -> list[PatrolPath]:
+        patrol_paths = []
+        for path in self.settings['patrol_paths']:
+            patrol_path = PatrolPath(path['x_range'], path['height'])
+            patrol_paths.append(patrol_path)
+
+        return patrol_paths
 
     def _load_enemies(self) -> list[Enemy]:
         enemies = []
@@ -152,13 +161,15 @@ class EntityManager:
     def _update_single_enemy(self, enemy: Enemy, sim: pymunk.Space):
         # change enemy's action in accordance to rules
         # 1. check for aggro
-        # 2. check for patrol path
+        # 2. check for a patrol path
         # 3. else idle
         if self._check_for_aggro(enemy, sim):
             enemy.change_action(EnemyAction.AGGRO) # apply aggro and return
-        elif not enemy.update_patrol_state():
-            # returns false if a player is not on a path
+        elif not enemy.update_patrol_state(self.patrol_paths):
+            # returns false if an enemy is not on a path
             enemy.change_action(EnemyAction.IDLE)
+        else:
+            pass
 
     def _check_for_aggro(self, enemy, sim):
         mask = self.settings['physics']['collision_masks']['line_of_sight']
@@ -174,21 +185,32 @@ class EntityManager:
             shape_filter=query_filter
         )
         shape = info.shape
-        if getattr(shape, 'id', None) == self.settings['player_info']['id']:
+        if getattr(shape, 'id', None) == self.settings['player_info']['id']\
+           and self._in_distance(enemy, shape, self.settings):
+            # logger.debug('> found aggro')
             return True
         return False
 
+    @staticmethod
+    def _in_distance(enemy, shape, settings):
+        return (
+            enemy.get_position() - shape.body.position
+        ).length < settings['enemy_info'][enemy.name.value]['sight']
 
-    def _apply_enemy_action(self, enemy):
+    def _apply_enemy_action(self, enemy: Enemy):
         current_action = enemy.get_current_action()
+        direction = enemy.get_movement_direction()
+
         if current_action == EnemyAction.AGGRO:
             direction = self._get_direction_to_player(
                 enemy.get_position()[0],
                 self.player.get_position()[0]
             )
-            enemy.state_manager.apply_horizontal_velocity(direction)
+
         elif current_action == EnemyAction.PATROL:
             enemy.state_manager.move_along_patrol_path()
+
+        enemy.state_manager.apply_horizontal_velocity(direction)
 
     @staticmethod
     def _get_direction_to_player(x, player_x):

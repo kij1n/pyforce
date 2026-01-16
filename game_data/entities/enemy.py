@@ -1,6 +1,7 @@
-from .state_manager import StateManager
+from .state_manager import StateManager, Direction
 from .entity_helper import prepare_collision_box
 from shared import *
+from loguru import logger
 
 class Enemy:
     def __init__(self, name: EnemyName, skin_color: SkinColor, settings : dict, pos, ent_id):
@@ -38,8 +39,55 @@ class Enemy:
     def get_current_action(self) -> EnemyAction:
         return self.current_action
 
-    def update_patrol_state(self):
-        pass
+    def update_patrol_state(self, patrol_paths):
+        if self.patrol_path is None:
+            path = self._is_on_patrol_path(patrol_paths)
+            if path is not None:
+                logger.debug("found patrol path")
+                self._set_patrol_path(path)
+                return True
+            return False  # return false if a patrol path is not set
+        if self._is_at_end_of_path():
+            logger.debug("reached patrol path end")
+            self._bounce_on_path()
+        return True
+
+    def _bounce_on_path(self):
+        self.state_manager.state.set_direction(
+            Direction.RIGHT if self.get_movement_direction() == Direction.LEFT else Direction.LEFT,
+            self.get_position()
+        )
+
+    def _is_at_end_of_path(self):
+        return self.patrol_path.is_at_end(
+            self.shape.body.position.x,
+            self.get_movement_direction()
+        )
+
+    def _set_patrol_path(self, path):
+        self.patrol_path = path
+        path.add_enemy(self)
+        self.change_action(EnemyAction.PATROL)
+
+    def _is_on_patrol_path(self, patrol_paths):
+        for path in patrol_paths:
+            if path.is_in(
+                self.shape.body.position.x,
+                self._get_y_range()
+            ):
+                return path
+        return None
+
+    def _get_y_range(self):
+        height = self._get_height()
+        return (
+            self.shape.body.position.y - height // 2,
+            self.shape.body.position.y + height // 2
+        )
+
+    def _get_height(self):
+        vertices = self.shape.get_vertices()
+        return vertices[0].y * 2  # vertices are in local coordinates
 
     def change_action(self, action: EnemyAction):
         if self.current_action == action:
@@ -48,3 +96,20 @@ class Enemy:
         self.current_action = action
         if action in [EnemyAction.AGGRO, EnemyAction.PATROL]:
             self.state_manager.state.change_state("run", self.get_position(), self.body)
+
+        self._log_action_change()
+
+    def _log_action_change(self):
+        if self.current_action == EnemyAction.AGGRO:
+            logger.debug(f"Enemy {self.name.value} found player")
+        elif self.current_action == EnemyAction.PATROL:
+            logger.debug(f"Enemy {self.name.value} found patrol path")
+        else:
+            logger.debug(f"Enemy {self.name.value} lost player and patrol path, is now idle")
+
+    def get_patrol_coords(self):
+        x_range = (
+            self.shape.body.position.x,
+            self.shape.body.position.x + self.shape.width
+        )
+        return x_range, self.shape.body.position.y

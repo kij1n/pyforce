@@ -66,6 +66,8 @@
         "time_step": 0.016,
         "radius": 1,
         "segment_query_radius": 10,
+        "collision_bias": 0,
+        "collision_slop": 0,
         "collision_types": {
             "player": 1,
             "player_feet": 2,
@@ -99,13 +101,35 @@
         {
             "x_range": [
                 0,
-                0
+                576
             ],
-            "height": 0
+            "height": 690
+        },
+        {
+            "x_range": [
+                720,
+                1824
+            ],
+            "height": 690
+        },
+        {
+            "x_range": [
+                1968,
+                2496
+            ],
+            "height": 690
+        },
+        {
+            "x_range": [
+                2976,
+                4800
+            ],
+            "height": 738
         }
     ],
     "enemy_info": {
         "goblin": {
+            "sight": 200,
             "move_horizontal": 200,
             "mass": 100,
             "moment": null,
@@ -297,7 +321,7 @@
             ],
             "start_positions": [
                 [
-                    100,
+                    700,
                     500
                 ]
             ],
@@ -305,6 +329,7 @@
             "feet_friction": 1
         },
         "skeleton": {
+            "sight": 200,
             "move_horizontal": 200,
             "mass": 100,
             "moment": null,
@@ -746,12 +771,7 @@
                 50,
                 10
             ],
-            "start_positions": [
-                [
-                    300,
-                    500
-                ]
-            ],
+            "start_positions": [],
             "friction": 0,
             "feet_friction": 1
         }

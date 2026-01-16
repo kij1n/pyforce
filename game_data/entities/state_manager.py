@@ -205,5 +205,5 @@ class State:
 
 
 class Direction(Enum):
-    LEFT = -1
-    RIGHT = 1
+    LEFT = 'left'
+    RIGHT = 'right'
