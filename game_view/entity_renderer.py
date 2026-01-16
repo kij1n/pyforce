@@ -79,7 +79,7 @@ class EntityRenderer:
             rel_camera_pos=rel_camera_pos
         )
 
-        ent_sprite_name = where.name + '_'+ where.state + str(where.sprite_index + 1)
+        ent_sprite_name = where.name + '_'+ where.state.value + str(where.sprite_index + 1)
         ent_sprite = sprite_loader.get_sprite(ent_sprite_name)  # Sprite instance, not pygame Surface
 
         ent_surface, ent_rect =  self._prepare_entity(ent_relative_pos, ent_sprite, where.inversion)

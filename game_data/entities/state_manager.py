@@ -5,7 +5,7 @@ from shared import *
 class StateManager:
     def __init__(self, entity):
         self.entity = entity
-        self.state = State('idle', self.entity.get_position())
+        self.state = State(StateName.IDLE, self.entity.get_position())
 
         name = getattr(self.entity.name, 'value', 'player')
         if name == 'player':
@@ -20,8 +20,8 @@ class StateManager:
             name=getattr(self.entity.name, 'value', 'player'),
             sprite_index=self.state.get_sprite_index(
                 self.entity.get_position(),
-                self.entity.get_sprite_qty(self.state.get_state()),
-                self.entity.settings['sprites']['cycle_lengths'][getattr(self.entity.name, 'value', 'player')][self.state.get_state()],
+                self.entity.get_sprite_qty(self.state.get_state_str()),
+                self.entity.settings['sprites']['cycle_lengths'][getattr(self.entity.name, 'value', 'player')][self.state.get_state_str()],
                 self.entity.shape.body.velocity,
             ),
             state=self.state.get_state(),
@@ -38,8 +38,8 @@ class StateManager:
         if not self.state.can_jump(self.entity.shape.body):
             return
 
-        if self.state.get_state() != "jump":
-            self.state.change_state("jump", self.entity.get_position(), self.entity.shape.body,
+        if self.state.get_state() != StateName.JUMP:
+            self.state.change_state(StateName.JUMP, self.entity.get_position(), self.entity.shape.body,
                                     settings=self.entity.settings)
 
         force = Vec2d(
@@ -49,7 +49,7 @@ class StateManager:
 
     def apply_horizontal_velocity(self, direction: Direction):
         if self._should_run():
-            self.state.change_state("run", self.entity.get_position(), self.entity.shape.body)
+            self.state.change_state(StateName.RUN, self.entity.get_position(), self.entity.shape.body)
 
         if direction == Direction.LEFT:
             self.state.set_direction(Direction.LEFT, position=self.entity.get_position())
@@ -60,7 +60,7 @@ class StateManager:
 
     def _should_run(self):
         return (
-            self.state.get_state() != "run" and
+            self.state.get_state() != StateName.RUN and
             self.entity.shape.body.velocity.y == 0 and
             self.state.is_on_ground
         )
@@ -101,11 +101,11 @@ class State:
         if total_sprites <= 1:
             return 0
 
-        if self.state == "run":
+        if self.state == StateName.RUN:
             return self._handle_run(current_position, total_sprites, cycle_length)
-        elif self.state == "idle":
+        elif self.state == StateName.IDLE:
             return self._handle_idle(cycle_length, total_sprites)
-        elif self.state == "jump":
+        elif self.state == StateName.JUMP:
             return self._handle_jump(current_position, total_sprites, velocity)
 
         return 0
@@ -158,7 +158,7 @@ class State:
         return total_sprites - 1 - index
 
     def append_time(self):
-        if self.state == "idle":
+        if self.state == StateName.IDLE:
             self.current_time += 1
 
     def set_direction(self, direction, position=None):
@@ -170,14 +170,14 @@ class State:
         # print(f"{self.state} -> {new_state}")
         self.state = new_state
 
-        if new_state == "run":
+        if new_state == StateName.RUN:
             self.start_pos = position
 
-        elif new_state == "idle":
+        elif new_state == StateName.IDLE:
             self.start_time = 0
             self.current_time = 0
 
-        elif new_state == "jump":
+        elif new_state == StateName.JUMP:
             self.achieved_highest_y = False
             self.start_y = position.y
             self.highest_y = self._calc_highest_y(position.y, settings)
@@ -193,7 +193,9 @@ class State:
         highest_y = abs(J ** 2 / (2 * g * m ** 2) - y_0)
         return highest_y
 
-    def get_state(self):
+    def get_state(self) -> StateName:
         return self.state
 
+    def get_state_str(self) -> str:
+        return self.state.value
 

@@ -53,7 +53,6 @@ class Enemy:
         if self.patrol_path is None:
             path = self._is_on_patrol_path(patrol_paths)
             if path is not None:
-                logger.debug("found patrol path")
                 self._set_patrol_path(path)
                 return True
             return False  # return false if a patrol path is not set
@@ -125,7 +124,7 @@ class Enemy:
 
         self.current_action = action
         if action in [EnemyAction.AGGRO, EnemyAction.PATROL]:
-            self.state_manager.state.change_state("run", self.get_position(), self.body)
+            self.state_manager.state.change_state(StateName.RUN, self.get_position(), self.body)
 
         self._log_action_change()
 

@@ -126,7 +126,7 @@ class EntityManager:
     def update_entity_states(self):
         for entity in self.get_entities():
             if entity.name == 'player' and self._is_to_idle(entity):
-                self._change_state(entity, 'idle')
+                self._change_state(entity, StateName.IDLE)
             # new_state = self._is_proper_state(entity)
             # if new_state is not None:
             #     self._change_state(entity, new_state)
@@ -142,7 +142,7 @@ class EntityManager:
         return (
             entity.shape.body.velocity == (0, 0) and
             entity.state_manager.state.is_on_ground and
-            not entity.state_manager.state.get_state() == "idle"
+            not entity.state_manager.state.get_state() == StateName.IDLE
         )
 
     @staticmethod
@@ -188,7 +188,6 @@ class EntityManager:
         shape = info.shape
         if getattr(shape, 'id', None) == self.settings['player_info']['id']\
            and self._in_distance(enemy, shape, self.settings):
-            logger.debug('> found aggro')
             return True
         return False
 
