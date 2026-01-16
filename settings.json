@@ -3,7 +3,7 @@
     "fps": 60,
     "debug": {
         "show_hitboxes": false,
-        "show_patrol_paths": true,
+        "show_patrol_paths": false,
         "show_fps": false
     },
     "sprites": {
@@ -131,6 +131,7 @@
     ],
     "enemy_info": {
         "goblin": {
+            "health": 100,
             "sight": 400,
             "move_horizontal": 200,
             "mass": 100,
@@ -331,6 +332,7 @@
             "feet_friction": 1
         },
         "skeleton": {
+            "health": 100,
             "sight": 200,
             "move_horizontal": 200,
             "mass": 100,
@@ -779,6 +781,7 @@
         }
     },
     "player_info": {
+        "health": 100,
         "sprites_paths": {
             "idle": [
                 {

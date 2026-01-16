@@ -7,8 +7,9 @@ class Player:
     def __init__(self, settings: dict):
         self.name = "player"
         self.settings = settings
+        self.health = 100
 
-        self.body, self.shape, self.feet = prepare_collision_box(self.name, settings)
+        self.body, self.shape, self.feet = prepare_collision_box(self.name, settings, self)
         self.state_manager = StateManager(self)
 
         self.arm_deg = 0  # 0 means pointing down, turns counter-clockwise

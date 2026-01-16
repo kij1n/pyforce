@@ -1,7 +1,7 @@
 from pymunk import Body, Vec2d, Poly, ShapeFilter
 
 
-def prepare_collision_box(name, settings, pos=None, ent_id=None):
+def prepare_collision_box(name, settings, entity, pos=None, ent_id=None):
     if ent_id is None:  # if id is not given, it's a player
         ent_id = getattr(settings["player_info"], "id", 1)
 
@@ -17,7 +17,13 @@ def prepare_collision_box(name, settings, pos=None, ent_id=None):
     shape = _create_shape(body, ent_settings, settings, name, ent_id)
     feet = _create_feet(body, ent_settings, settings, name, ent_id)
 
+    _add_ents_to_shapes(shape, feet, entity)
+
     return body, shape, feet
+
+def _add_ents_to_shapes(shape, feet, entity):
+    shape.entity = entity
+    feet.entity = entity
 
 def _create_body(mass, moment, ent_settings, pos=None):
     moment = float('inf') if moment is None else moment

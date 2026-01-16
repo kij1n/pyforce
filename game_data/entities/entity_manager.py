@@ -42,8 +42,8 @@ class EntityManager:
 
         return patrol_paths
 
-    def _load_enemies(self) -> list[Enemy]:
-        enemies = []
+    def _load_enemies(self) -> set[Enemy]:
+        enemies = set()
 
         for enemy_type in self.settings['enemy_info'].keys():
             ent_settings = self.settings['enemy_info'][enemy_type]
@@ -56,7 +56,7 @@ class EntityManager:
                     pos=pos,
                     ent_id=len(enemies) + 2  # player's id is 1
                 )
-                enemies.append(enemy)
+                enemies.add(enemy)
 
         return enemies
 
@@ -243,7 +243,7 @@ class EntityManager:
         return where
 
     def get_entities(self):
-        ent_list = [self.player] + self.enemies
+        ent_list = [self.player] + list(self.enemies)
         return ent_list
 
     def update_bullets(self):
@@ -268,13 +268,13 @@ class EntityManager:
         weapon = self.weapons[self.player.gun_held]
         ammo = self.ammo[self.player.ammo_used]
 
-        body = self._create_body_bullet(ammo, self.player.get_gun_position())
-        shape = self._create_shape_bullet(ammo, body, self.settings)
         bullet = self._create_bullet_entity(
             self.player.get_gun_position(),
             ammo, weapon,
             id_counter=len(self.bullets_dict)
         )
+        body = self._create_body_bullet(ammo, self.player.get_gun_position())
+        shape = self._create_shape_bullet(ammo, body, self.settings, bullet)
 
         self._apply_bullet_impulse(shape, self.player.arm_deg, ammo)
         return body, shape, bullet
@@ -298,7 +298,7 @@ class EntityManager:
         return bullet
 
     @staticmethod
-    def _create_shape_bullet(ammo, body, settings):
+    def _create_shape_bullet(ammo, body, settings, bullet):
         shape = Circle(
             body,
             ammo.bullet_radius
@@ -308,6 +308,7 @@ class EntityManager:
             categories=settings['physics']['collision_categories']['player_bullet'],
             mask=settings['physics']['collision_masks']['player_bullet']
         )
+        shape.bullet = bullet
         return shape
 
     @staticmethod
@@ -330,7 +331,22 @@ class EntityManager:
 
     @staticmethod
     def _convert_angle(angle):
-        # arm deg is already converted
+        # arm deg is already converted,
         # so we need to un-convert it
         angle = (angle - 90) % 360
         return angle
+
+    def handle_hits(self, entities_hit: list, sim):
+        for entity, bullet in entities_hit:
+            entity.take_damage(bullet.damage)
+        self.remove_killed(sim)
+
+    def remove_killed(self, sim: pymunk.Space):
+        for entity in self.get_entities():
+            if entity.health <= 0:
+                self._kill_entity(entity, sim)
+
+    def _kill_entity(self, entity, sim: pymunk.Space):
+        self.enemies.discard(entity)
+        sim.remove(entity.shape, entity.feet, entity.body)
+        entity.kill()

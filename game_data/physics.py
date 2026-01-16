@@ -15,6 +15,11 @@ class PhysicsEngine:
         # stores entity ids touching the ground
         self.entities_touching_ground = []
 
+        self.entities_hit = []  # list to store all entities hit by bullets, emptied every frame
+
+    def empty_hit_list(self):
+        self.entities_hit.clear()
+
     def _set_collision_handlers(self):
         self.sim.on_collision(
             self.settings["physics"]['collision_types']['player_feet'],
@@ -22,6 +27,21 @@ class PhysicsEngine:
             begin=self._entity_touching_ground,
             separate=self._entity_leaving_ground
         )
+        self.sim.on_collision(
+            self.settings['physics']['collision_types']['bullet'],
+            self.settings['physics']['collision_types']['enemy'],
+            begin=self._hit
+        )
+
+    def _hit(self, arbiter, space, data):
+        bullet = getattr(arbiter.shapes[0], 'bullet', None)
+        entity = getattr(arbiter.shapes[1], 'entity', None)  # a bullet is the first shape in the arbiter
+
+        if entity is not None and bullet is not None:
+            self.entities_hit.append((entity, bullet))
+            # logger.info(f"Entity {entity.name} hit by bullet {bullet.name} | {len(self.entities_hit)} entities hit")
+
+        return True
 
     def _entity_touching_ground(self, arbiter, space, data):
         identifier = getattr(arbiter.shapes[0], 'id', None)  # only feet have an id

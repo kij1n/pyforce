@@ -9,9 +9,10 @@ class Enemy:
         self.name = name
         self.skin_color = skin_color  # flying or ground
         self.settings = settings
+        self.health = self.settings['enemy_info'][name.value]['health']
 
         self.body, self.shape, self.feet = prepare_collision_box(
-            name.value, settings, pos, ent_id=ent_id
+            name.value, settings, self, pos=pos, ent_id=ent_id
         )
 
         self.state_manager = StateManager(self)
@@ -27,6 +28,12 @@ class Enemy:
 
     def __hash__(self):
         return hash(self.get_id())
+
+    def __del__(self):
+        logger.info(f"{self.name.value} killed")
+        if self.patrol_path is not None:
+            self.patrol_path.remove_enemy(self)
+        del self
 
     def get_id(self):
         return self.body.id
@@ -142,3 +149,9 @@ class Enemy:
             self.shape.body.position.x + self.shape.width
         )
         return x_range, self.shape.body.position.y
+
+    def take_damage(self, damage):
+        self.health -= damage
+
+    def kill(self):
+        self.__del__()
