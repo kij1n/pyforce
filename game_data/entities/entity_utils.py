@@ -17,7 +17,6 @@ def prepare_collision_box(name, settings, entity, pos=None, ent_id=None):
     shape = _create_shape(body, ent_settings, settings, name, ent_id)
     feet = _create_feet(body, ent_settings, settings, name, ent_id)
 
-
     _add_ents_to_shapes(shape, feet, entity)
 
     return body, shape, feet
