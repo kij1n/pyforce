@@ -36,7 +36,6 @@ class Model:
 
         self.physics.sim.step(self.settings["physics"]['time_step'])
         self.entities.handle_hits(self.physics.entities_hit, self.physics.sim)
-        self.physics.empty_hit_list()
 
     def get_center_pos(self) -> tuple[int, int]:
         player_pos = self.entities.get_player_pos()

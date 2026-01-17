@@ -78,7 +78,7 @@ class SpriteLoader:
 
 
     def get_sprite(self, sprite_name):
-        return self.sprites[sprite_name]
+        return self.sprites.get(sprite_name, None)
 
     @staticmethod
     def _get_path(sprite_location):

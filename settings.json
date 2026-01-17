@@ -13,19 +13,23 @@
             "player": {
                 "idle": 40,
                 "run": 20,
-                "jump": 30
+                "jump": 30,
+                "death_time": 300,
+                "wait_after_death": 300
             },
             "goblin": {
                 "idle": 13,
                 "run": 20,
                 "jump": 30,
-                "death": 40
+                "death_time": 20,
+                "wait_after_death": 300
             },
             "skeleton": {
                 "idle": 7,
                 "run": 20,
                 "jump": 30,
-                "death": 40
+                "death_time": 300,
+                "wait_after_death": 300
             }
         },
         "arm_disp_vector_x": 16,

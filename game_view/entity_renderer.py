@@ -2,6 +2,7 @@ import pygame
 from math import cos, sin, radians, sqrt
 from shared import Where
 
+
 def convert_abs_to_rel(position, abs_camera_pos, rel_camera_pos):
     d_vector = (
         position[0] - abs_camera_pos[0],
@@ -12,6 +13,7 @@ def convert_abs_to_rel(position, abs_camera_pos, rel_camera_pos):
         rel_camera_pos[1] + d_vector[1]
     )
     return relative_pos
+
 
 def calc_camera_pos(settings, player_pos):
     x = player_pos[0]
@@ -33,8 +35,10 @@ def calc_camera_pos(settings, player_pos):
     )
     return abs_camera_pos, rel_camera_pos
 
+
 def _clamp(min_val, value, max_val):
     return max(min(value, max_val), min_val)
+
 
 class EntityRenderer:
     def render_bullets(self, bullets_dict, sprite_loader, screen, settings, player_pos):
@@ -59,7 +63,6 @@ class EntityRenderer:
         )
         screen.blit(sprite.image, sprite.image.get_rect(center=bullet_relative_pos))
 
-
     def render(self, where_array: list[Where], sprite_loader, screen, settings, player_pos):
         abs_camera_pos, rel_camera_pos = calc_camera_pos(settings, player_pos)
         for where in where_array:
@@ -79,10 +82,11 @@ class EntityRenderer:
             rel_camera_pos=rel_camera_pos
         )
 
-        ent_sprite_name = where.name + '_'+ where.state.value + str(where.sprite_index + 1)
+        ent_sprite_name = where.name + '_' + where.state.value + str(where.sprite_index + 1)
         ent_sprite = sprite_loader.get_sprite(ent_sprite_name)  # Sprite instance, not pygame Surface
+        if ent_sprite is None: return
 
-        ent_surface, ent_rect =  self._prepare_entity(ent_relative_pos, ent_sprite, where.inversion)
+        ent_surface, ent_rect = self._prepare_entity(ent_relative_pos, ent_sprite, where.inversion)
 
         if where.arm_deg is None:
             screen.blit(ent_surface, ent_rect)
@@ -149,13 +153,12 @@ class EntityRenderer:
             if gun_surface: screen.blit(gun_surface, gun_rect)
             screen.blit(ent_data[0], ent_data[1])
 
-
     @staticmethod
     def _calc_hand_position(arm_relative_pos, deg, hand_pos):
         length = sqrt(hand_pos[0] ** 2 + hand_pos[1] ** 2)
         pos = (
-            arm_relative_pos[0] + length*cos(radians(deg - 90)),
-            arm_relative_pos[1] - length*sin(radians(deg - 90))
+            arm_relative_pos[0] + length * cos(radians(deg - 90)),
+            arm_relative_pos[1] - length * sin(radians(deg - 90))
         )
 
         return pos

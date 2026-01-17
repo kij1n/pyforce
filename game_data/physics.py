@@ -17,9 +17,6 @@ class PhysicsEngine:
 
         self.entities_hit = []  # list to store all entities hit by bullets, emptied every frame
 
-    def empty_hit_list(self):
-        self.entities_hit.clear()
-
     def _set_collision_handlers(self):
         self.sim.on_collision(
             self.settings["physics"]['collision_types']['player_feet'],

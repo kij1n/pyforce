@@ -164,7 +164,9 @@ class EntityManager:
         # 1. check for aggro
         # 2. check for a patrol path
         # 3. else idle
-        if self._check_for_aggro(enemy, sim):
+        if enemy.get_state() == StateName.DEATH:
+            return
+        elif self._check_for_aggro(enemy, sim):
             enemy.change_action(EnemyAction.AGGRO) # apply aggro and return
         elif enemy.update_patrol_state(self.patrol_paths):
             # returns false if an enemy is not on a path
@@ -199,6 +201,10 @@ class EntityManager:
 
     def _apply_enemy_action(self, enemy: Enemy):
         current_action = enemy.get_current_action()
+
+        if current_action == EnemyAction.DEATH:
+            return
+
         direction = enemy.get_movement_direction()
 
         # logger.debug(f"action: {current_action}, direction: {direction}")
@@ -347,6 +353,13 @@ class EntityManager:
                 self._kill_entity(entity, sim)
 
     def _kill_entity(self, entity, sim: pymunk.Space):
+        if not entity.get_state() == StateName.DEATH:
+            entity.change_state(StateName.DEATH)
+            entity.change_action(EnemyAction.DEATH)
+
+        if not entity.is_over_dying():
+            return
+
         self.enemies.discard(entity)
         sim.remove(entity.shape, entity.feet, entity.body)
         entity.kill()

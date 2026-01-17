@@ -35,6 +35,16 @@ class Enemy:
             self.patrol_path.remove_enemy(self)
         del self
 
+    def get_state(self):
+        return self.state_manager.state.get_state()
+
+    def change_state(self, state):
+        self.state_manager.state.change_state(
+            state,
+            self.get_position(),
+            self.body
+        )
+
     def get_id(self):
         return self.body.id
 
@@ -140,6 +150,8 @@ class Enemy:
             logger.debug(f"Enemy {self.name.value} found player")
         elif self.current_action == EnemyAction.PATROL:
             logger.debug(f"Enemy {self.name.value} found patrol path")
+        elif self.current_action == EnemyAction.DEATH:
+            logger.debug(f"Enemy {self.name.value} lost all hp")
         else:
             logger.debug(f"Enemy {self.name.value} lost player and patrol path, is now idle")
 
@@ -155,3 +167,6 @@ class Enemy:
 
     def kill(self):
         self.__del__()
+
+    def is_over_dying(self):
+        return self.state_manager.state.current_time >= self.state_manager.state.wait_after_death

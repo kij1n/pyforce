@@ -1,17 +1,23 @@
 from pymunk import Vec2d
 from shared import *
+from .state import *
 
 
 class StateManager:
     def __init__(self, entity):
         self.entity = entity
-        self.state = State(StateName.IDLE, self.entity.get_position())
 
-        name = getattr(self.entity.name, 'value', 'player')
-        if name == 'player':
+        self.name = getattr(self.entity.name, 'value', 'player')
+        if self.name == 'player':
             self.movement = self.entity.settings['player_info']['move_horizontal']
         else:
-            self.movement = self.entity.settings['enemy_info'][name]['move_horizontal']
+            self.movement = self.entity.settings['enemy_info'][self.name]['move_horizontal']
+
+        self.state = State(
+            StateName.IDLE,
+            self.entity.get_position(),
+            self
+        )
 
     def get_where(self, player_pos: tuple[int, int] = None) -> Where:
         # if player_pos is None:
@@ -21,7 +27,7 @@ class StateManager:
             sprite_index=self.state.get_sprite_index(
                 self.entity.get_position(),
                 self.entity.get_sprite_qty(self.state.get_state_str()),
-                self.entity.settings['sprites']['cycle_lengths'][getattr(self.entity.name, 'value', 'player')][self.state.get_state_str()],
+                self.entity.settings['sprites']['cycle_lengths'][self.name].get(self.state.get_state_str(), None),
                 self.entity.shape.body.velocity,
             ),
             state=self.state.get_state(),
@@ -71,131 +77,4 @@ class StateManager:
             self.entity.shape.body.velocity.y
         )
         self.entity.shape.body.velocity = velocity
-
-class State:
-    def __init__(self, state, position: Vec2d):
-        self.state = state
-        self.start_pos = position
-
-        self.start_time = 0
-        self.current_time = 0
-
-        self.start_y = None
-        self.highest_y = None
-        self.achieved_highest_y = False
-
-        self.movement_direction = None
-        self.is_on_ground = False
-
-    def is_inverted(self):
-        return True if self.movement_direction == Direction.LEFT else False
-
-    def can_jump(self, body) -> bool:
-        return self.is_on_ground and body.velocity.y >= 0
-
-    def set_on_ground(self, is_on_ground: bool, body):
-        self.is_on_ground = is_on_ground
-
-    def get_sprite_index(self, current_position: Vec2d, total_sprites: int, cycle_length: float,
-                         velocity: Vec2d) -> int:
-        if total_sprites <= 1:
-            return 0
-
-        if self.state == StateName.RUN:
-            return self._handle_run(current_position, total_sprites, cycle_length)
-        elif self.state == StateName.IDLE:
-            return self._handle_idle(cycle_length, total_sprites)
-        elif self.state == StateName.JUMP:
-            return self._handle_jump(current_position, total_sprites, velocity)
-
-        return 0
-
-    def _handle_run(self, current_position, total_sprites, cycle_length):
-        current_x = current_position.x
-        start_x = self.start_pos.x
-
-        distance_moved = abs(current_x - start_x)
-        full_cycle = cycle_length * total_sprites
-        rest_of_dist = distance_moved % full_cycle
-
-        return int(rest_of_dist // cycle_length)
-
-    def _handle_idle(self, cycle_length, total_sprites):
-        time_elapsed = self.current_time - self.start_time
-        full_cycle = cycle_length * total_sprites
-        rest_of_time = time_elapsed % full_cycle
-
-        return int(rest_of_time // cycle_length)
-
-    def _handle_jump(self, current_position, total_sprites, velocity):
-        current_y = current_position.y
-        end_y = self.highest_y
-
-        h_total_sprites = int(total_sprites // 2)
-
-        if (current_y <= end_y or velocity.y > 0) and not self.achieved_highest_y:
-            self.achieved_highest_y = True
-            return h_total_sprites - 1
-
-        current_dist = abs(self.start_y - current_y)
-        total_dist = abs(end_y - self.start_y)
-
-        cycle_length = total_dist / h_total_sprites
-
-        if current_dist >= total_dist:
-            index = 0
-        else:
-            index = int(current_dist // cycle_length)
-
-        if not self.achieved_highest_y:
-            return index
-        else:
-            index = self._reverse_index(index, total_sprites)
-            return index
-
-    @staticmethod
-    def _reverse_index(index, total_sprites):
-        return total_sprites - 1 - index
-
-    def append_time(self):
-        if self.state == StateName.IDLE:
-            self.current_time += 1
-
-    def set_direction(self, direction, position=None):
-        if direction != self.movement_direction:
-            self.movement_direction = direction
-            self.start_pos = position
-
-    def change_state(self, new_state, position: Vec2d, body, settings=None):
-        # print(f"{self.state} -> {new_state}")
-        self.state = new_state
-
-        if new_state == StateName.RUN:
-            self.start_pos = position
-
-        elif new_state == StateName.IDLE:
-            self.start_time = 0
-            self.current_time = 0
-
-        elif new_state == StateName.JUMP:
-            self.achieved_highest_y = False
-            self.start_y = position.y
-            self.highest_y = self._calc_highest_y(position.y, settings)
-
-        body.activate()
-
-    @staticmethod
-    def _calc_highest_y(current_y, settings):
-        J = settings["player_info"]["jump_force"]
-        g = settings["physics"]["gravity"]
-        m = settings["player_info"]["mass"]
-        y_0 = current_y
-        highest_y = abs(J ** 2 / (2 * g * m ** 2) - y_0)
-        return highest_y
-
-    def get_state(self) -> StateName:
-        return self.state
-
-    def get_state_str(self) -> str:
-        return self.state.value
 

@@ -13,6 +13,7 @@ class EnemyAction(Enum):
     PATROL = 'patrol'
     IDLE = 'idle'
     ATTACK = 'attack'
+    DEATH = 'death'
 
 def get_enemy_name(name) -> EnemyName:
     return EnemyName(name)
