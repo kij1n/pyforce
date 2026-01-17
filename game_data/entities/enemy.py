@@ -1,5 +1,5 @@
 from .state_manager import StateManager
-from .entity_helper import prepare_collision_box
+from .entity_utils import prepare_collision_box
 from loguru import logger
 from shared import *
 

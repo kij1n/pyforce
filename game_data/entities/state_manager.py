@@ -1,6 +1,7 @@
 from pymunk import Vec2d
 from shared import *
 from .state import *
+from .entity_utils import get_ent_rect
 
 
 class StateManager:
@@ -33,7 +34,8 @@ class StateManager:
             state=self.state.get_state(),
             inversion=True if self.state.is_inverted() else False,
             arm_deg=getattr(self.entity, 'arm_deg', None),
-            gun_name=getattr(self.entity, 'gun_held', None)
+            gun_name=getattr(self.entity, 'gun_held', None),
+            hitbox=get_ent_rect(self.entity)
         )
 
         return where

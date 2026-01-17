@@ -4,7 +4,8 @@
     "debug": {
         "show_hitboxes": false,
         "show_patrol_paths": false,
-        "show_fps": false
+        "show_fps": false,
+        "show_bbs": false
     },
     "sprites": {
         "inversion_indicator": "inv_",

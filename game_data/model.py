@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+import pygame
 import pymunk
 
 from shared import Where
@@ -19,10 +20,7 @@ class Model:
         self.insert_ents_to_sim()
 
         self.where_array = self._create_where()
-
-        self.debug_elements = DebugElements(
-            self.physics.sim, self.entities.patrol_paths
-        )
+        self.debug_elements = DebugElements(None, None, None)
 
     def update(self, mouse_pos):
         self.entities.update_entity_states()
@@ -36,6 +34,23 @@ class Model:
 
         self.physics.sim.step(self.settings["physics"]['time_step'])
         self.entities.handle_hits(self.physics.entities_hit, self.physics.sim)
+
+        self._add_debug()
+
+    def _add_debug(self):
+        self.debug_elements = DebugElements(
+            self.physics.sim,
+            self.entities.patrol_paths,
+            self._add_bbs()
+        )
+
+    def _add_bbs(self):
+        bbs = []
+        if self.settings['debug']['show_bbs']:
+
+            for i in self.where_array:
+                bbs.append(i.hitbox)
+        return bbs
 
     def get_center_pos(self) -> tuple[int, int]:
         player_pos = self.entities.get_player_pos()
@@ -72,3 +87,4 @@ class Model:
 class DebugElements:
     sim: pymunk.Space
     patrol_paths: list[PatrolPath]
+    bbs: list[pygame.Rect]

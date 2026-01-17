@@ -53,6 +53,16 @@ class View:
         if self.settings['debug']['show_fps']:
             pass
 
+        if self.settings['debug']['show_bbs']:
+            self._render_bbs(debug_elements.bbs)
+
+    def _render_bbs(self, bbs):
+        if bbs is None:
+            return
+        for rect in bbs:
+            # we don't need to translate the rect, because it's already in relative coordinates
+            pygame.draw.rect(self.screen, 'red', rect)
+
     def _render_hitboxes(self, sim: pymunk.Space, vector: tuple[int, int]):
         draw_options = pymunk.pygame_util.DrawOptions(self.screen)
         draw_options.transform = pymunk.Transform.translation(vector[0], vector[1])

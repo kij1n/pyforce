@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from pygame import Rect
+
 
 @dataclass
 class Where:
@@ -9,3 +11,4 @@ class Where:
     inversion: bool
     arm_deg: int
     gun_name: str
+    hitbox: Rect

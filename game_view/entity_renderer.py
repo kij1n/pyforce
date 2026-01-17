@@ -35,6 +35,12 @@ def calc_camera_pos(settings, player_pos):
     )
     return abs_camera_pos, rel_camera_pos
 
+def calc_vector(abs_camera_pos, rel_camera_pos):
+    vector = (
+        rel_camera_pos[0] - abs_camera_pos[0],
+        rel_camera_pos[1] - abs_camera_pos[1]
+    )
+    return vector
 
 def _clamp(min_val, value, max_val):
     return max(min(value, max_val), min_val)
@@ -86,7 +92,7 @@ class EntityRenderer:
         ent_sprite = sprite_loader.get_sprite(ent_sprite_name)  # Sprite instance, not pygame Surface
         if ent_sprite is None: return
 
-        ent_surface, ent_rect = self._prepare_entity(ent_relative_pos, ent_sprite, where.inversion)
+        ent_surface, ent_rect = self._prepare_entity(ent_relative_pos, ent_sprite, where, calc_vector(abs_camera_pos, rel_camera_pos))
 
         if where.arm_deg is None:
             screen.blit(ent_surface, ent_rect)
@@ -164,7 +170,7 @@ class EntityRenderer:
         return pos
 
     @staticmethod
-    def _prepare_entity(ent_relative_pos, sprite, is_inverted):
+    def _prepare_entity(ent_relative_pos, sprite, where, vector):
         img = sprite.image
 
         pos = (
@@ -172,9 +178,12 @@ class EntityRenderer:
             ent_relative_pos[1] + sprite.offset[1]
         )
 
-        rect = img.get_rect(center=pos)
+        where.hitbox.move_ip(vector)
 
-        if is_inverted:
+        rect = img.get_rect(center=pos)
+        rect.bottom = where.hitbox.bottom
+
+        if where.inversion:
             img = pygame.transform.flip(img, True, False)
 
         return img, rect

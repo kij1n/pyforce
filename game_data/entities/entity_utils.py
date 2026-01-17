@@ -1,5 +1,5 @@
 from pymunk import Body, Vec2d, Poly, ShapeFilter
-
+from pygame import Rect
 
 def prepare_collision_box(name, settings, entity, pos=None, ent_id=None):
     if ent_id is None:  # if id is not given, it's a player
@@ -17,9 +17,11 @@ def prepare_collision_box(name, settings, entity, pos=None, ent_id=None):
     shape = _create_shape(body, ent_settings, settings, name, ent_id)
     feet = _create_feet(body, ent_settings, settings, name, ent_id)
 
+
     _add_ents_to_shapes(shape, feet, entity)
 
     return body, shape, feet
+
 
 def _add_ents_to_shapes(shape, feet, entity):
     shape.entity = entity
@@ -87,7 +89,6 @@ def _create_feet(body, ent_settings, settings, name, ent_id):
     feet.friction = ent_settings["feet_friction"]
     feet.collision_type = _get_collision_type(name, settings, True)
     feet.id = ent_id  # used in handling ground collisions
-
     feet.filter = _get_collision_filter(name, settings, True)
 
     return feet
@@ -112,3 +113,13 @@ def _calc_vertical_shift(a, b):
     # this equation ensures the center of mass is in (0,0)
     # where <a,b> is the range of y values of the hitbox
     return (a + b) / (-2)
+
+def get_ent_rect(entity):
+    shape_bb = entity.shape.bb
+    feet_bb = entity.feet.bb
+    bb = shape_bb.merge(feet_bb)
+
+    width = bb.right - bb.left
+    height = bb.top - bb.bottom
+
+    return Rect(int(bb.left), int(bb.bottom), int(width), int(height))
