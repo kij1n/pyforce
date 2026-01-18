@@ -1,3 +1,4 @@
+from loguru import logger
 from pymunk import Vec2d
 from shared import *
 from .state import *
@@ -51,7 +52,7 @@ class StateManager:
                                     settings=self.entity.settings)
 
         force = Vec2d(
-            0, -self.entity.settings["player_info"]["jump_force"]
+            0, -self.entity.settings["physics"]["ent_jump_force"]
         )
         self.entity.shape.body.apply_impulse_at_local_point(force)
 

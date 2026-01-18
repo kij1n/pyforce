@@ -29,7 +29,7 @@ class State:
     def can_jump(self, body) -> bool:
         return self.is_on_ground and body.velocity.y >= 0
 
-    def set_on_ground(self, is_on_ground: bool, body):
+    def set_on_ground(self, is_on_ground: bool):
         self.is_on_ground = is_on_ground
 
     def get_sprite_index(self, current_position: Vec2d, total_sprites: int, cycle_length: float,
@@ -131,7 +131,7 @@ class State:
 
     @staticmethod
     def _calc_highest_y(current_y, settings):
-        J = settings["player_info"]["jump_force"]
+        J = settings["physics"]["ent_jump_force"]
         g = settings["physics"]["gravity"]
         m = settings["player_info"]["mass"]
         y_0 = current_y
@@ -139,7 +139,17 @@ class State:
         return highest_y
 
     def get_state(self) -> StateName:
-        return self.state
+        settings = self.get_ent_sp_settings()
+        if settings.get(self.state.value) is None:
+            return StateName.RUN
+        else:
+            return self.state
+
+    def get_ent_sp_settings(self):
+        if self.state_manager.name == 'player':
+            return self.settings['player_info']['sprites_paths']
+        else:
+            return self.settings['enemy_info'][self.state_manager.name]['sprites_paths']
 
     def get_state_str(self) -> str:
         return self.state.value

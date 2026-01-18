@@ -1,17 +1,17 @@
-import math
-from math import cos, sin, radians
-
-import pymunk
-from pymunk import Body, Circle, ShapeFilter
-
-from shared import *
+from game_data.weaponry import *
 from .patrol_path import PatrolPath
 from .player import Player
 from .enemy import Enemy
 from .state_manager import Direction
-from .weapon import *
+import pymunk
+from pymunk import Body, Circle, ShapeFilter, Vec2d
+from shared import *
+from math import cos, sin, radians
+import math
+
 
 from loguru import logger
+
 
 class EntityManager:
     def __init__(self, settings: dict):
@@ -51,7 +51,6 @@ class EntityManager:
                 pos = (pos[0], pos[1])
                 enemy = Enemy(
                     name=get_enemy_name(enemy_type),
-                    skin_color=SkinColor.GROUND,  # to me implemented later, or not
                     settings=self.settings,
                     pos=pos,
                     ent_id=len(enemies) + 2  # player's id is 1
@@ -83,6 +82,7 @@ class EntityManager:
                 damage=settings["ammo"][name]["damage"],
                 bullet_mass=settings["ammo"][name]["bullet_mass"],
                 bullet_radius=settings["ammo"][name]["bullet_radius"],
+                bullet_name=settings["ammo"][name]["bullet_name"]
             )
             ammo[name] = amm
         return ammo
@@ -107,9 +107,9 @@ class EntityManager:
             identifier = getattr(entity.feet, 'id', None)
 
             if identifier in entities_touching_ground:
-                entity.state_manager.state.set_on_ground(True, entity.shape.body)
+                entity.state_manager.state.set_on_ground(True)
             else:
-                entity.state_manager.state.set_on_ground(False, entity.shape.body)
+                entity.state_manager.state.set_on_ground(False)
 
     def update_timers(self):
         # for entity animations that rely on time
@@ -127,14 +127,6 @@ class EntityManager:
         for entity in self.get_entities():
             if entity.name == 'player' and self._is_to_idle(entity):
                 self._change_state(entity, StateName.IDLE)
-            # new_state = self._is_proper_state(entity)
-            # if new_state is not None:
-            #     self._change_state(entity, new_state)
-
-    def _is_proper_state(self, entity):
-        # helper function dedicated to enemies
-        # possible enemy state: run, idle, attack, death
-        pass
 
     @staticmethod
     def _is_to_idle(entity):
@@ -157,7 +149,7 @@ class EntityManager:
         # actions to handle: run(to player, patrol), attack
         for enemy in self.enemies:
             self._update_single_enemy(enemy, sim)
-            self._apply_enemy_action(enemy)
+            self._apply_enemy_action(enemy, sim)
 
     def _update_single_enemy(self, enemy: Enemy, sim: pymunk.Space):
         # change enemy's action in accordance to rules
@@ -175,12 +167,9 @@ class EntityManager:
             enemy.change_action(EnemyAction.IDLE)
 
     def _check_for_aggro(self, enemy, sim):
-        mask = self.settings['physics']['collision_masks']['line_of_sight']
-        query_filter = ShapeFilter(
-            mask=mask
-        )
-        radius = self.settings['physics']['segment_query_radius']
+        query_filter = self._get_query_filter()
 
+        radius = self.settings['physics']['segment_query_radius']
         info = sim.segment_query_first(
             enemy.get_position(),
             self.player.get_position(),
@@ -199,26 +188,65 @@ class EntityManager:
             enemy.get_position() - shape.body.position
         ).length < settings['enemy_info'][enemy.name.value]['sight']
 
-    def _apply_enemy_action(self, enemy: Enemy):
+    def _apply_enemy_action(self, enemy: Enemy, sim):
         current_action = enemy.get_current_action()
-
-        if current_action == EnemyAction.DEATH:
+        if current_action in [EnemyAction.DEATH, EnemyAction.IDLE]:
             return
 
-        direction = enemy.get_movement_direction()
-
-        # logger.debug(f"action: {current_action}, direction: {direction}")
-
+        move_dir = enemy.get_movement_direction()
         if current_action == EnemyAction.AGGRO:
-            direction = self._get_direction_to_player(
+            move_dir = self._get_direction_to_player(
                 enemy.get_position()[0],
                 self.player.get_position()[0]
             )
+            self._jump_if_gap(enemy, sim)
 
-        elif current_action == EnemyAction.IDLE:
-            return
+        enemy.state_manager.apply_horizontal_velocity(move_dir)
 
-        enemy.state_manager.apply_horizontal_velocity(direction)
+    def _jump_if_gap(self, enemy, sim):
+        query_filter = self._get_query_filter()
+        radius = self.settings['physics']['segment_query_radius']
+        for inv in [True, False]:
+            # inverted means the point is on the right
+            gap_point = self._calc_gap_point(enemy.get_position(), inv)
+            info = sim.segment_query_first(
+                enemy.get_position(),
+                gap_point,
+                radius=radius,
+                shape_filter=query_filter
+            )
+
+            jump_dir = Direction.LEFT if inv else Direction.RIGHT
+            if info is None and jump_dir == enemy.get_movement_direction():
+                enemy.state_manager.apply_vertical_push()
+
+    def _calc_gap_point(self, ent_pos: Vec2d, is_inverted):
+        angle = self.settings['physics']['raycast_options']['angle']
+        length = self.settings['physics']['raycast_options']['length']
+
+        # Convert angle to radians for trigonometric functions
+        # The angle in settings has 0 degrees pointing down.
+        # We need to convert it to a standard angle where 0 degrees is on the positive x-axis.
+        # Adding 90 degrees achieves this.
+        rad_angle = radians((angle - 90)%360)
+
+        # Calculate the offset from the entity's position
+        offset_x = length * cos(rad_angle)
+        offset_y = -length * sin(rad_angle)
+
+        if is_inverted:
+            offset_x = -offset_x
+
+        point = ent_pos + Vec2d(offset_x, offset_y)
+        return point
+
+    def _get_query_filter(self):
+        # used for line of sight queries
+        mask = self.settings['physics']['collision_masks']['line_of_sight']
+        query_filter = ShapeFilter(
+            mask=mask
+        )
+        return query_filter
 
     @staticmethod
     def _get_direction_to_player(x, player_x):
@@ -264,88 +292,56 @@ class EntityManager:
                 # print(f"removing bullet: positon: {shape.body.position}")
 
         for bullet, shape in to_be_removed:
-            shape.body.space.remove(shape, shape.body)
-            del self.bullets_dict[bullet]
+            # shape.body.space.remove(shape, shape.body)
+            # del self.bullets_dict[bullet]
+            self._remove_bullet(bullet, shape.body.space)
 
     def get_bullet(self):
-        if not self._can_shoot(self.weapons[self.player.gun_held]):
+        if not self.weapons[self.player.gun_held].can_shoot():
             return None, None, None
 
         weapon = self.weapons[self.player.gun_held]
         ammo = self.ammo[self.player.ammo_used]
 
-        bullet = self._create_bullet_entity(
-            self.player.get_gun_position(),
-            ammo, weapon,
-            id_counter=len(self.bullets_dict)
+        info = self._get_basic_bullet_info(
+            weapon, ammo
         )
-        body = self._create_body_bullet(ammo, self.player.get_gun_position())
-        shape = self._create_shape_bullet(ammo, body, self.settings, bullet)
 
-        self._apply_bullet_impulse(shape, self.player.arm_deg, ammo)
-        return body, shape, bullet
-
-    @staticmethod
-    def _can_shoot(weapon: Weapon):
-        if weapon.can_shoot():
-            return True
-        return False
-
-    @staticmethod
-    def _create_bullet_entity(start_pos, ammo, weapon, id_counter):
         bullet = Bullet(
-            id=id_counter + 1,
-            start_pos=start_pos,
-            pos=start_pos,
-            reach=weapon.reach,
-            damage=ammo.damage,
-            name='bullet'
-        )
-        return bullet
-
-    @staticmethod
-    def _create_shape_bullet(ammo, body, settings, bullet):
-        shape = Circle(
-            body,
-            ammo.bullet_radius
-        )
-        shape.collision_type = settings['physics']['collision_types']['bullet']
-        shape.filter = ShapeFilter(
-            categories=settings['physics']['collision_categories']['player_bullet'],
-            mask=settings['physics']['collision_masks']['player_bullet']
-        )
-        shape.bullet = bullet
-        return shape
-
-    @staticmethod
-    def _create_body_bullet(ammo, pos: Vec2d):
-        body = Body(
-            mass=ammo.bullet_mass,
-            moment=float('inf'),
-            body_type=Body.DYNAMIC
-        )
-        body.position = pos
-        return body
-
-    def _apply_bullet_impulse(self, shape, angle, ammo):
-        v = ammo.velocity
-        angle = self._convert_angle(angle)
-
-        shape.body.apply_impulse_at_local_point(
-            (v * cos(radians(angle)), -v * sin(radians(angle)))
+            info=info,
+            arm_deg=self.player.arm_deg,
+            ammo=ammo,
+            settings=self.settings
         )
 
-    @staticmethod
-    def _convert_angle(angle):
-        # arm deg is already converted,
-        # so we need to un-convert it
-        angle = (angle - 90) % 360
-        return angle
+        return bullet.body, bullet.shape, bullet
+
+    def _get_basic_bullet_info(self, weapon, ammo):
+        info = BasicBulletInfo(
+            self._get_next_bullet_id(),
+            self.player.get_gun_position(),
+            weapon.reach,
+            ammo.damage,
+            ammo.bullet_name
+        )
+        return info
 
     def handle_hits(self, entities_hit: list, sim):
         for entity, bullet in entities_hit:
+            if bullet.has_collided:
+                continue
+            bullet.has_collided = True
             entity.take_damage(bullet.damage)
+            self._remove_bullet(bullet, sim)
         self.remove_killed(sim)
+
+    def _remove_bullet(self, bullet, sim):
+        logger.debug(f"removing bullet: {bullet.id}")
+        shape = self.bullets_dict[bullet]
+        sim.remove(shape, shape.body)
+        del self.bullets_dict[bullet]
+        del bullet
+        del shape
 
     def remove_killed(self, sim: pymunk.Space):
         for entity in self.get_entities():
@@ -363,3 +359,6 @@ class EntityManager:
         self.enemies.discard(entity)
         sim.remove(entity.shape, entity.feet, entity.body)
         entity.kill()
+
+    def _get_next_bullet_id(self):
+        return max([bullet.id for bullet in self.bullets_dict.keys()] + [0]) + 1

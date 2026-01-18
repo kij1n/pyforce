@@ -53,7 +53,8 @@
             "velocity": 2500,
             "damage": 10,
             "bullet_mass": 1,
-            "bullet_radius": 1
+            "bullet_radius": 1,
+            "bullet_name": "bullet"
         }
     },
     "screen": {
@@ -72,9 +73,10 @@
         "friction": 1.0,
         "time_step": 0.016,
         "radius": 1,
-        "segment_query_radius": 10,
+        "segment_query_radius": 3,
         "collision_bias": 0,
         "collision_slop": 0,
+        "ent_jump_force": 20000,
         "collision_types": {
             "player": 1,
             "player_feet": 2,
@@ -102,6 +104,10 @@
         },
         "timeout": {
             "bullet": 1000
+        },
+        "raycast_options": {
+            "angle": 45,
+            "length": 50
         }
     },
     "patrol_paths": [
@@ -136,10 +142,10 @@
     ],
     "enemy_info": {
         "goblin": {
-            "health": 100,
+            "health": 400,
             "sight": 400,
             "move_horizontal": 200,
-            "mass": 100,
+            "mass": 70,
             "moment": null,
             "sprites_paths": {
                 "idle": [
@@ -340,7 +346,7 @@
             "health": 100,
             "sight": 200,
             "move_horizontal": 200,
-            "mass": 100,
+            "mass": 70,
             "moment": null,
             "sprites_paths": {
                 "idle": [
@@ -748,27 +754,6 @@
                             0,
                             0
                         ]
-                    },
-                    {
-                        "path": "assets/enemies/skeleton/death16.png",
-                        "offset": [
-                            0,
-                            0
-                        ]
-                    },
-                    {
-                        "path": "assets/enemies/skeleton/death17.png",
-                        "offset": [
-                            0,
-                            0
-                        ]
-                    },
-                    {
-                        "path": "assets/enemies/skeleton/death18.png",
-                        "offset": [
-                            0,
-                            0
-                        ]
                     }
                 ]
             },
@@ -911,7 +896,6 @@
             300
         ],
         "move_horizontal": 250,
-        "jump_force": 20000,
         "hitbox": [
             60,
             66

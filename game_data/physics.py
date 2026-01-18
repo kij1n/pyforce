@@ -15,11 +15,17 @@ class PhysicsEngine:
         # stores entity ids touching the ground
         self.entities_touching_ground = []
 
-        self.entities_hit = []  # list to store all entities hit by bullets, emptied every frame
+        self.entities_hit = []  # list to store all entities hit by bullets, emptied after hit is resolved
 
     def _set_collision_handlers(self):
         self.sim.on_collision(
             self.settings["physics"]['collision_types']['player_feet'],
+            self.settings["physics"]['collision_types']['platform'],
+            begin=self._entity_touching_ground,
+            separate=self._entity_leaving_ground
+        )
+        self.sim.on_collision(
+            self.settings["physics"]['collision_types']['enemy_feet'],
             self.settings["physics"]['collision_types']['platform'],
             begin=self._entity_touching_ground,
             separate=self._entity_leaving_ground
@@ -36,7 +42,6 @@ class PhysicsEngine:
 
         if entity is not None and bullet is not None:
             self.entities_hit.append((entity, bullet))
-            # logger.info(f"Entity {entity.name} hit by bullet {bullet.name} | {len(self.entities_hit)} entities hit")
 
         return True
 

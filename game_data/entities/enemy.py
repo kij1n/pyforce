@@ -5,9 +5,8 @@ from shared import *
 
 
 class Enemy:
-    def __init__(self, name: EnemyName, skin_color: SkinColor, settings: dict, pos, ent_id):
+    def __init__(self, name: EnemyName, settings: dict, pos, ent_id):
         self.name = name
-        self.skin_color = skin_color  # flying or ground
         self.settings = settings
         self.health = self.settings['enemy_info'][name.value]['health']
 
@@ -49,7 +48,13 @@ class Enemy:
         return self.body.id
 
     def get_sprite_qty(self, state):
-        return len(self.settings["enemy_info"][self.name.value]["sprites_paths"][state])
+        # some enemies don't have jump sprites, they will use run instead
+        return len(
+            self.settings["enemy_info"][self.name.value]["sprites_paths"].get(
+                state,
+                self.settings['enemy_info'][self.name.value]['sprites_paths'][StateName.RUN.value]
+            )
+        )
 
     def get_position(self):
         return self.shape.body.position
@@ -164,6 +169,7 @@ class Enemy:
 
     def take_damage(self, damage):
         self.health -= damage
+        logger.debug(f"{self.name.value} took {damage} damage, health left: {self.health}")
 
     def kill(self):
         self.__del__()

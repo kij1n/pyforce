@@ -80,8 +80,20 @@ class Model:
         if body is None or shape is None or bullet is None:
             return
 
+        logger.debug("player shot")
+
         self.physics.sim.add(body, shape)
+
+        previous_len = len(self.entities.bullets_dict)
+
         self.entities.bullets_dict[bullet] = shape
+
+        current_len = len(self.entities.bullets_dict)
+
+        if previous_len != current_len:
+            logger.debug(f"added bullet: {bullet.id}")
+        else:
+            logger.error(f"failed to add bullet: {bullet.id}")
 
 @dataclass
 class DebugElements:
