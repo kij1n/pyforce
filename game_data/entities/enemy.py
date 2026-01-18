@@ -168,6 +168,9 @@ class Enemy:
         return x_range, self.shape.body.position.y
 
     def take_damage(self, damage):
+        if self.get_current_action() == EnemyAction.DEATH:
+            return
+
         self.health -= damage
         logger.debug(f"{self.name.value} took {damage} damage, health left: {self.health}")
 

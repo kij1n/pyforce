@@ -150,6 +150,7 @@ class EntityManager:
         for enemy in self.enemies:
             self._update_single_enemy(enemy, sim)
             self._apply_enemy_action(enemy, sim)
+            # logger.debug(f"action:{enemy.get_current_action()}, state: {enemy.get_state()} | start_pos: {enemy.state_manager.state.start_pos}, pos: {enemy.get_position()}")
 
     def _update_single_enemy(self, enemy: Enemy, sim: pymunk.Space):
         # change enemy's action in accordance to rules
@@ -336,7 +337,6 @@ class EntityManager:
         self.remove_killed(sim)
 
     def _remove_bullet(self, bullet, sim):
-        logger.debug(f"removing bullet: {bullet.id}")
         shape = self.bullets_dict[bullet]
         sim.remove(shape, shape.body)
         del self.bullets_dict[bullet]

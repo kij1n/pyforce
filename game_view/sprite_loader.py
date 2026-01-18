@@ -1,6 +1,7 @@
 import pygame
 import os
 from loguru import logger
+import re
 
 class SpriteLoader:
     def __init__(self, settings: dict):
@@ -78,7 +79,13 @@ class SpriteLoader:
 
 
     def get_sprite(self, sprite_name):
-        return self.sprites.get(sprite_name, None)
+        if self.sprites.get(sprite_name, None) is None:
+            # fallback to run if sprite not found
+            sprite_number = int(re.sub(r'\D', '', sprite_name))
+            name = sprite_name.split('_')[0] + '_run' + str(sprite_number)
+            return self.sprites[name]
+        else:
+            return self.sprites[sprite_name]
 
     @staticmethod
     def _get_path(sprite_location):

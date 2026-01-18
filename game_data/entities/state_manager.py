@@ -43,13 +43,16 @@ class StateManager:
         # return None
 
     def apply_vertical_push(self):
-        # enemies will not jump, so this is only for player
         if not self.state.can_jump(self.entity.shape.body):
             return
 
         if self.state.get_state() != StateName.JUMP:
-            self.state.change_state(StateName.JUMP, self.entity.get_position(), self.entity.shape.body,
-                                    settings=self.entity.settings)
+            logger.debug(f"Jumping {self.entity.name}, state before change: {self.state.get_state()}")
+            self.state.change_state(
+                StateName.JUMP, self.entity.get_position(),
+                self.entity.shape.body, settings=self.entity.settings
+            )
+            logger.debug(f"Jumping {self.entity.name}, state after change: {self.state.get_state()}")
 
         force = Vec2d(
             0, -self.entity.settings["physics"]["ent_jump_force"]

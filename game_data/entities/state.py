@@ -1,3 +1,4 @@
+from loguru import logger
 from pymunk import Vec2d
 from shared import StateName, Direction
 
@@ -35,6 +36,7 @@ class State:
     def get_sprite_index(self, current_position: Vec2d, total_sprites: int, cycle_length: float,
                          velocity: Vec2d) -> int:
         if total_sprites <= 1:
+            logger.debug("Invalid total sprites")
             return 0
 
         if self.state == StateName.RUN:
@@ -113,6 +115,8 @@ class State:
             self.start_pos = position
 
     def change_state(self, new_state, position: Vec2d, body, settings=None):
+        if self.state_manager.name != 'player':
+            logger.debug(f"Entity {self.state_manager.name} changing state from {self.state} to {new_state}")
         self.state = new_state
 
         if new_state == StateName.RUN:
@@ -123,6 +127,8 @@ class State:
             self.current_time = 0
 
         elif new_state == StateName.JUMP:
+            if self.state_manager.name != 'player':
+                self.start_pos = position
             self.achieved_highest_y = False
             self.start_y = position.y
             self.highest_y = self._calc_highest_y(position.y, settings)
@@ -139,11 +145,15 @@ class State:
         return highest_y
 
     def get_state(self) -> StateName:
-        settings = self.get_ent_sp_settings()
-        if settings.get(self.state.value) is None:
-            return StateName.RUN
-        else:
-            return self.state
+        # settings = self.get_ent_sp_settings()
+        # if settings.get(self.state.value) is None:
+        #     return StateName.RUN
+        # else:
+        #     return self.state
+        return self.state
+
+    def get_state_incl_jump(self) -> StateName:
+        return self.state
 
     def get_ent_sp_settings(self):
         if self.state_manager.name == 'player':

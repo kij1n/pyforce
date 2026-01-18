@@ -145,7 +145,7 @@
             "health": 400,
             "sight": 400,
             "move_horizontal": 200,
-            "mass": 70,
+            "mass": 60,
             "moment": null,
             "sprites_paths": {
                 "idle": [
