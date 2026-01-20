@@ -16,10 +16,10 @@ class State:
         self.hits = 0
         self.start_time = 0
         self.current_time = 0
-        self.death_time = self.settings['sprites']['cycle_lengths'][self.state_manager.name]['death_time']
-        self.wait_after_death = self.settings['sprites']['cycle_lengths'][self.state_manager.name]['wait_after_death']
+        self.death_time = self.settings["sprites"]["cycle_lengths"][self.state_manager.name]["death_time"]
+        self.wait_after_death = self.settings["sprites"]["cycle_lengths"][self.state_manager.name]["wait_after_death"]
         self.dead = False
-        self.attack_time = self.settings['sprites']['cycle_lengths'][self.state_manager.name]['attack_time']
+        self.attack_time = self.settings["sprites"]["cycle_lengths"][self.state_manager.name]["attack_time"]
 
         self.start_y = None
         self.highest_y = None
@@ -37,8 +37,9 @@ class State:
     def set_on_ground(self, is_on_ground: bool):
         self.is_on_ground = is_on_ground
 
-    def get_sprite_index(self, current_position: Vec2d, total_sprites: int, cycle_length: float,
-                         velocity: Vec2d) -> int:
+    def get_sprite_index(
+        self, current_position: Vec2d, total_sprites: int, cycle_length: float, velocity: Vec2d
+    ) -> int:
         if total_sprites <= 1:
             logger.error("Invalid total sprites")
             return 0
@@ -132,7 +133,7 @@ class State:
             self.start_pos = position
 
     def change_state(self, new_state: EnemyAction, position: Vec2d, body, settings=None):
-        if self.state_manager.name != 'player':
+        if self.state_manager.name != "player":
             logger.debug(f"Entity {self.state_manager.name} changing state from {self.state} to {new_state}")
         self.state = new_state
 
@@ -146,7 +147,7 @@ class State:
             self.previous_hits = 0
 
         elif new_state == StateName.JUMP:
-            if self.state_manager.name != 'player':
+            if self.state_manager.name != "player":
                 self.start_pos = position
             self.achieved_highest_y = False
             self.start_y = position.y
@@ -160,18 +161,17 @@ class State:
         g = settings["physics"]["gravity"]
         m = settings["player_info"]["mass"]
         y_0 = current_y
-        highest_y = abs(J ** 2 / (2 * g * m ** 2) - y_0)
+        highest_y = abs(J**2 / (2 * g * m**2) - y_0)
         return highest_y
 
     def get_state(self) -> StateName:
         return self.state
 
     def get_ent_sp_settings(self):
-        if self.state_manager.name == 'player':
-            return self.settings['player_info']['sprites_paths']
+        if self.state_manager.name == "player":
+            return self.settings["player_info"]["sprites_paths"]
         else:
-            return self.settings['enemy_info'][self.state_manager.name]['sprites_paths']
+            return self.settings["enemy_info"][self.state_manager.name]["sprites_paths"]
 
     def get_state_str(self) -> str:
         return self.state.value
-

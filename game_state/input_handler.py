@@ -16,7 +16,6 @@ class InputHandler:
             if event.type == pygame.QUIT:
                 self.controller.running = False
 
-
     def handle_keys(self):
         keys = pygame.key.get_pressed()
 

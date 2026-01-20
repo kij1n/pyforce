@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from game_data.entities.patrol_path import PatrolPath
 
+
 @dataclass
 class DebugElements:
     sim: pymunk.Space

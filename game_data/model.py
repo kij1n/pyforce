@@ -3,6 +3,7 @@ from .physics import PhysicsEngine
 from . import entities
 from loguru import logger
 
+
 class Model:
     def __init__(self, settings: dict):
         logger.info("Initializing model...")
@@ -29,21 +30,17 @@ class Model:
 
         self.where_array = self.entities.get_where_array()
 
-        self.physics.sim.step(self.settings["physics"]['time_step'])
+        self.physics.sim.step(self.settings["physics"]["time_step"])
         self.entities.handle_hits(self.physics.entities_hit, self.physics.sim)
 
         self._add_debug()
 
     def _add_debug(self):
-        self.debug_elements = DebugElements(
-            self.physics.sim,
-            self.entities.patrol_paths,
-            self._add_bbs()
-        )
+        self.debug_elements = DebugElements(self.physics.sim, self.entities.patrol_paths, self._add_bbs())
 
     def _add_bbs(self):
         bbs = []
-        if self.settings['debug']['show_bbs']:
+        if self.settings["debug"]["show_bbs"]:
 
             for i in self.where_array:
                 bbs.append(i.hitbox)

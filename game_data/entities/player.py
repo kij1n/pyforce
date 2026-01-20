@@ -17,8 +17,8 @@ class Player:
         self.state_manager = StateManager(self)
 
         self.arm_deg = 0  # 0 means pointing down, turns counter-clockwise
-        self.gun_held = 'base'
-        self.ammo_used = 'base'
+        self.gun_held = "base"
+        self.ammo_used = "base"
 
     # def __del__(self):
     #     self.shape = self.body = self.feet = None
@@ -27,10 +27,10 @@ class Player:
     def get_relative_pos(self):
         player_abs_pos = self.get_position()
 
-        screen_w = self.settings['screen']['size_x']
-        screen_h = self.settings['screen']['size_y']
-        map_w = self.settings['map']['size_x']
-        map_h = self.settings['map']['size_y']
+        screen_w = self.settings["screen"]["size_x"]
+        screen_h = self.settings["screen"]["size_y"]
+        map_w = self.settings["map"]["size_x"]
+        map_h = self.settings["map"]["size_y"]
 
         # Calculate where the camera wants to be (centered on player)
         # Camera Top-Left = Player Center - Half Screen

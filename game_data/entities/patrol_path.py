@@ -1,5 +1,6 @@
 from shared import Direction
 
+
 class PatrolPath:
     def __init__(self, x_range, height):
         self.start = (x_range[0], height)
@@ -7,15 +8,11 @@ class PatrolPath:
         self.enemies = set()
 
     def is_in(self, x, y_range: tuple[int, int]):
-        return (
-            self.start[0] <= x <= self.end[0] and
-            y_range[1] <= self.start[1] <= y_range[0]
-        )
+        return self.start[0] <= x <= self.end[0] and y_range[1] <= self.start[1] <= y_range[0]
 
     def is_at_end(self, x, direction):
-        return (
-            (direction == Direction.LEFT and x - 40 <= self.start[0]) or
-            (direction == Direction.RIGHT and x + 40 >= self.end[0])
+        return (direction == Direction.LEFT and x - 40 <= self.start[0]) or (
+            direction == Direction.RIGHT and x + 40 >= self.end[0]
         )
 
     def add_enemy(self, enemy):

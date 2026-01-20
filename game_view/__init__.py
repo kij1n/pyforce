@@ -1,3 +1,3 @@
 from .view import View
 
-__all__ = ['View']
+__all__ = ["View"]

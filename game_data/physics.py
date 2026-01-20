@@ -3,6 +3,7 @@ import pytmx
 import os
 from loguru import logger
 
+
 class PhysicsEngine:
     def __init__(self, settings: dict):
         logger.info("Initializing physics engine...")
@@ -19,26 +20,26 @@ class PhysicsEngine:
 
     def _set_collision_handlers(self):
         self.sim.on_collision(
-            self.settings["physics"]['collision_types']['player_feet'],
-            self.settings["physics"]['collision_types']['platform'],
+            self.settings["physics"]["collision_types"]["player_feet"],
+            self.settings["physics"]["collision_types"]["platform"],
             begin=self._entity_touching_ground,
-            separate=self._entity_leaving_ground
+            separate=self._entity_leaving_ground,
         )
         self.sim.on_collision(
-            self.settings["physics"]['collision_types']['enemy_feet'],
-            self.settings["physics"]['collision_types']['platform'],
+            self.settings["physics"]["collision_types"]["enemy_feet"],
+            self.settings["physics"]["collision_types"]["platform"],
             begin=self._entity_touching_ground,
-            separate=self._entity_leaving_ground
+            separate=self._entity_leaving_ground,
         )
         self.sim.on_collision(
-            self.settings['physics']['collision_types']['bullet'],
-            self.settings['physics']['collision_types']['enemy'],
-            begin=self._hit
+            self.settings["physics"]["collision_types"]["bullet"],
+            self.settings["physics"]["collision_types"]["enemy"],
+            begin=self._hit,
         )
 
     def _hit(self, arbiter, space, data):
-        bullet = getattr(arbiter.shapes[0], 'bullet', None)
-        entity = getattr(arbiter.shapes[1], 'entity', None)  # a bullet is the first shape in the arbiter
+        bullet = getattr(arbiter.shapes[0], "bullet", None)
+        entity = getattr(arbiter.shapes[1], "entity", None)  # a bullet is the first shape in the arbiter
 
         if entity is not None and bullet is not None:
             self.entities_hit.append((entity, bullet))
@@ -46,7 +47,7 @@ class PhysicsEngine:
         return True
 
     def _entity_touching_ground(self, arbiter, space, data):
-        identifier = getattr(arbiter.shapes[0], 'id', None)  # only feet have an id
+        identifier = getattr(arbiter.shapes[0], "id", None)  # only feet have an id
         if identifier is None:
             return True
 
@@ -55,7 +56,7 @@ class PhysicsEngine:
         return True
 
     def _entity_leaving_ground(self, arbiter, space, data):
-        identifier = getattr(arbiter.shapes[0], 'id', None)
+        identifier = getattr(arbiter.shapes[0], "id", None)
         if identifier is None:
             return True
 
@@ -65,10 +66,10 @@ class PhysicsEngine:
         return True
 
     def _prepare_space(self):
-        self.sim.gravity = pymunk.Vec2d(0, self.settings["physics"]['gravity'])
+        self.sim.gravity = pymunk.Vec2d(0, self.settings["physics"]["gravity"])
         self._add_map()
-        self.sim.collision_bias = self.settings["physics"]['collision_bias']
-        self.sim.collision_slop = self.settings["physics"]['collision_slop']
+        self.sim.collision_bias = self.settings["physics"]["collision_bias"]
+        self.sim.collision_slop = self.settings["physics"]["collision_slop"]
 
         logger.info("Physics engine platform collision shapes added.")
 
@@ -91,7 +92,7 @@ class PhysicsEngine:
             if os.name == "nt":
                 path = path.replace("/", "\\")
 
-            object_layer = pytmx.TiledMap(path).get_layer_by_name(self.settings["map"]['object_layer_name'])
+            object_layer = pytmx.TiledMap(path).get_layer_by_name(self.settings["map"]["object_layer_name"])
             return object_layer
         except FileNotFoundError:
             logger.error(f"Map file not found")
@@ -108,28 +109,20 @@ class PhysicsEngine:
         width = obj.width
         height = obj.height
 
-        h_width = width/2
-        h_height = height/2
+        h_width = width / 2
+        h_height = height / 2
 
-        body.position = pymunk.Vec2d(
-            x + h_width,
-            y + h_height
-        )
+        body.position = pymunk.Vec2d(x + h_width, y + h_height)
 
         shape = pymunk.Poly(
             body,
-            [
-                (-h_width, h_height),
-                (-h_width, -h_height),
-                (h_width, -h_height),
-                (h_width, h_height)
-            ],
-            radius=settings["physics"]['radius']
+            [(-h_width, h_height), (-h_width, -h_height), (h_width, -h_height), (h_width, h_height)],
+            radius=settings["physics"]["radius"],
         )
-        shape.friction = settings["physics"]['friction']
-        shape.collision_type = settings["physics"]['collision_types']['platform']
+        shape.friction = settings["physics"]["friction"]
+        shape.collision_type = settings["physics"]["collision_types"]["platform"]
         shape.filter = pymunk.ShapeFilter(
-            categories=settings['physics']['collision_categories']['platform'],
-            mask=settings['physics']['collision_masks']['platform']
+            categories=settings["physics"]["collision_categories"]["platform"],
+            mask=settings["physics"]["collision_masks"]["platform"],
         )
         return [shape, body]

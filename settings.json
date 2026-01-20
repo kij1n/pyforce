@@ -25,7 +25,7 @@
                 "run": 20,
                 "jump": 30,
                 "attack_time": 50,
-                "death_time": 40,
+                "death_time": 20,
                 "wait_after_death": 300
             },
             "skeleton": {

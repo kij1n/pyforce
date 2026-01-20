@@ -8,6 +8,7 @@ from .json_manager import JSONManager
 
 from loguru import logger
 
+
 class Controller:
     def __init__(self):
         logger.info("Initializing controller...")
@@ -31,7 +32,7 @@ class Controller:
                 self.model.get_center_pos(),
                 self.model.get_where_array(),
                 self.model.get_bullets_dict(),
-                self.model.debug_elements
+                self.model.debug_elements,
             )
 
             self.model.update(pygame.mouse.get_pos())

@@ -8,13 +8,11 @@ class Enemy:
     def __init__(self, name: EnemyName, settings: dict, pos, ent_id, entity_manager):
         self.name = name
         self.settings = settings
-        self.health = self.settings['enemy_info'][name.value]['health']
-        self.damage_dealt = self.settings['enemy_info'][name.value]['damage']
+        self.health = self.settings["enemy_info"][name.value]["health"]
+        self.damage_dealt = self.settings["enemy_info"][name.value]["damage"]
         self.entity_manager = entity_manager
 
-        self.body, self.shape, self.feet = prepare_collision_box(
-            name.value, settings, self, pos=pos, ent_id=ent_id
-        )
+        self.body, self.shape, self.feet = prepare_collision_box(name.value, settings, self, pos=pos, ent_id=ent_id)
 
         self.state_manager = StateManager(self)
 
@@ -49,11 +47,7 @@ class Enemy:
         return self.state_manager.state.get_state()
 
     def change_state(self, state):
-        self.state_manager.state.change_state(
-            state,
-            self.get_position(),
-            self.body
-        )
+        self.state_manager.state.change_state(state, self.get_position(), self.body)
 
     def get_id(self):
         return self.body.id
@@ -62,8 +56,7 @@ class Enemy:
         # some enemies don't have jump sprites, they will use run instead
         return len(
             self.settings["enemy_info"][self.name.value]["sprites_paths"].get(
-                state,
-                self.settings['enemy_info'][self.name.value]['sprites_paths'][StateName.RUN.value]
+                state, self.settings["enemy_info"][self.name.value]["sprites_paths"][StateName.RUN.value]
             )
         )
 
@@ -96,18 +89,12 @@ class Enemy:
         return True
 
     def _is_still_on_path(self):
-        return self.patrol_path.is_in(
-            self.shape.body.position.x,
-            self._get_y_range()
-        )
+        return self.patrol_path.is_in(self.shape.body.position.x, self._get_y_range())
 
     def _bounce_on_path(self):
         direction = self.get_movement_direction()
         direction = self._invert_direction(direction)
-        self.state_manager.state.set_direction(
-            direction,
-            self.get_position()
-        )
+        self.state_manager.state.set_direction(direction, self.get_position())
 
     @staticmethod
     def _invert_direction(direction):
@@ -116,10 +103,7 @@ class Enemy:
         return Direction.LEFT
 
     def _is_at_end_of_path(self):
-        return self.patrol_path.is_at_end(
-            self.shape.body.position.x,
-            self.get_movement_direction()
-        )
+        return self.patrol_path.is_at_end(self.shape.body.position.x, self.get_movement_direction())
 
     def _set_patrol_path(self, path):
         if path is None:
@@ -133,19 +117,13 @@ class Enemy:
 
     def _is_on_patrol_path(self, patrol_paths):
         for path in patrol_paths:
-            if path.is_in(
-                self.shape.body.position.x,
-                self._get_y_range()
-            ):
+            if path.is_in(self.shape.body.position.x, self._get_y_range()):
                 return path
         return None
 
     def _get_y_range(self):
         height = self._get_height()
-        return (
-            self.shape.body.position.y - height // 2,
-            self.shape.body.position.y + height // 2
-        )
+        return (self.shape.body.position.y - height // 2, self.shape.body.position.y + height // 2)
 
     def _get_height(self):
         vertices = self.shape.get_vertices()
@@ -176,10 +154,7 @@ class Enemy:
             logger.debug(f"Enemy {self.name.value} lost player and patrol path, is now idle")
 
     def get_patrol_coords(self):
-        x_range = (
-            self.shape.body.position.x,
-            self.shape.body.position.x + self.shape.width
-        )
+        x_range = (self.shape.body.position.x, self.shape.body.position.x + self.shape.width)
         return x_range, self.shape.body.position.y
 
     def take_damage(self, damage):

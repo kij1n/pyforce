@@ -1,11 +1,12 @@
 import json
 from loguru import logger
 
+
 class JSONManager:
     def __init__(self):
         logger.info("Initializing JSON manager...")
 
-        self.path = 'settings.json'
+        self.path = "settings.json"
         self.settings = {}
         self.load()
 
@@ -14,7 +15,7 @@ class JSONManager:
 
     def load(self):
         try:
-            with open(self.path, 'r') as f:
+            with open(self.path, "r") as f:
                 self.settings = json.load(f)
                 logger.info(f"Settings successfully loaded from {self.path}")
 
@@ -29,7 +30,7 @@ class JSONManager:
         if len(self.settings.items()) == 0:  # in case of failed loading, don't overwrite existing settings
             return
         try:
-            with open(self.path, 'w') as f:
+            with open(self.path, "w") as f:
                 json.dump(self.settings, f, indent=4)
                 logger.info(f"Settings saved to {self.path}")
 
