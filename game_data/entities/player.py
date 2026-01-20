@@ -1,3 +1,5 @@
+from loguru import logger
+
 from .state_manager import StateManager
 from .entity_utils import prepare_collision_box
 from pymunk import Vec2d
@@ -50,3 +52,7 @@ class Player:
 
     def get_gun_position(self):
         return self.shape.body.position
+
+    def take_damage(self, damage):
+        self.health -= damage
+        logger.debug(f"Player took {damage} damage, health: {self.health}")

@@ -1,6 +1,6 @@
 from loguru import logger
 from pymunk import Vec2d
-from shared import StateName, Direction
+from shared import StateName, Direction, EnemyAction
 
 
 class State:
@@ -12,10 +12,13 @@ class State:
         self.start_pos = position
         self.dead = False
 
+        self.previous_hits = 0
+        self.hits = 0
         self.start_time = 0
         self.current_time = 0
         self.death_time = self.settings['sprites']['cycle_lengths'][self.state_manager.name]['death_time']
         self.wait_after_death = self.settings['sprites']['cycle_lengths'][self.state_manager.name]['wait_after_death']
+        self.attack_time = self.settings['sprites']['cycle_lengths'][self.state_manager.name]['attack_time']
 
         self.start_y = None
         self.highest_y = None
@@ -36,7 +39,7 @@ class State:
     def get_sprite_index(self, current_position: Vec2d, total_sprites: int, cycle_length: float,
                          velocity: Vec2d) -> int:
         if total_sprites <= 1:
-            logger.debug("Invalid total sprites")
+            logger.error("Invalid total sprites")
             return 0
 
         if self.state == StateName.RUN:
@@ -47,12 +50,24 @@ class State:
             return self._handle_jump(current_position, total_sprites, velocity)
         elif self.state == StateName.DEATH:
             return self._handle_death(total_sprites)
+        elif self.state == StateName.ATTACK:
+            return self._handle_attack(total_sprites)
 
         return 0
 
+    def _handle_attack(self, total_sprites):
+        if self.current_time >= self.attack_time:
+            # self.previous_hits = self.hits
+            self.hits += 1
+            self.current_time = 0
+            return total_sprites - 1
+
+        step = self.attack_time / total_sprites
+        # logger.debug(f"enemy attack, returning {int(self.current_time // step)} index, current time {self.current_time}, step {step}")
+        return int(self.current_time // step)
+
     def _handle_death(self, total_sprites):
         if self.current_time >= self.death_time:
-            self.dead = True
             return total_sprites - 1
 
         step = self.death_time // total_sprites
@@ -106,7 +121,7 @@ class State:
         return total_sprites - 1 - index
 
     def append_time(self):
-        if self.state in [StateName.IDLE, StateName.DEATH]:
+        if self.state in [StateName.IDLE, StateName.DEATH, StateName.ATTACK]:
             self.current_time += 1
 
     def set_direction(self, direction, position=None):
@@ -114,7 +129,7 @@ class State:
             self.movement_direction = direction
             self.start_pos = position
 
-    def change_state(self, new_state, position: Vec2d, body, settings=None):
+    def change_state(self, new_state: EnemyAction, position: Vec2d, body, settings=None):
         if self.state_manager.name != 'player':
             logger.debug(f"Entity {self.state_manager.name} changing state from {self.state} to {new_state}")
         self.state = new_state
@@ -122,9 +137,11 @@ class State:
         if new_state == StateName.RUN:
             self.start_pos = position
 
-        elif new_state == StateName.IDLE or new_state == StateName.DEATH:
+        elif new_state in [StateName.IDLE, StateName.DEATH, StateName.ATTACK]:
             self.start_time = 0
             self.current_time = 0
+            self.hits = 0
+            self.previous_hits = 0
 
         elif new_state == StateName.JUMP:
             if self.state_manager.name != 'player':
@@ -132,6 +149,9 @@ class State:
             self.achieved_highest_y = False
             self.start_y = position.y
             self.highest_y = self._calc_highest_y(position.y, settings)
+
+        # else:
+        #     logger.debug(f"Entity {self.state_manager.name} changing state to {new_state} but it doesn't require any special handling")
 
         body.activate()
 
@@ -145,14 +165,6 @@ class State:
         return highest_y
 
     def get_state(self) -> StateName:
-        # settings = self.get_ent_sp_settings()
-        # if settings.get(self.state.value) is None:
-        #     return StateName.RUN
-        # else:
-        #     return self.state
-        return self.state
-
-    def get_state_incl_jump(self) -> StateName:
         return self.state
 
     def get_ent_sp_settings(self):

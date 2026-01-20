@@ -150,22 +150,30 @@ class EntityManager:
         for enemy in self.enemies:
             self._update_single_enemy(enemy, sim)
             self._apply_enemy_action(enemy, sim)
-            # logger.debug(f"action:{enemy.get_current_action()}, state: {enemy.get_state()} | start_pos: {enemy.state_manager.state.start_pos}, pos: {enemy.get_position()}")
 
     def _update_single_enemy(self, enemy: Enemy, sim: pymunk.Space):
-        # change enemy's action in accordance to rules
-        # 1. check for aggro
-        # 2. check for a patrol path
-        # 3. else idle
         if enemy.get_state() == StateName.DEATH:
             return
+        elif self._check_for_attack(enemy):
+            self._resolve_enemy_hits(enemy)
+            enemy.change_action(EnemyAction.ATTACK)
         elif self._check_for_aggro(enemy, sim):
-            enemy.change_action(EnemyAction.AGGRO) # apply aggro and return
+            enemy.change_action(EnemyAction.AGGRO)
         elif enemy.update_patrol_state(self.patrol_paths):
             # returns false if an enemy is not on a path
             enemy.change_action(EnemyAction.PATROL)
         else:
             enemy.change_action(EnemyAction.IDLE)
+
+    def _resolve_enemy_hits(self, enemy):
+        if enemy.has_hit():
+            self.player.take_damage(enemy.damage_dealt)
+
+    def _check_for_attack(self, enemy) -> bool:
+        player_pos = self.player.get_position()
+        enemy_pos = enemy.get_position()
+        attack_dist = self.settings['enemy_info'][enemy.name.value]['attack_distance']
+        return (player_pos - enemy_pos).length <= attack_dist
 
     def _check_for_aggro(self, enemy, sim):
         query_filter = self._get_query_filter()
@@ -226,12 +234,10 @@ class EntityManager:
         length = self.settings['physics']['raycast_options']['length']
 
         # Convert angle to radians for trigonometric functions
-        # The angle in settings has 0 degrees pointing down.
-        # We need to convert it to a standard angle where 0 degrees is on the positive x-axis.
-        # Adding 90 degrees achieves this.
+        # The angle in settings has 0 degrees pointing down
+        # We need to convert it to a standard angle where 0 degrees is on the positive x-axis
         rad_angle = radians((angle - 90)%360)
 
-        # Calculate the offset from the entity's position
         offset_x = length * cos(rad_angle)
         offset_y = -length * sin(rad_angle)
 
@@ -287,14 +293,10 @@ class EntityManager:
         for bullet, shape in self.bullets_dict.items():
             if bullet.timer >= self.settings['physics']['timeout']['bullet']:
                 to_be_removed.append((bullet, shape))
-                # print("removing bullet: timer")
             elif (bullet.start_pos - shape.body.position).length >= bullet.reach:
                 to_be_removed.append((bullet, shape))
-                # print(f"removing bullet: positon: {shape.body.position}")
 
         for bullet, shape in to_be_removed:
-            # shape.body.space.remove(shape, shape.body)
-            # del self.bullets_dict[bullet]
             self._remove_bullet(bullet, shape.body.space)
 
     def get_bullet(self):
@@ -345,8 +347,13 @@ class EntityManager:
 
     def remove_killed(self, sim: pymunk.Space):
         for entity in self.get_entities():
+            if entity.name == 'player' and self._check_debug():
+                continue
             if entity.health <= 0:
                 self._kill_entity(entity, sim)
+
+    def _check_debug(self):
+        return self.settings['debug']['player_immortal']
 
     def _kill_entity(self, entity, sim: pymunk.Space):
         if not entity.get_state() == StateName.DEATH:

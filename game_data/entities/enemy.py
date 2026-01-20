@@ -9,6 +9,7 @@ class Enemy:
         self.name = name
         self.settings = settings
         self.health = self.settings['enemy_info'][name.value]['health']
+        self.damage_dealt = self.settings['enemy_info'][name.value]['damage']
 
         self.body, self.shape, self.feet = prepare_collision_box(
             name.value, settings, self, pos=pos, ent_id=ent_id
@@ -33,6 +34,12 @@ class Enemy:
         if self.patrol_path is not None:
             self.patrol_path.remove_enemy(self)
         del self
+
+    def has_hit(self):
+        if self.state_manager.state.previous_hits != self.state_manager.state.hits:
+            self.state_manager.state.previous_hits = self.state_manager.state.hits
+            return True
+        return False
 
     def get_state(self):
         return self.state_manager.state.get_state()
@@ -71,7 +78,7 @@ class Enemy:
     def get_current_action(self) -> EnemyAction:
         return self.current_action
 
-    def update_patrol_state(self, patrol_paths):
+    def update_patrol_state(self, patrol_paths) -> bool:
         if self.patrol_path is None:
             path = self._is_on_patrol_path(patrol_paths)
             if path is not None:
@@ -147,6 +154,8 @@ class Enemy:
         self.current_action = action
         if action in [EnemyAction.AGGRO, EnemyAction.PATROL]:
             self.state_manager.state.change_state(StateName.RUN, self.get_position(), self.body)
+        elif action == EnemyAction.ATTACK:
+            self.state_manager.state.change_state(StateName.ATTACK, self.get_position(), self.body)
 
         self._log_action_change()
 
@@ -157,6 +166,8 @@ class Enemy:
             logger.debug(f"Enemy {self.name.value} found patrol path")
         elif self.current_action == EnemyAction.DEATH:
             logger.debug(f"Enemy {self.name.value} lost all hp")
+        elif self.current_action == EnemyAction.ATTACK:
+            logger.debug(f"Enemy {self.name.value} is attacking player")
         else:
             logger.debug(f"Enemy {self.name.value} lost player and patrol path, is now idle")
 
@@ -172,7 +183,6 @@ class Enemy:
             return
 
         self.health -= damage
-        logger.debug(f"{self.name.value} took {damage} damage, health left: {self.health}")
 
     def kill(self):
         self.__del__()

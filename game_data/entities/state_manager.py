@@ -47,12 +47,12 @@ class StateManager:
             return
 
         if self.state.get_state() != StateName.JUMP:
-            logger.debug(f"Jumping {self.entity.name}, state before change: {self.state.get_state()}")
+            # logger.debug(f"Jumping {self.entity.name}, state before change: {self.state.get_state()}")
             self.state.change_state(
                 StateName.JUMP, self.entity.get_position(),
                 self.entity.shape.body, settings=self.entity.settings
             )
-            logger.debug(f"Jumping {self.entity.name}, state after change: {self.state.get_state()}")
+            # logger.debug(f"Jumping {self.entity.name}, state after change: {self.state.get_state()}")
 
         force = Vec2d(
             0, -self.entity.settings["physics"]["ent_jump_force"]
@@ -67,14 +67,14 @@ class StateManager:
             self.state.set_direction(Direction.LEFT, position=self.entity.get_position())
         else:
             self.state.set_direction(Direction.RIGHT, position=self.entity.get_position())
-
         self._calc_and_apply_velocity()
 
     def _should_run(self):
         return (
             self.state.get_state() != StateName.RUN and
             self.entity.shape.body.velocity.y == 0 and
-            self.state.is_on_ground
+            self.state.is_on_ground and
+            getattr(self.entity, 'current_action', None) != EnemyAction.ATTACK
         )
 
     def _calc_and_apply_velocity(self):
