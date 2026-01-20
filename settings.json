@@ -6,7 +6,7 @@
         "show_patrol_paths": false,
         "show_fps": false,
         "show_bbs": false,
-        "player_immortal": true
+        "player_immortal": false
     },
     "sprites": {
         "inversion_indicator": "inv_",
@@ -17,7 +17,7 @@
                 "run": 20,
                 "jump": 30,
                 "attack_time": null,
-                "death_time": 300,
+                "death_time": 40,
                 "wait_after_death": 300
             },
             "goblin": {
@@ -25,7 +25,7 @@
                 "run": 20,
                 "jump": 30,
                 "attack_time": 50,
-                "death_time": 20,
+                "death_time": 40,
                 "wait_after_death": 300
             },
             "skeleton": {
@@ -148,7 +148,7 @@
         "goblin": {
             "attack_distance": 100,
             "health": 100,
-            "damage": 10,
+            "damage": 50,
             "sight": 400,
             "move_horizontal": 200,
             "mass": 60,
@@ -779,6 +779,50 @@
     "player_info": {
         "health": 100,
         "sprites_paths": {
+            "death": [
+                {
+                    "path": "assets/player/death1.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/death2.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/death3.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/death4.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/death5.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                },
+                {
+                    "path": "assets/player/death6.png",
+                    "offset": [
+                        0,
+                        0
+                    ]
+                }
+            ],
             "idle": [
                 {
                     "path": "assets/player/idle1.png",

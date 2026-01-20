@@ -14,11 +14,12 @@ from loguru import logger
 
 
 class EntityManager:
-    def __init__(self, settings: dict):
+    def __init__(self, settings: dict, sim: pymunk.Space):
         logger.info("Initializing entity manager...")
 
         self.settings = settings
-        self.player = Player(settings)
+        self.sim = sim
+        self.player = Player(settings, self)
         self.enemies = self._load_enemies()
 
         logger.info(f"Player and enemies ({len(self.enemies)}) loaded successfully")
@@ -53,7 +54,8 @@ class EntityManager:
                     name=get_enemy_name(enemy_type),
                     settings=self.settings,
                     pos=pos,
-                    ent_id=len(enemies) + 2  # player's id is 1
+                    ent_id=len(enemies) + 2,  # player's id is 1
+                    entity_manager=self
                 )
                 enemies.add(enemy)
 
@@ -176,6 +178,9 @@ class EntityManager:
         return (player_pos - enemy_pos).length <= attack_dist
 
     def _check_for_aggro(self, enemy, sim):
+        if self.player.is_dying():
+            return False
+
         query_filter = self._get_query_filter()
 
         radius = self.settings['physics']['segment_query_radius']
@@ -358,14 +363,22 @@ class EntityManager:
     def _kill_entity(self, entity, sim: pymunk.Space):
         if not entity.get_state() == StateName.DEATH:
             entity.change_state(StateName.DEATH)
-            entity.change_action(EnemyAction.DEATH)
+            if entity.name != 'player':
+                entity.change_action(EnemyAction.DEATH)
 
         if not entity.is_over_dying():
             return
 
         self.enemies.discard(entity)
-        sim.remove(entity.shape, entity.feet, entity.body)
+        # sim.remove(entity.shape, entity.feet, entity.body)
         entity.kill()
 
     def _get_next_bullet_id(self):
         return max([bullet.id for bullet in self.bullets_dict.keys()] + [0]) + 1
+
+    def remove_entity(self, entity):
+        self.sim.remove(entity.body, entity.shape, entity.feet)
+        if entity.name == 'player':
+            self.player = None
+        else:
+            self.enemies.discard(entity)

@@ -35,12 +35,14 @@ def calc_camera_pos(settings, player_pos):
     )
     return abs_camera_pos, rel_camera_pos
 
+
 def calc_vector(abs_camera_pos, rel_camera_pos):
     vector = (
         rel_camera_pos[0] - abs_camera_pos[0],
         rel_camera_pos[1] - abs_camera_pos[1]
     )
     return vector
+
 
 def _clamp(min_val, value, max_val):
     return max(min(value, max_val), min_val)
@@ -92,7 +94,8 @@ class EntityRenderer:
         ent_sprite = sprite_loader.get_sprite(ent_sprite_name)  # Sprite instance, not pygame Surface
         if ent_sprite is None: return
 
-        ent_surface, ent_rect = self._prepare_entity(ent_relative_pos, ent_sprite, where, calc_vector(abs_camera_pos, rel_camera_pos))
+        ent_surface, ent_rect = self._prepare_entity(ent_relative_pos, ent_sprite, where,
+                                                     calc_vector(abs_camera_pos, rel_camera_pos))
 
         if where.arm_deg is None:
             screen.blit(ent_surface, ent_rect)
@@ -112,24 +115,26 @@ class EntityRenderer:
         arm_sprite_name = where.name + '_' + 'arm'
         arm_sprite = sprite_loader.get_sprite(arm_sprite_name)
 
-        arm_surface, arm_rect, is_over = self._prepare_arm(
-            ent_relative_pos=ent_relative_pos,
-            sprite=arm_sprite,
-            is_inverted=where.inversion,
-            deg=where.arm_deg,
-            offset=(
-                settings["sprites"]["arm_disp_vector_x"],
-                settings["sprites"]["arm_disp_vector_y"]
-            ),
-            rotation=(
-                settings["sprites"]["arm_rotation_x"],
-                settings["sprites"]["arm_rotation_y"]
-            ),
-        )
+        arm_surface = arm_rect = is_over = None
+        if not where.is_dead:
+            arm_surface, arm_rect, is_over = self._prepare_arm(
+                ent_relative_pos=ent_relative_pos,
+                sprite=arm_sprite,
+                is_inverted=where.inversion,
+                deg=where.arm_deg,
+                offset=(
+                    settings["sprites"]["arm_disp_vector_x"],
+                    settings["sprites"]["arm_disp_vector_y"]
+                ),
+                rotation=(
+                    settings["sprites"]["arm_rotation_x"],
+                    settings["sprites"]["arm_rotation_y"]
+                ),
+            )
 
         gun_surface = gun_rect = None
 
-        if where.gun_name is not None:
+        if where.gun_name is not None and not where.is_dead:
             gun_sprite_name = where.gun_name
             gun_sprite = sprite_loader.get_sprite(gun_sprite_name)
 

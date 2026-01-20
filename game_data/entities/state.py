@@ -18,6 +18,7 @@ class State:
         self.current_time = 0
         self.death_time = self.settings['sprites']['cycle_lengths'][self.state_manager.name]['death_time']
         self.wait_after_death = self.settings['sprites']['cycle_lengths'][self.state_manager.name]['wait_after_death']
+        self.dead = False
         self.attack_time = self.settings['sprites']['cycle_lengths'][self.state_manager.name]['attack_time']
 
         self.start_y = None
@@ -68,9 +69,10 @@ class State:
 
     def _handle_death(self, total_sprites):
         if self.current_time >= self.death_time:
+            self.dead = True
             return total_sprites - 1
 
-        step = self.death_time // total_sprites
+        step = self.death_time / total_sprites
         return int(self.current_time // step)
 
     def _handle_run(self, current_position, total_sprites, cycle_length):
@@ -149,9 +151,6 @@ class State:
             self.achieved_highest_y = False
             self.start_y = position.y
             self.highest_y = self._calc_highest_y(position.y, settings)
-
-        # else:
-        #     logger.debug(f"Entity {self.state_manager.name} changing state to {new_state} but it doesn't require any special handling")
 
         body.activate()
 

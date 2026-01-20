@@ -26,7 +26,7 @@ class Controller:
     def run(self):
         self.running = True
 
-        while self.running:
+        while self.running and self.model.game_not_lost():
             self.view.render(
                 self.model.get_center_pos(),
                 self.model.get_where_array(),

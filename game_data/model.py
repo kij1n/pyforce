@@ -1,10 +1,4 @@
-from dataclasses import dataclass
-
-import pygame
-import pymunk
-
-from shared import Where
-from .entities.patrol_path import PatrolPath
+from shared import Where, DebugElements
 from .physics import PhysicsEngine
 from . import entities
 from loguru import logger
@@ -15,12 +9,15 @@ class Model:
 
         self.settings = settings
 
-        self.entities = entities.EntityManager(self.settings)
         self.physics = PhysicsEngine(self.settings)
+        self.entities = entities.EntityManager(self.settings, self.physics.sim)
         self.insert_ents_to_sim()
 
         self.where_array = self._create_where()
         self.debug_elements = DebugElements(None, None, None)
+
+    def game_not_lost(self):
+        return self.entities.player is not None
 
     def update(self, mouse_pos):
         self.entities.update_entity_states()
@@ -82,9 +79,3 @@ class Model:
 
         self.physics.sim.add(body, shape)
         self.entities.bullets_dict[bullet] = shape
-
-@dataclass
-class DebugElements:
-    sim: pymunk.Space
-    patrol_paths: list[PatrolPath]
-    bbs: list[pygame.Rect]

@@ -1,14 +1,16 @@
 from loguru import logger
 
+from shared import StateName
 from .state_manager import StateManager
 from .entity_utils import prepare_collision_box
 from pymunk import Vec2d
 
 
 class Player:
-    def __init__(self, settings: dict):
+    def __init__(self, settings: dict, entity_manager):
         self.name = "player"
         self.settings = settings
+        self.entity_manager = entity_manager
         self.health = 100
 
         self.body, self.shape, self.feet = prepare_collision_box(self.name, settings, self)
@@ -17,6 +19,10 @@ class Player:
         self.arm_deg = 0  # 0 means pointing down, turns counter-clockwise
         self.gun_held = 'base'
         self.ammo_used = 'base'
+
+    # def __del__(self):
+    #     self.shape = self.body = self.feet = None
+    #     del self
 
     def get_relative_pos(self):
         player_abs_pos = self.get_position()
@@ -48,7 +54,7 @@ class Player:
         return self.shape.body.position
 
     def get_state(self):
-        return self.state_manager.state
+        return self.state_manager.state.get_state()
 
     def get_gun_position(self):
         return self.shape.body.position
@@ -56,3 +62,15 @@ class Player:
     def take_damage(self, damage):
         self.health -= damage
         logger.debug(f"Player took {damage} damage, health: {self.health}")
+
+    def change_state(self, state):
+        self.state_manager.state.change_state(state, self.get_position(), self.body)
+
+    def is_over_dying(self):
+        return self.state_manager.state.dead
+
+    def is_dying(self):
+        return self.state_manager.state.state == StateName.DEATH
+
+    def kill(self):
+        self.entity_manager.remove_entity(self)

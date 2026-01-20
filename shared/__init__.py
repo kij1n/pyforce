@@ -3,5 +3,6 @@ from .enemy_enum import *
 from .direction import Direction
 from .state_name import StateName
 from .weapon_utils import BasicBulletInfo
+from .debug_elements import DebugElements
 
-__all__ = ['Where', 'Direction', 'StateName', 'EnemyName', 'EnemyAction', 'get_enemy_name', 'BasicBulletInfo']
+__all__ = ['Where', 'Direction', 'StateName', 'EnemyName', 'EnemyAction', 'get_enemy_name', 'BasicBulletInfo', 'DebugElements']

@@ -5,11 +5,12 @@ from shared import *
 
 
 class Enemy:
-    def __init__(self, name: EnemyName, settings: dict, pos, ent_id):
+    def __init__(self, name: EnemyName, settings: dict, pos, ent_id, entity_manager):
         self.name = name
         self.settings = settings
         self.health = self.settings['enemy_info'][name.value]['health']
         self.damage_dealt = self.settings['enemy_info'][name.value]['damage']
+        self.entity_manager = entity_manager
 
         self.body, self.shape, self.feet = prepare_collision_box(
             name.value, settings, self, pos=pos, ent_id=ent_id
@@ -33,7 +34,10 @@ class Enemy:
         logger.info(f"{self.name.value} killed")
         if self.patrol_path is not None:
             self.patrol_path.remove_enemy(self)
-        del self
+
+        # self.shape.body.space.remove(self.shape, self.shape.body, self.feet)
+        # self.shape = self.body = self.feet = None
+        # del self
 
     def has_hit(self):
         if self.state_manager.state.previous_hits != self.state_manager.state.hits:
@@ -185,7 +189,7 @@ class Enemy:
         self.health -= damage
 
     def kill(self):
-        self.__del__()
+        self.entity_manager.remove_entity(self)
 
     def is_over_dying(self):
-        return self.state_manager.state.current_time >= self.state_manager.state.wait_after_death
+        return self.state_manager.state.dead
