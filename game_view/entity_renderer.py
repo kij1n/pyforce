@@ -130,15 +130,29 @@ class EntityRenderer:
                 ),
             )
 
+        gun_data = (gun_surface, gun_rect)
+        arm_data = (arm_surface, arm_rect)
+        self._render_complex_entity(screen, ent_data, arm_data, gun_data, is_over)
+
+        # if is_over:
+        #     screen.blit(ent_data[0], ent_data[1])
+        #     screen.blit(arm_surface, arm_rect)
+        #     if gun_surface:
+        #         screen.blit(gun_surface, gun_rect)
+        # else:
+        #     screen.blit(arm_surface, arm_rect)
+        #     if gun_surface:
+        #         screen.blit(gun_surface, gun_rect)
+        #     screen.blit(ent_data[0], ent_data[1])
+
+    def _render_complex_entity(self, screen, ent_data, arm_data, gun_data, is_over):
         if is_over:
             screen.blit(ent_data[0], ent_data[1])
-            screen.blit(arm_surface, arm_rect)
-            if gun_surface:
-                screen.blit(gun_surface, gun_rect)
+            if None not in gun_data: screen.blit(gun_data[0], gun_data[1])
+            if None not in arm_data: screen.blit(arm_data[0], arm_data[1])
         else:
-            screen.blit(arm_surface, arm_rect)
-            if gun_surface:
-                screen.blit(gun_surface, gun_rect)
+            if None not in arm_data: screen.blit(arm_data[0], arm_data[1])
+            if None not in gun_data: screen.blit(gun_data[0], gun_data[1])
             screen.blit(ent_data[0], ent_data[1])
 
     @staticmethod

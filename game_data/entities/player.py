@@ -20,10 +20,6 @@ class Player:
         self.gun_held = "base"
         self.ammo_used = "base"
 
-    # def __del__(self):
-    #     self.shape = self.body = self.feet = None
-    #     del self
-
     def get_relative_pos(self):
         player_abs_pos = self.get_position()
 

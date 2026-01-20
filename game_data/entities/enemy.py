@@ -33,10 +33,6 @@ class Enemy:
         if self.patrol_path is not None:
             self.patrol_path.remove_enemy(self)
 
-        # self.shape.body.space.remove(self.shape, self.shape.body, self.feet)
-        # self.shape = self.body = self.feet = None
-        # del self
-
     def has_hit(self):
         if self.state_manager.state.previous_hits != self.state_manager.state.hits:
             self.state_manager.state.previous_hits = self.state_manager.state.hits
@@ -123,7 +119,7 @@ class Enemy:
 
     def _get_y_range(self):
         height = self._get_height()
-        return (self.shape.body.position.y - height // 2, self.shape.body.position.y + height // 2)
+        return self.shape.body.position.y - height // 2, self.shape.body.position.y + height // 2
 
     def _get_height(self):
         vertices = self.shape.get_vertices()

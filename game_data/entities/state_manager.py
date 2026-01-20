@@ -33,6 +33,7 @@ class StateManager:
             arm_deg=getattr(self.entity, "arm_deg", None),
             gun_name=getattr(self.entity, "gun_held", None),
             hitbox=get_ent_rect(self.entity),
+            is_dead=True if self.state.get_state() == StateName.DEATH else False,
         )
 
         return where

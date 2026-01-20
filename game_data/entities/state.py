@@ -65,12 +65,12 @@ class State:
             return total_sprites - 1
 
         step = self.attack_time / total_sprites
-        # logger.debug(f"enemy attack, returning {int(self.current_time // step)} index, current time {self.current_time}, step {step}")
         return int(self.current_time // step)
 
     def _handle_death(self, total_sprites):
-        if self.current_time >= self.death_time:
+        if self.current_time >= self.wait_after_death:
             self.dead = True
+        if self.current_time >= self.death_time:
             return total_sprites - 1
 
         step = self.death_time / total_sprites
@@ -133,8 +133,10 @@ class State:
             self.start_pos = position
 
     def change_state(self, new_state: EnemyAction, position: Vec2d, body, settings=None):
-        if self.state_manager.name != "player":
-            logger.debug(f"Entity {self.state_manager.name} changing state from {self.state} to {new_state}")
+        # if self.state_manager.name != "player":
+        #     logger.debug(f"Entity {self.state_manager.name} changing state from {self.state} to {new_state}")
+        # else:
+        #     logger.debug(f"Player changing state from {self.state} to {new_state}")
         self.state = new_state
 
         if new_state == StateName.RUN:

@@ -15,7 +15,7 @@ class Model:
         self.insert_ents_to_sim()
 
         self.where_array = self._create_where()
-        self.debug_elements = DebugElements(None, None, None)
+        self.debug_elements = self._add_debug()
 
     def game_not_lost(self):
         return self.entities.player is not None
@@ -33,10 +33,8 @@ class Model:
         self.physics.sim.step(self.settings["physics"]["time_step"])
         self.entities.handle_hits(self.physics.entities_hit, self.physics.sim)
 
-        self._add_debug()
-
     def _add_debug(self):
-        self.debug_elements = DebugElements(self.physics.sim, self.entities.patrol_paths, self._add_bbs())
+        return DebugElements(self.physics.sim, self.entities.patrol_paths, self._add_bbs())
 
     def _add_bbs(self):
         bbs = []
@@ -66,9 +64,15 @@ class Model:
             self.physics.sim.add(body, shape, feet)
 
     def move_player(self, direction: str):
+        if self.entities.player.is_dying():
+            return
+
         self.entities.move_player(direction)
 
     def player_shoot(self):
+        if self.entities.player.is_dying():
+            return
+
         body, shape, bullet = self.entities.get_bullet()
 
         if body is None or shape is None or bullet is None:

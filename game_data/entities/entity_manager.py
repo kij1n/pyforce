@@ -132,7 +132,7 @@ class EntityManager:
         return (
             entity.shape.body.velocity == (0, 0)
             and entity.state_manager.state.is_on_ground
-            and not entity.state_manager.state.get_state() == StateName.IDLE
+            and not entity.state_manager.state.get_state() in [StateName.IDLE, StateName.DEATH]
         )
 
     @staticmethod
@@ -140,7 +140,6 @@ class EntityManager:
         entity.state_manager.state.change_state(new_state, entity.get_position(), entity.shape.body)
 
     def update_enemy_action(self, sim):
-        # actions to handle: run(to player, patrol), attack
         for enemy in self.enemies:
             self._update_single_enemy(enemy, sim)
             self._apply_enemy_action(enemy, sim)
@@ -154,7 +153,7 @@ class EntityManager:
         elif self._check_for_aggro(enemy, sim):
             enemy.change_action(EnemyAction.AGGRO)
         elif enemy.update_patrol_state(self.patrol_paths):
-            # returns false if an enemy is not on a path
+            # update patrol state returns false if an enemy is not on a path
             enemy.change_action(EnemyAction.PATROL)
         else:
             enemy.change_action(EnemyAction.IDLE)
@@ -164,6 +163,8 @@ class EntityManager:
             self.player.take_damage(enemy.damage_dealt)
 
     def _check_for_attack(self, enemy) -> bool:
+        if self.player.is_dying():
+            return False
         player_pos = self.player.get_position()
         enemy_pos = enemy.get_position()
         attack_dist = self.settings["enemy_info"][enemy.name.value]["attack_distance"]
@@ -196,7 +197,7 @@ class EntityManager:
             return
 
         move_dir = enemy.get_movement_direction()
-        if current_action == EnemyAction.AGGRO:
+        if current_action in [EnemyAction.AGGRO, EnemyAction.ATTACK]:
             move_dir = self._get_direction_to_player(enemy.get_position()[0], self.player.get_position()[0])
             self._jump_if_gap(enemy, sim)
 
