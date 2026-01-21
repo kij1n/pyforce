@@ -2,9 +2,8 @@ from game_data.weaponry import *
 from .patrol_path import PatrolPath
 from .player import Player
 from .enemy import Enemy
-from .state_manager import Direction
 import pymunk
-from pymunk import Body, Circle, ShapeFilter, Vec2d
+from pymunk import ShapeFilter, Vec2d
 from shared import *
 from math import cos, sin, radians
 import math
@@ -254,7 +253,7 @@ class EntityManager:
 
     def get_player_pos(self):
         pos = self.player.get_position()
-        return (pos[0], pos[1])
+        return pos[0], pos[1]
 
     def get_where_array(self) -> list[Where]:
         where = [self.player.state_manager.get_where()]
@@ -299,6 +298,16 @@ class EntityManager:
         )
         return info
 
+    def handle_kills(self, entities_to_kill: list):
+        # used to kill entities that touch water
+        ents_to_remove = []
+        for ent in entities_to_kill:
+            if self._kill_entity(ent, self.sim):
+                ents_to_remove.append(ent)
+
+        for ent in ents_to_remove:
+            entities_to_kill.remove(ent)
+
     def handle_hits(self, entities_hit: list, sim):
         for entity, bullet in entities_hit:
             if bullet.has_collided:
@@ -330,13 +339,16 @@ class EntityManager:
             entity.change_state(StateName.DEATH)
             if entity.name != "player":
                 entity.change_action(EnemyAction.DEATH)
+            if entity.health > 0:
+                entity.health = 0
 
         if not entity.is_over_dying():
-            return
+            return False
 
         self.enemies.discard(entity)
         # sim.remove(entity.shape, entity.feet, entity.body)
         entity.kill()
+        return True
 
     def _get_next_bullet_id(self):
         return max([bullet.id for bullet in self.bullets_dict.keys()] + [0]) + 1

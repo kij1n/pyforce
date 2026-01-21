@@ -17,6 +17,7 @@ class PhysicsEngine:
         self.entities_touching_ground = []
 
         self.entities_hit = []  # list to store all entities hit by bullets, emptied after hit is resolved
+        self.entities_to_kill = []
 
     def _set_collision_handlers(self):
         self.sim.on_collision(
@@ -36,6 +37,24 @@ class PhysicsEngine:
             self.settings["physics"]["collision_types"]["enemy"],
             begin=self._hit,
         )
+        self.sim.on_collision(
+            self.settings["physics"]["collision_types"]["enemy_feet"],
+            self.settings["physics"]["collision_types"]["water"],
+            begin=self._add_to_kill_list,
+        )
+        self.sim.on_collision(
+            self.settings["physics"]["collision_types"]["player_feet"],
+            self.settings["physics"]["collision_types"]["water"],
+            begin=self._add_to_kill_list,
+        )
+
+    def _add_to_kill_list(self, arbiter, space, data):
+        entity = getattr(arbiter.shapes[0], "entity", None)
+        if entity is not None:
+            self.entities_to_kill.append(entity)
+            logger.info(f"Entity {entity.name} killed by collision with water.")
+
+        return True
 
     def _hit(self, arbiter, space, data):
         bullet = getattr(arbiter.shapes[0], "bullet", None)
@@ -120,7 +139,12 @@ class PhysicsEngine:
             radius=settings["physics"]["radius"],
         )
         shape.friction = settings["physics"]["friction"]
-        shape.collision_type = settings["physics"]["collision_types"]["platform"]
+
+        if obj.type == "water":
+            shape.collision_type = settings["physics"]["collision_types"]["water"]
+        else:
+            shape.collision_type = settings["physics"]["collision_types"]["platform"]
+
         shape.filter = pymunk.ShapeFilter(
             categories=settings["physics"]["collision_categories"]["platform"],
             mask=settings["physics"]["collision_masks"]["platform"],

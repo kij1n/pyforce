@@ -87,7 +87,8 @@
             "platform": 3,
             "bullet": 4,
             "enemy": 5,
-            "enemy_feet": 6
+            "enemy_feet": 6,
+            "water": 7
         },
         "collision_categories": {
             "player": 1,

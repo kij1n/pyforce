@@ -32,6 +32,7 @@ class Model:
 
         self.physics.sim.step(self.settings["physics"]["time_step"])
         self.entities.handle_hits(self.physics.entities_hit, self.physics.sim)
+        self.entities.handle_kills(self.physics.entities_to_kill)
 
     def _add_debug(self):
         return DebugElements(self.physics.sim, self.entities.patrol_paths, self._add_bbs())
