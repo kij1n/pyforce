@@ -73,6 +73,9 @@ class Enemy:
         return self.current_action
 
     def update_patrol_state(self, patrol_paths) -> bool:
+        if self.patrol_path is not None and not self._is_still_on_path():
+            self.patrol_path.remove_enemy(self)
+            self.patrol_path = None
         if self.patrol_path is None:
             path = self._is_on_patrol_path(patrol_paths)
             if path is not None:
@@ -81,8 +84,6 @@ class Enemy:
             return False  # return false if a patrol path is not set
         if self._is_at_end_of_path():
             self._bounce_on_path()
-        if not self._is_still_on_path():
-            self.patrol_path.remove_enemy(self)
         return True
 
     def _is_still_on_path(self):
@@ -142,7 +143,7 @@ class Enemy:
         if self.current_action == EnemyAction.AGGRO:
             logger.debug(f"Enemy {self.name.value} found player")
         elif self.current_action == EnemyAction.PATROL:
-            logger.debug(f"Enemy {self.name.value} found patrol path")
+            logger.debug(f"Enemy {self.name.value} found patrol path: {self.patrol_path.id}")
         elif self.current_action == EnemyAction.DEATH:
             logger.debug(f"Enemy {self.name.value} lost all hp")
         elif self.current_action == EnemyAction.ATTACK:

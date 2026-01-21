@@ -6,6 +6,7 @@ class PatrolPath:
         self.start = (x_range[0], height)
         self.end = (x_range[1], height)
         self.enemies = set()
+        self.id = (x_range[0], x_range[1], height)
 
     def is_in(self, x, y_range: tuple[int, int]):
         return self.start[0] <= x <= self.end[0] and y_range[1] <= self.start[1] <= y_range[0]

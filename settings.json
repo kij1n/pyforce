@@ -6,7 +6,7 @@
         "show_patrol_paths": false,
         "show_fps": false,
         "show_bbs": false,
-        "player_immortal": false
+        "player_immortal": true
     },
     "sprites": {
         "inversion_indicator": "inv_",
