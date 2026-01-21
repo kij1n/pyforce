@@ -1,3 +1,4 @@
+from shared import GameState
 from .ui import GameUI
 from .entity_renderer import *
 from .sprite_loader import *
@@ -21,12 +22,23 @@ class View:
 
         pygame.init()
 
-        self.ui = GameUI()
+        self.ui = GameUI(self.settings)
         self.sprite_loader = SpriteLoader(self.settings)
         self.entity_renderer = EntityRenderer()
         self.map_renderer = MapRenderer(self.size, self.settings)
 
-    def render(self, player_pos, where_array: list[Where], bullets_set, debug_elements):
+    def render(self, player_pos, where_array: list[Where], bullets_set, debug_elements, game_state: GameState):
+        if game_state == GameState.MENU:
+            self.ui.change_game_state = game_state
+            self.ui.render(self.screen, events=pygame.event.get())
+            pygame.display.flip()
+            return
+        elif game_state == GameState.PAUSE:
+            self.ui.change_game_state = game_state
+            self.ui.render_pause(self.screen, events=pygame.event.get())
+            pygame.display.flip()
+            return
+
         self.map_renderer.render(player_pos, self.screen)
         self.entity_renderer.render(where_array, self.sprite_loader, self.screen, self.settings, player_pos)
         self.entity_renderer.render_bullets(bullets_set, self.sprite_loader, self.screen, self.settings, player_pos)

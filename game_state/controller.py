@@ -2,6 +2,7 @@ import pygame
 
 from game_view import View
 from game_data import Model
+from shared import GameState
 
 from .input_handler import InputHandler
 from .json_manager import JSONManager
@@ -21,6 +22,7 @@ class Controller:
 
         self.fps = pygame.time.Clock()
         self.input_handler = InputHandler(self)
+        self.game_state = GameState.MENU
 
         self.running = False
 
@@ -33,12 +35,19 @@ class Controller:
                 self.model.get_where_array(),
                 self.model.get_bullets_dict(),
                 self.model.debug_elements,
+                self.game_state
             )
 
-            self.model.update(pygame.mouse.get_pos())
+            if self.game_state == GameState.PLAYING:
+                # only update the model if the game is running
+                self.model.update(pygame.mouse.get_pos())
+
+            if self.game_state in [GameState.MENU, GameState.PAUSE]:
+                self.input_handler.handle_menu_clicks(self.view.ui)
 
             self.input_handler.handle()
 
             self.fps.tick(self.settings["fps"])
 
         pygame.quit()
+

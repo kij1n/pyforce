@@ -302,6 +302,8 @@ class EntityManager:
         # used to kill entities that touch water
         ents_to_remove = []
         for ent in entities_to_kill:
+            if ent.name == "player" and self._check_debug():
+                continue
             if self._kill_entity(ent, self.sim):
                 ents_to_remove.append(ent)
 
@@ -354,7 +356,8 @@ class EntityManager:
         return max([bullet.id for bullet in self.bullets_dict.keys()] + [0]) + 1
 
     def remove_entity(self, entity):
-        self.sim.remove(entity.body, entity.shape, entity.feet)
+        if None not in [entity.body.space, entity.shape.space, entity.feet.space]:
+            self.sim.remove(entity.body, entity.shape, entity.feet)
         if entity.name == "player":
             self.player = None
         else:

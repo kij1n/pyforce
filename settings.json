@@ -970,5 +970,22 @@
         "width": 100,
         "color": "red",
         "background_color": "black"
+    },
+    "theme_info": {
+        "menu_background_color": "black",
+        "background_color": [
+            0,
+            0,
+            0,
+            0
+        ],
+        "widget_padding": 10,
+        "font_size": 20,
+        "font_color": "white",
+        "font_shadow": true,
+        "menu_height": 200,
+        "menu_width": 300,
+        "menu_title": "Main menu",
+        "pause_title": "Paused"
     }
 }

@@ -4,6 +4,7 @@ from .direction import Direction
 from .state_name import StateName
 from .weapon_utils import BasicBulletInfo
 from .debug_elements import DebugElements
+from .game_state import GameState
 
 __all__ = [
     "Where",
@@ -14,4 +15,5 @@ __all__ = [
     "get_enemy_name",
     "BasicBulletInfo",
     "DebugElements",
+    "GameState"
 ]
