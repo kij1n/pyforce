@@ -1,57 +1,56 @@
 ```
-controller 		# main loop, inputs, events
-- input handler		# controller's main task, talks with model
-- game controller	# state management
-
-model
-- gamestate         # overall state of the game
-- entity-manager 	# game entities
-- main-character 	# player character
-- entity/enemy	# every other mob
-  <-> bidirectional class state machine
-- physics-manager 	# manage physics, collisions
-    * pymunk
-- settings-manager 	# read setting, then save
-    * json
-- menu-state # hold values for the menu
-
-view
-- game-renderer 	# render game: entities, player, background, etc.
-- camera 		# manage what to render using pyscroll
-  * pyscroll
-- sprite-loader 	# load character and enemy sprites
-- map-loader 		# load map from file
-    * pytmx
-- menurenderer 		# stores info form pygame-menu
-    * pygame-menu
-```
-A better looking version:
-```
-root/
+pyforce/
 │
-├── main.py                     # entry poing
-├── settings.json
+├── main.py                     # Entry point
+├── settings.json               # Configuration (physics, paths, constants)
+├── requirements.txt            # Dependencies
+├── pyproject.toml              # Project metadata
 │
-├── controller/                 
-│   ├── __init__.py             # expose controller
-│   ├── controller.py           # main loop and all
-│   └── input_handler.py        # handle inputs
+├── game_state/                 # Controller Logic
+│   ├── __init__.py
+│   ├── controller.py           # Main loop, coordinates Model and View
+│   ├── input_handler.py        # Processes keyboard/mouse events
+│   └── json_manager.py         # Loads settings.json
 │
-├── model/                      
-│   ├── __init__.py             # expose view
-│   ├── model.py                # model class
-│   ├── json_manager.py         # reads/rrites JSON
-│   ├── physics.py              # pymunk setup
-│   └── entities/               
+├── game_data/                  # Model Logic
+│   ├── __init__.py
+│   ├── model.py                # Core game state container
+│   ├── physics.py              # Pymunk physics engine wrapper
+│   ├── entities/               # Game objects
+│   │   ├── __init__.py
+│   │   ├── entity_manager.py   # Manages creation/deletion of entities
+│   │   ├── player.py           # Player specific logic
+│   │   ├── enemy.py            # Enemy AI and behavior
+│   │   ├── state_manager.py    # State machine implementation
+│   │   ├── state.py            # State base class
+│   │   ├── patrol_path.py      # Enemy patrol logic
+│   │   └── entity_utils.py     # Collision box helpers
+│   └── weaponry/               # Weapon logic
 │       ├── __init__.py
-│       ├── state_manager.py    # class for updating entity states
-│       ├── player.py           # bro logic
-│       └── enemy.py            # enemy logic
+│       ├── weapon.py           # Weapon base logic
+│       ├── bullet.py           # Projectile logic
+│       └── ammo.py             # Ammo definitions
 │
-└── view/                       
-    ├── __init__.py             # expose view
-    ├── view.py                 # view class
-    ├── camera.py               # pyscroll Logic
-    ├── map_loader.py           # pytmx Logic
-    └── ui.py                   # pygame-menu setup
+├── game_view/                  # View Logic
+│   ├── __init__.py
+│   ├── view.py                 # Main rendering orchestrator
+│   ├── ui.py                   # Pygame-menu integration
+│   ├── entity_renderer.py      # Draws sprites/entities
+│   ├── map_renderer.py         # PyTMX map rendering
+│   └── sprite_loader.py        # Asset caching and loading
+│
+├── shared/                     # Common Utilities & Enums
+│   ├── __init__.py
+│   ├── game_state.py           # GameState enum (MENU, PLAYING, etc.)
+│   ├── debug_elements.py       # Debug visualizers (hitboxes)
+│   ├── direction.py            # Direction enum
+│   ├── enemy_enum.py           # Enemy types
+│   ├── state_name.py           # Entity states (IDLE, RUN, etc.)
+│   ├── weapon_utils.py
+│   └── where.py                # Coordinate data class
+│
+└── assets/                     # Game Resources
+├── map/                    # TMX maps and tilesets
+├── player/                 # Player sprites
+└── enemies/                # Enemy sprites
 ```

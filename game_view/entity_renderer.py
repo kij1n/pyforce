@@ -81,10 +81,10 @@ class EntityRenderer:
 
         pos = (ent_relative_pos[0] + offset[0], ent_relative_pos[1] + offset[1])
 
-        health_bar_rect_full = pygame.Rect((0,0), (width, height))
+        health_bar_rect_full = pygame.Rect((0, 0), (width, height))
         health_bar_rect_full.center = pos
 
-        health_bar_rect_filled= pygame.Rect((0,0), (width * where.health_percent, height))
+        health_bar_rect_filled = pygame.Rect((0, 0), (width * where.health_percent, height))
         health_bar_rect_filled.center = health_bar_rect_full.center
         health_bar_rect_filled.left = health_bar_rect_full.left
 

@@ -7,7 +7,8 @@ from loguru import logger
 def setup_logging():
     logger.remove()
     logger.add(
-        sys.stderr, format="[<red>{time:HH:mm:ss}</red>] | {file} | >> " "<yellow>{level}</yellow>: " "<cyan>{message}</cyan>"
+        sys.stderr,
+        format="[<red>{time:HH:mm:ss}</red>] | {file} | >> " "<yellow>{level}</yellow>: " "<cyan>{message}</cyan>",
     )
     logger.add(
         f"logs/{datetime.datetime.now().strftime('%Y-%m-%d_session-%H-%M-%S')}.log",

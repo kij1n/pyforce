@@ -35,7 +35,7 @@ class Controller:
                 self.model.get_where_array(),
                 self.model.get_bullets_dict(),
                 self.model.debug_elements,
-                self.game_state
+                self.game_state,
             )
 
             if self.game_state == GameState.PLAYING:
@@ -50,4 +50,3 @@ class Controller:
             self.fps.tick(self.settings["fps"])
 
         pygame.quit()
-

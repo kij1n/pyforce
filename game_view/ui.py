@@ -36,32 +36,18 @@ class GameUI:
         return menu
 
     def _add_pause_buttons(self):
-        self.pause_menu.add.button(
-            "Resume",
-            self._play_game
-        )
-        self.pause_menu.add.button(
-            "Quit",
-            self._stop_game
-        )
+        self.pause_menu.add.button("Resume", self._play_game)
+        self.pause_menu.add.button("Quit", self._stop_game)
 
     def _add_menu_buttons(self):
-        self.menu.add.button(
-            "Play",
-            self._play_game
-        )
-        self.menu.add.button(
-            "Quit",
-            self._stop_game
-        )
+        self.menu.add.button("Play", self._play_game)
+        self.menu.add.button("Quit", self._stop_game)
 
     def _create_theme(self):
         theme = pygame_menu.Theme(
             background_color=self.settings["theme_info"]["menu_background_color"],
-
             title_font=pygame_menu.font.FONT_MUNRO,
             title_font_shadow=self.settings["theme_info"]["font_shadow"],
-
             widget_padding=self.settings["theme_info"]["widget_padding"],
             widget_font=pygame_menu.font.FONT_MUNRO,
             widget_font_color=self.settings["theme_info"]["font_color"],

@@ -15,5 +15,5 @@ __all__ = [
     "get_enemy_name",
     "BasicBulletInfo",
     "DebugElements",
-    "GameState"
+    "GameState",
 ]
