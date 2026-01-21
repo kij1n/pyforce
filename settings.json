@@ -959,5 +959,15 @@
         "friction": 0,
         "feet_friction": 1,
         "id": 1
+    },
+    "health_bar_info": {
+        "offset": [
+            0,
+            -70
+        ],
+        "height": 10,
+        "width": 100,
+        "color": "red",
+        "background_color": "black"
     }
 }

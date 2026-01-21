@@ -9,6 +9,7 @@ class Enemy:
         self.name = name
         self.settings = settings
         self.health = self.settings["enemy_info"][name.value]["health"]
+        self.max_health = self.health
         self.damage_dealt = self.settings["enemy_info"][name.value]["damage"]
         self.entity_manager = entity_manager
 

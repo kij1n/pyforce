@@ -12,4 +12,5 @@ class Where:
     arm_deg: int
     gun_name: str
     hitbox: Rect
+    health_percent: float
     is_dead: bool = False  # used for player

@@ -133,10 +133,6 @@ class State:
             self.start_pos = position
 
     def change_state(self, new_state: EnemyAction, position: Vec2d, body, settings=None):
-        # if self.state_manager.name != "player":
-        #     logger.debug(f"Entity {self.state_manager.name} changing state from {self.state} to {new_state}")
-        # else:
-        #     logger.debug(f"Player changing state from {self.state} to {new_state}")
         self.state = new_state
 
         if new_state == StateName.RUN:

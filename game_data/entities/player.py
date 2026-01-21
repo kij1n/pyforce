@@ -11,7 +11,8 @@ class Player:
         self.name = "player"
         self.settings = settings
         self.entity_manager = entity_manager
-        self.health = 100
+        self.health = self.settings["player_info"]["health"]
+        self.max_health = self.health
 
         self.body, self.shape, self.feet = prepare_collision_box(self.name, settings, self)
         self.state_manager = StateManager(self)

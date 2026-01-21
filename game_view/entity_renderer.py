@@ -65,6 +65,31 @@ class EntityRenderer:
                 settings=settings,
                 screen=screen,
             )
+            self._handle_health_bar(where, screen, abs_camera_pos, rel_camera_pos, settings)
+
+    @staticmethod
+    def _handle_health_bar(where, screen, abs_camera_pos, rel_camera_pos, settings):
+        ent_relative_pos = convert_abs_to_rel(
+            position=where.position, abs_camera_pos=abs_camera_pos, rel_camera_pos=rel_camera_pos
+        )
+
+        offset = settings["health_bar_info"]["offset"]
+        height = settings["health_bar_info"]["height"]
+        width = settings["health_bar_info"]["width"]
+        color = settings["health_bar_info"]["color"]
+        back_color = settings["health_bar_info"]["background_color"]
+
+        pos = (ent_relative_pos[0] + offset[0], ent_relative_pos[1] + offset[1])
+
+        health_bar_rect_full = pygame.Rect((0,0), (width, height))
+        health_bar_rect_full.center = pos
+
+        health_bar_rect_filled= pygame.Rect((0,0), (width * where.health_percent, height))
+        health_bar_rect_filled.center = health_bar_rect_full.center
+        health_bar_rect_filled.left = health_bar_rect_full.left
+
+        pygame.draw.rect(screen, back_color, health_bar_rect_full)
+        pygame.draw.rect(screen, color, health_bar_rect_filled)
 
     def _handle_single_entity(self, abs_camera_pos, rel_camera_pos, where, sprite_loader, settings, screen):
         ent_relative_pos = convert_abs_to_rel(
@@ -134,25 +159,19 @@ class EntityRenderer:
         arm_data = (arm_surface, arm_rect)
         self._render_complex_entity(screen, ent_data, arm_data, gun_data, is_over)
 
-        # if is_over:
-        #     screen.blit(ent_data[0], ent_data[1])
-        #     screen.blit(arm_surface, arm_rect)
-        #     if gun_surface:
-        #         screen.blit(gun_surface, gun_rect)
-        # else:
-        #     screen.blit(arm_surface, arm_rect)
-        #     if gun_surface:
-        #         screen.blit(gun_surface, gun_rect)
-        #     screen.blit(ent_data[0], ent_data[1])
-
-    def _render_complex_entity(self, screen, ent_data, arm_data, gun_data, is_over):
+    @staticmethod
+    def _render_complex_entity(screen, ent_data, arm_data, gun_data, is_over):
         if is_over:
             screen.blit(ent_data[0], ent_data[1])
-            if None not in gun_data: screen.blit(gun_data[0], gun_data[1])
-            if None not in arm_data: screen.blit(arm_data[0], arm_data[1])
+            if None not in gun_data:
+                screen.blit(gun_data[0], gun_data[1])
+            if None not in arm_data:
+                screen.blit(arm_data[0], arm_data[1])
         else:
-            if None not in arm_data: screen.blit(arm_data[0], arm_data[1])
-            if None not in gun_data: screen.blit(gun_data[0], gun_data[1])
+            if None not in arm_data:
+                screen.blit(arm_data[0], arm_data[1])
+            if None not in gun_data:
+                screen.blit(gun_data[0], gun_data[1])
             screen.blit(ent_data[0], ent_data[1])
 
     @staticmethod
