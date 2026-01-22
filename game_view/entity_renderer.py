@@ -60,7 +60,8 @@ def _clamp(min_val, value, max_val):
 
 class EntityRenderer:
     """
-    The EntityRenderer class provides methods for rendering various game entities, including players, enemies, and bullets.
+    The EntityRenderer class provides methods for rendering
+    various game entities, including players, enemies, and bullets.
     """
 
     def render_bullets(self, bullets_dict, sprite_loader, screen, settings, player_pos):
