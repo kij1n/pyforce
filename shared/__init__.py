@@ -1,3 +1,6 @@
+"""
+This module initializes the shared package and exports common data structures and enums.
+"""
 from .where import Where
 from .enemy_enum import *
 from .direction import Direction

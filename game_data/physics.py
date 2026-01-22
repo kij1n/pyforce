@@ -1,3 +1,6 @@
+"""
+This module contains the PhysicsEngine class which manages the physical simulation of the game world.
+"""
 import pymunk
 import pytmx
 import os
@@ -5,7 +8,24 @@ from loguru import logger
 
 
 class PhysicsEngine:
+    """
+    The PhysicsEngine class handles the pymunk physics simulation, map collisions, and collision callbacks.
+
+    Attributes:
+        settings (dict): Dictionary containing game settings.
+        sim (pymunk.Space): The pymunk physics simulation space.
+        entities_touching_ground (list[int]): List of entity IDs currently touching a platform.
+        entities_hit (list): List of (entity, bullet) tuples representing recent hits.
+        entities_to_kill (list): List of entities marked for removal (e.g., from falling into water).
+    """
+
     def __init__(self, settings: dict):
+        """
+        Initializes the PhysicsEngine, sets up the simulation space and collision handlers.
+
+        :param settings: Dictionary containing game settings.
+        :return: None
+        """
         logger.info("Initializing physics engine...")
 
         self.settings = settings
@@ -20,6 +40,11 @@ class PhysicsEngine:
         self.entities_to_kill = []
 
     def _set_collision_handlers(self):
+        """
+        Registers collision callback functions for various object types in the physics space.
+
+        :return: None
+        """
         self.sim.on_collision(
             self.settings["physics"]["collision_types"]["player_feet"],
             self.settings["physics"]["collision_types"]["platform"],
@@ -49,6 +74,14 @@ class PhysicsEngine:
         )
 
     def _add_to_kill_list(self, arbiter, space, data):
+        """
+        Collision callback: Marks an entity for death when it touches water.
+
+        :param arbiter: The pymunk Arbiter instance.
+        :param space: The pymunk Space.
+        :param data: Arbitrary data passed to the callback.
+        :return: True to allow the collision to be processed.
+        """
         entity = getattr(arbiter.shapes[0], "entity", None)
         if entity is not None:
             self.entities_to_kill.append(entity)
@@ -57,6 +90,14 @@ class PhysicsEngine:
         return True
 
     def _hit(self, arbiter, space, data):
+        """
+        Collision callback: Records a bullet hitting an entity.
+
+        :param arbiter: The pymunk Arbiter instance.
+        :param space: The pymunk Space.
+        :param data: Arbitrary data passed to the callback.
+        :return: True to allow the collision to be processed.
+        """
         bullet = getattr(arbiter.shapes[0], "bullet", None)
         entity = getattr(arbiter.shapes[1], "entity", None)  # a bullet is the first shape in the arbiter
 
@@ -66,6 +107,14 @@ class PhysicsEngine:
         return True
 
     def _entity_touching_ground(self, arbiter, space, data):
+        """
+        Collision callback: Records an entity touching a platform.
+
+        :param arbiter: The pymunk Arbiter instance.
+        :param space: The pymunk Space.
+        :param data: Arbitrary data passed to the callback.
+        :return: True to allow the collision to be processed.
+        """
         identifier = getattr(arbiter.shapes[0], "id", None)  # only feet have an id
         if identifier is None:
             return True
@@ -75,6 +124,14 @@ class PhysicsEngine:
         return True
 
     def _entity_leaving_ground(self, arbiter, space, data):
+        """
+        Collision callback: Records an entity leaving a platform.
+
+        :param arbiter: The pymunk Arbiter instance.
+        :param space: The pymunk Space.
+        :param data: Arbitrary data passed to the callback.
+        :return: True to allow the collision to be processed.
+        """
         identifier = getattr(arbiter.shapes[0], "id", None)
         if identifier is None:
             return True
@@ -85,6 +142,11 @@ class PhysicsEngine:
         return True
 
     def _prepare_space(self):
+        """
+        Configures gravity and other global physics parameters.
+
+        :return: None
+        """
         self.sim.gravity = pymunk.Vec2d(0, self.settings["physics"]["gravity"])
         self._add_map()
         self.sim.collision_bias = self.settings["physics"]["collision_bias"]
@@ -93,6 +155,11 @@ class PhysicsEngine:
         logger.info("Physics engine platform collision shapes added.")
 
     def _add_map(self):
+        """
+        Loads map collision objects from the TMX file.
+
+        :return: None
+        """
         object_layer = self._get_object_layer()
 
         for obj in object_layer:
@@ -100,10 +167,21 @@ class PhysicsEngine:
                 self._add_collision_obj(obj)
 
     def _add_collision_obj(self, obj):
+        """
+        Creates and adds a single collision shape to the simulation.
+
+        :param obj: The Tiled map object.
+        :return: None
+        """
         add = self._create_shape_body(obj, self.settings)
         self.sim.add(add[1], add[0])
 
     def _get_object_layer(self):
+        """
+        Retrieves the TMX object layer containing collision data.
+
+        :return: A pytmx.TiledObjectGroup instance.
+        """
         try:
             script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             path = os.path.join(script_dir, self.settings["map"]["map_path"])
@@ -120,18 +198,19 @@ class PhysicsEngine:
 
     @staticmethod
     def _create_shape_body(obj, settings):
+        """
+        Creates a static physics shape and body for a map object.
+
+        :param obj: The Tiled map object.
+        :param settings: Dictionary containing game settings.
+        :return: A list [shape, body].
+        """
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
 
-        x = obj.x
-        y = obj.y
+        h_width = obj.width / 2
+        h_height = obj.height / 2
 
-        width = obj.width
-        height = obj.height
-
-        h_width = width / 2
-        h_height = height / 2
-
-        body.position = pymunk.Vec2d(x + h_width, y + h_height)
+        body.position = pymunk.Vec2d(obj.x + h_width, obj.y + h_height)
 
         shape = pymunk.Poly(
             body,

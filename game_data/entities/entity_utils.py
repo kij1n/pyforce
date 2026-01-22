@@ -1,8 +1,21 @@
+"""
+This module provides utility functions for creating and managing entity physics components.
+"""
 from pymunk import Body, Vec2d, Poly, ShapeFilter
 from pygame import Rect
 
 
 def prepare_collision_box(name, settings, entity, pos=None, ent_id=None):
+    """
+    Creates and configures the physics components (body, shape, and feet) for an entity.
+
+    :param name: The name/type of the entity.
+    :param settings: Dictionary containing game settings.
+    :param entity: The entity instance to associate with the physics shapes.
+    :param pos: Optional initial position. If None, uses default from settings.
+    :param ent_id: Optional unique identifier for the entity.
+    :return: A tuple containing (body, shape, feet).
+    """
     if ent_id is None:  # if id is not given, it's a player
         ent_id = getattr(settings["player_info"], "id", 1)
 
@@ -24,11 +37,28 @@ def prepare_collision_box(name, settings, entity, pos=None, ent_id=None):
 
 
 def _add_ents_to_shapes(shape, feet, entity):
+    """
+    Associates the entity instance with its physics shapes.
+
+    :param shape: The main physics shape.
+    :param feet: The feet physics shape.
+    :param entity: The entity instance.
+    :return: None
+    """
     shape.entity = entity
     feet.entity = entity
 
 
 def _create_body(mass, moment, ent_settings, pos=None):
+    """
+    Creates a pymunk Body for an entity.
+
+    :param mass: The mass of the body.
+    :param moment: The moment of inertia.
+    :param ent_settings: Settings for the specific entity type.
+    :param pos: Initial position.
+    :return: A pymunk.Body instance.
+    """
     moment = float("inf") if moment is None else moment
     body = Body(mass=mass, moment=moment, body_type=Body.DYNAMIC)
     if pos is None:  # if position is None it's a player
@@ -39,6 +69,16 @@ def _create_body(mass, moment, ent_settings, pos=None):
 
 
 def _create_shape(body, ent_settings, settings, name, ent_id):
+    """
+    Creates the main physics shape (Poly) for an entity.
+
+    :param body: The pymunk Body to attach the shape to.
+    :param ent_settings: Settings for the specific entity type.
+    :param settings: Dictionary containing game settings.
+    :param name: The name/type of the entity.
+    :param ent_id: Unique identifier for the entity.
+    :return: A pymunk.Poly instance.
+    """
     h_x = ent_settings["hitbox"][0] // 2
     h_y = ent_settings["hitbox"][1] // 2
     feet_y = ent_settings["feet_hitbox"][1]
@@ -65,6 +105,16 @@ def _create_shape(body, ent_settings, settings, name, ent_id):
 
 
 def _create_feet(body, ent_settings, settings, name, ent_id):
+    """
+    Creates the feet physics shape (Poly) for ground collision detection.
+
+    :param body: The pymunk Body to attach the feet to.
+    :param ent_settings: Settings for the specific entity type.
+    :param settings: Dictionary containing game settings.
+    :param name: The name/type of the entity.
+    :param ent_id: Unique identifier for the entity.
+    :return: A pymunk.Poly instance.
+    """
     h_x = ent_settings["hitbox"][0] // 2
     h_y = ent_settings["hitbox"][1] // 2
     feet_y = ent_settings["feet_hitbox"][1]
@@ -89,6 +139,14 @@ def _create_feet(body, ent_settings, settings, name, ent_id):
 
 
 def _get_collision_type(name, settings, is_feet=False):
+    """
+    Retrieves the collision type for an entity or its feet from settings.
+
+    :param name: The name/type of the entity.
+    :param settings: Dictionary containing game settings.
+    :param is_feet: Whether to get the collision type for feet.
+    :return: An integer representing the collision type.
+    """
     ent = name if name == "player" else "enemy"
     if is_feet:
         ent += "_feet"
@@ -96,6 +154,14 @@ def _get_collision_type(name, settings, is_feet=False):
 
 
 def _get_collision_filter(name, settings, is_feet=False):
+    """
+    Retrieves the collision filter for an entity or its feet from settings.
+
+    :param name: The name/type of the entity.
+    :param settings: Dictionary containing game settings.
+    :param is_feet: Whether to get the collision filter for feet.
+    :return: A pymunk.ShapeFilter instance.
+    """
     ent = name if name == "player" else "enemy"
     if is_feet:
         ent += "_feet"
@@ -105,6 +171,13 @@ def _get_collision_filter(name, settings, is_feet=False):
 
 
 def _calc_vertical_shift(a, b):
+    """
+    Calculates the vertical shift required to center the physics body.
+
+    :param a: Top Y-coordinate of the hitbox.
+    :param b: Bottom Y-coordinate of the feet hitbox.
+    :return: The vertical shift value.
+    """
     # formula: a + x = -(b + x)
     # this equation ensures the center of mass is in (0,0)
     # where <a,b> is the range of y values of the hitbox
@@ -112,6 +185,12 @@ def _calc_vertical_shift(a, b):
 
 
 def get_ent_rect(entity):
+    """
+    Calculates the bounding rectangle for an entity based on its physics shapes.
+
+    :param entity: The entity instance.
+    :return: A pygame.Rect instance.
+    """
     shape_bb = entity.shape.bb
     feet_bb = entity.feet.bb
     bb = shape_bb.merge(feet_bb)

@@ -1,15 +1,33 @@
+"""
+This module contains the EntityRenderer class and helper functions for rendering game entities.
+"""
 import pygame
 from math import cos, sin, radians, sqrt
 from shared import Where
 
 
 def convert_abs_to_rel(position, abs_camera_pos, rel_camera_pos):
+    """
+    Converts absolute world coordinates to screen-relative coordinates based on the camera position.
+
+    :param position: The absolute world position to convert.
+    :param abs_camera_pos: The absolute position of the camera in the world.
+    :param rel_camera_pos: The relative position of the camera on the screen.
+    :return: A tuple representing the screen-relative position.
+    """
     d_vector = (position[0] - abs_camera_pos[0], position[1] - abs_camera_pos[1])
     relative_pos = (rel_camera_pos[0] + d_vector[0], rel_camera_pos[1] + d_vector[1])
     return relative_pos
 
 
 def calc_camera_pos(settings, player_pos):
+    """
+    Calculates the absolute and relative camera positions based on the player's position and screen settings.
+
+    :param settings: Dictionary containing game settings.
+    :param player_pos: The current absolute position of the player.
+    :return: A tuple containing (abs_camera_pos, rel_camera_pos).
+    """
     x = player_pos[0]
     y = player_pos[1]
 
@@ -25,6 +43,13 @@ def calc_camera_pos(settings, player_pos):
 
 
 def calc_vector(abs_camera_pos, rel_camera_pos):
+    """
+    Calculates the translation vector from absolute world coordinates to screen-relative coordinates.
+
+    :param abs_camera_pos: The absolute position of the camera.
+    :param rel_camera_pos: The relative position of the camera on the screen.
+    :return: A tuple representing the translation vector.
+    """
     vector = (rel_camera_pos[0] - abs_camera_pos[0], rel_camera_pos[1] - abs_camera_pos[1])
     return vector
 
@@ -34,7 +59,21 @@ def _clamp(min_val, value, max_val):
 
 
 class EntityRenderer:
+    """
+    The EntityRenderer class provides methods for rendering various game entities, including players, enemies, and bullets.
+    """
+
     def render_bullets(self, bullets_dict, sprite_loader, screen, settings, player_pos):
+        """
+        Renders all active bullets.
+
+        :param bullets_dict: A dictionary mapping bullet objects to their physics shapes.
+        :param sprite_loader: The SpriteLoader instance to use for getting bullet sprites.
+        :param screen: The pygame Surface to render onto.
+        :param settings: Dictionary containing game settings.
+        :param player_pos: The current absolute position of the player.
+        :return: None
+        """
         abs_camera_pos, rel_camera_pos = calc_camera_pos(settings, player_pos)
         for bullet, shape in bullets_dict.items():
             self._handle_single_bullet(
@@ -48,6 +87,17 @@ class EntityRenderer:
 
     @staticmethod
     def _handle_single_bullet(abs_camera_pos, rel_camera_pos, bullet, pos, sprite_loader, screen):
+        """
+        Renders a single bullet.
+
+        :param abs_camera_pos: The absolute position of the camera.
+        :param rel_camera_pos: The relative position of the camera on the screen.
+        :param bullet: The bullet object to render.
+        :param pos: The absolute position of the bullet.
+        :param sprite_loader: The SpriteLoader instance.
+        :param screen: The pygame Surface to render onto.
+        :return: None
+        """
         sprite = sprite_loader.get_sprite(bullet.name)
         bullet_relative_pos = convert_abs_to_rel(
             position=pos, abs_camera_pos=abs_camera_pos, rel_camera_pos=rel_camera_pos
@@ -55,6 +105,16 @@ class EntityRenderer:
         screen.blit(sprite.image, sprite.image.get_rect(center=bullet_relative_pos))
 
     def render(self, where_array: list[Where], sprite_loader, screen, settings, player_pos):
+        """
+        Renders all game entities and their health bars.
+
+        :param where_array: A list of Where objects containing entity rendering information.
+        :param sprite_loader: The SpriteLoader instance.
+        :param screen: The pygame Surface to render onto.
+        :param settings: Dictionary containing game settings.
+        :param player_pos: The current absolute position of the player.
+        :return: None
+        """
         abs_camera_pos, rel_camera_pos = calc_camera_pos(settings, player_pos)
         for where in where_array:
             self._handle_single_entity(
@@ -69,6 +129,16 @@ class EntityRenderer:
 
     @staticmethod
     def _handle_health_bar(where, screen, abs_camera_pos, rel_camera_pos, settings):
+        """
+        Renders the health bar for a single entity.
+
+        :param where: The Where object containing entity information.
+        :param screen: The pygame Surface to render onto.
+        :param abs_camera_pos: The absolute position of the camera.
+        :param rel_camera_pos: The relative position of the camera on the screen.
+        :param settings: Dictionary containing game settings.
+        :return: None
+        """
         ent_relative_pos = convert_abs_to_rel(
             position=where.position, abs_camera_pos=abs_camera_pos, rel_camera_pos=rel_camera_pos
         )
@@ -92,6 +162,17 @@ class EntityRenderer:
         pygame.draw.rect(screen, color, health_bar_rect_filled)
 
     def _handle_single_entity(self, abs_camera_pos, rel_camera_pos, where, sprite_loader, settings, screen):
+        """
+        Handles the rendering process for a single entity.
+
+        :param abs_camera_pos: The absolute position of the camera.
+        :param rel_camera_pos: The relative position of the camera on the screen.
+        :param where: The Where object containing entity information.
+        :param sprite_loader: The SpriteLoader instance.
+        :param settings: Dictionary containing game settings.
+        :param screen: The pygame Surface to render onto.
+        :return: None
+        """
         ent_relative_pos = convert_abs_to_rel(
             position=where.position, abs_camera_pos=abs_camera_pos, rel_camera_pos=rel_camera_pos
         )
@@ -120,6 +201,17 @@ class EntityRenderer:
         )
 
     def _handle_complex_entity(self, where, ent_relative_pos, sprite_loader, settings, screen, ent_data):
+        """
+        Handles the rendering process for a complex entity (e.g., player with arm and gun).
+
+        :param where: The Where object containing entity information.
+        :param ent_relative_pos: The relative position of the entity on the screen.
+        :param sprite_loader: The SpriteLoader instance.
+        :param settings: Dictionary containing game settings.
+        :param screen: The pygame Surface to render onto.
+        :param ent_data: A tuple containing the entity's surface and rect.
+        :return: None
+        """
         arm_sprite_name = where.name + "_" + "arm"
         arm_sprite = sprite_loader.get_sprite(arm_sprite_name)
 
@@ -161,6 +253,16 @@ class EntityRenderer:
 
     @staticmethod
     def _render_complex_entity(screen, ent_data, arm_data, gun_data, is_over):
+        """
+        Renders the parts of a complex entity in the correct order.
+
+        :param screen: The pygame Surface to render onto.
+        :param ent_data: A tuple containing the entity's surface and rect.
+        :param arm_data: A tuple containing the arm's surface and rect.
+        :param gun_data: A tuple containing the gun's surface and rect.
+        :param is_over: Boolean indicating if the arm is over the entity.
+        :return: None
+        """
         if is_over:
             screen.blit(ent_data[0], ent_data[1])
             if None not in gun_data:
@@ -176,16 +278,32 @@ class EntityRenderer:
 
     @staticmethod
     def _calc_hand_position(arm_relative_pos, deg, hand_pos):
+        """
+        Calculates the screen position of the hand on an arm.
+
+        :param arm_relative_pos: The relative position of the arm.
+        :param deg: The rotation angle of the arm.
+        :param hand_pos: The local position of the hand on the arm sprite.
+        :return: A tuple representing the screen position of the hand.
+        """
         length = sqrt(hand_pos[0] ** 2 + hand_pos[1] ** 2)
-        pos = (
+        pos = (  # subtract because 0deg is pointing down
             arm_relative_pos[0] + length * cos(radians(deg - 90)),
             arm_relative_pos[1] - length * sin(radians(deg - 90)),
         )
-
         return pos
 
     @staticmethod
     def _prepare_entity(ent_relative_pos, sprite, where, vector):
+        """
+        Prepares the entity's surface and rect for rendering.
+
+        :param ent_relative_pos: The relative position of the entity on the screen.
+        :param sprite: The Sprite instance for the entity.
+        :param where: The Where object containing entity information.
+        :param vector: The translation vector for the camera.
+        :return: A tuple containing (surface, rect).
+        """
         img = sprite.image
 
         pos = (ent_relative_pos[0] + sprite.offset[0], ent_relative_pos[1] + sprite.offset[1])
@@ -202,6 +320,16 @@ class EntityRenderer:
 
     @staticmethod
     def _prepare_gun(hand_position, sprite, is_inverted, deg, handle_position_offset):
+        """
+        Prepares the gun's surface and rect for rendering.
+
+        :param hand_position: The screen position of the hand holding the gun.
+        :param sprite: The Sprite instance for the gun.
+        :param is_inverted: Boolean indicating if the gun should be flipped.
+        :param deg: The rotation angle of the gun, in degrees.
+        :param handle_position_offset: The offset of the handle on the gun sprite.
+        :return: A tuple containing (surface, rect).
+        """
         is_on_left = False
         if deg > 180:
             deg = 360 - deg
@@ -222,6 +350,17 @@ class EntityRenderer:
 
     @staticmethod
     def _prepare_arm(ent_relative_pos, sprite, is_inverted, deg, offset, rotation):
+        """
+        Prepares the arm's surface and rect for rendering.
+
+        :param ent_relative_pos: The relative position of the entity on the screen.
+        :param sprite: The Sprite instance for the arm.
+        :param is_inverted: Boolean indicating if the arm should be flipped.
+        :param deg: The rotation angle of the arm, in degrees.
+        :param offset: The displacement vector for the arm's position.
+        :param rotation: The rotation point for the arm.
+        :return: A tuple containing (surface, rect, is_on_left).
+        """
         is_on_left = False
         if deg > 180:
             deg = 360 - deg

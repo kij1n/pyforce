@@ -1,3 +1,7 @@
+"""
+This module contains the EntityManager class which manages all entities in the game,
+including the player, enemies, bullets, and their interactions.
+"""
 from game_data.weaponry import *
 from .patrol_path import PatrolPath
 from .player import Player
@@ -13,7 +17,28 @@ from loguru import logger
 
 
 class EntityManager:
+    """
+    The EntityManager class coordinates the lifecycle and interactions of all game entities.
+
+    Attributes:
+        settings (dict): Dictionary containing game settings.
+        sim (pymunk.Space): The physics simulation space.
+        player (Player): The player entity instance.
+        enemies (set[Enemy]): A set of active enemy entities.
+        weapons (dict): A mapping of weapon names to Weapon instances.
+        ammo (dict): A mapping of ammo names to Ammo instances.
+        bullets_dict (dict): A dictionary mapping Bullet instances to their physics shapes.
+        patrol_paths (list[PatrolPath]): A list of available patrol paths in the level.
+    """
+
     def __init__(self, settings: dict, sim: pymunk.Space):
+        """
+        Initializes the EntityManager with settings and a physics space.
+
+        :param settings: Dictionary containing game settings.
+        :param sim: The pymunk.Space instance for physics simulation.
+        :return: None
+        """
         logger.info("Initializing entity manager...")
 
         self.settings = settings
@@ -34,6 +59,11 @@ class EntityManager:
         logger.info(f"Patrol paths ({len(self.patrol_paths)}) loaded successfully")
 
     def _load_patrol_paths(self) -> list[PatrolPath]:
+        """
+        Loads patrol paths from the settings.
+
+        :return: A list of PatrolPath instances.
+        """
         patrol_paths = []
         for path in self.settings["patrol_paths"]:
             patrol_path = PatrolPath(path["x_range"], path["height"])
@@ -42,6 +72,11 @@ class EntityManager:
         return patrol_paths
 
     def _load_enemies(self) -> set[Enemy]:
+        """
+        Loads enemies from the settings and initializes them.
+
+        :return: A set of Enemy instances.
+        """
         enemies = set()
 
         for enemy_type in self.settings["enemy_info"].keys():
@@ -61,6 +96,12 @@ class EntityManager:
 
     @staticmethod
     def _load_weapons(settings):
+        """
+        Loads weapon definitions from settings.
+
+        :param settings: Dictionary containing game settings.
+        :return: A dictionary of weapon names to Weapon instances.
+        """
         weapons = {}
 
         for name in settings["weapons"]:
@@ -74,6 +115,12 @@ class EntityManager:
 
     @staticmethod
     def _load_ammo(settings):
+        """
+        Loads ammo definitions from settings.
+
+        :param settings: Dictionary containing game settings.
+        :return: A dictionary of ammo names to Ammo instances.
+        """
         ammo = {}
 
         for name in settings["ammo"]:
@@ -88,6 +135,12 @@ class EntityManager:
         return ammo
 
     def update_player_aim(self, mouse_pos):
+        """
+        Updates the player's arm angle based on the mouse position.
+
+        :param mouse_pos: The screen-relative mouse position.
+        :return: None
+        """
         # mouse pos is in relative coordinates,
         # so we need to use the player's rel not abs position
         player_pos = self.player.get_relative_pos()
@@ -100,6 +153,12 @@ class EntityManager:
         self.player.arm_deg = angle
 
     def update_ground_contact(self, entities_touching_ground: list):
+        """
+        Updates the ground contact status for all entities.
+
+        :param entities_touching_ground: A list of physics shape IDs that are currently touching the ground.
+        :return: None
+        """
         for entity in self.get_entities():
             identifier = getattr(entity.feet, "id", None)
 
@@ -109,6 +168,11 @@ class EntityManager:
                 entity.state_manager.state.set_on_ground(False)
 
     def update_timers(self):
+        """
+        Increments internal timers for animations, weapon rate-of-fire, and bullet lifespan.
+
+        :return: None
+        """
         # for entity animations that rely on time
         for entity in self.get_entities():
             entity.state_manager.state.append_time()
@@ -121,12 +185,23 @@ class EntityManager:
             bullet.timer += 1
 
     def update_entity_states(self):
+        """
+        Updates the high-level states of entities (e.g., transitioning player to idle).
+
+        :return: None
+        """
         for entity in self.get_entities():
             if entity.name == "player" and self._is_to_idle(entity):
                 self._change_state(entity, StateName.IDLE)
 
     @staticmethod
     def _is_to_idle(entity):
+        """
+        Checks if the entity (specifically player) should transition to the IDLE state.
+
+        :param entity: The entity to check.
+        :return: True if the entity should be idle, False otherwise.
+        """
         # helper function dedicated to player
         return (
             entity.shape.body.velocity == (0, 0)
@@ -136,14 +211,34 @@ class EntityManager:
 
     @staticmethod
     def _change_state(entity, new_state: str):
+        """
+        Transitions an entity to a new animation state.
+
+        :param entity: The entity whose state is changing.
+        :param new_state: The new state name.
+        :return: None
+        """
         entity.state_manager.state.change_state(new_state, entity.get_position(), entity.shape.body)
 
     def update_enemy_action(self, sim):
+        """
+        Updates the high-level behavior and actions for all enemies.
+
+        :param sim: The physics simulation space.
+        :return: None
+        """
         for enemy in self.enemies:
             self._update_single_enemy(enemy, sim)
             self._apply_enemy_action(enemy, sim)
 
     def _update_single_enemy(self, enemy: Enemy, sim: pymunk.Space):
+        """
+        Updates the action of a single enemy based on player proximity and patrol paths.
+
+        :param enemy: The enemy entity to update.
+        :param sim: The physics simulation space.
+        :return: None
+        """
         if enemy.get_state() == StateName.DEATH:
             return
         elif self._check_for_attack(enemy):
@@ -158,10 +253,22 @@ class EntityManager:
             enemy.change_action(EnemyAction.IDLE)
 
     def _resolve_enemy_hits(self, enemy):
+        """
+        Checks if an enemy's attack has connected with the player and applies damage.
+
+        :param enemy: The enemy entity performing the attack.
+        :return: None
+        """
         if enemy.has_hit():
             self.player.take_damage(enemy.damage_dealt)
 
     def _check_for_attack(self, enemy) -> bool:
+        """
+        Checks if the player is within the enemy's attack range.
+
+        :param enemy: The enemy entity.
+        :return: True if the player is in attack range, False otherwise.
+        """
         if self.player.is_dying():
             return False
         player_pos = self.player.get_position()
@@ -170,6 +277,13 @@ class EntityManager:
         return (player_pos - enemy_pos).length <= attack_dist
 
     def _check_for_aggro(self, enemy, sim):
+        """
+        Performs a line-of-sight check to see if the enemy should become aggressive.
+
+        :param enemy: The enemy entity.
+        :param sim: The physics simulation space.
+        :return: True if the player is seen, False otherwise.
+        """
         if self.player.is_dying():
             return False
 
@@ -188,9 +302,24 @@ class EntityManager:
 
     @staticmethod
     def _in_distance(enemy, shape, settings):
+        """
+        Checks if the player (represented by shape) is within the enemy's sight range.
+
+        :param enemy: The enemy entity.
+        :param shape: The player's physics shape.
+        :param settings: Dictionary containing game settings.
+        :return: True if within distance, False otherwise.
+        """
         return (enemy.get_position() - shape.body.position).length < settings["enemy_info"][enemy.name.value]["sight"]
 
     def _apply_enemy_action(self, enemy: Enemy, sim):
+        """
+        Applies physical movement or jumping based on the enemy's current action.
+
+        :param enemy: The enemy entity.
+        :param sim: The physics simulation space.
+        :return: None
+        """
         current_action = enemy.get_current_action()
         if current_action in [EnemyAction.DEATH, EnemyAction.IDLE]:
             return
@@ -203,6 +332,13 @@ class EntityManager:
         enemy.state_manager.apply_horizontal_velocity(move_dir)
 
     def _jump_if_gap(self, enemy, sim):
+        """
+        Makes the enemy jump if it detects a gap or obstacle in its movement direction.
+
+        :param enemy: The enemy entity.
+        :param sim: The physics simulation space.
+        :return: None
+        """
         query_filter = self._get_query_filter()
         radius = self.settings["physics"]["segment_query_radius"]
         for inv in [True, False]:
@@ -215,6 +351,13 @@ class EntityManager:
                 enemy.state_manager.apply_vertical_push()
 
     def _calc_gap_point(self, ent_pos: Vec2d, is_inverted):
+        """
+        Calculates a world point used for gap detection raycasting.
+
+        :param ent_pos: The entity's current position.
+        :param is_inverted: Whether checking to the left (True) or right (False).
+        :return: A Vec2d representing the target point for the raycast.
+        """
         angle = self.settings["physics"]["raycast_options"]["angle"]
         length = self.settings["physics"]["raycast_options"]["length"]
 
@@ -233,6 +376,11 @@ class EntityManager:
         return point
 
     def _get_query_filter(self):
+        """
+        Creates a physics query filter for line-of-sight checks.
+
+        :return: A pymunk.ShapeFilter instance.
+        """
         # used for line of sight queries
         mask = self.settings["physics"]["collision_masks"]["line_of_sight"]
         query_filter = ShapeFilter(mask=mask)
@@ -240,34 +388,67 @@ class EntityManager:
 
     @staticmethod
     def _get_direction_to_player(x, player_x):
+        """
+        Determines the horizontal direction from an X coordinate to the player's X coordinate.
+
+        :param x: The source X coordinate.
+        :param player_x: The player's X coordinate.
+        :return: The Direction (LEFT or RIGHT).
+        """
         if x > player_x:
             return Direction.LEFT
         else:
             return Direction.RIGHT
 
     def move_player(self, direction: Direction):
+        """
+        Initiates player movement or jumping in the specified direction.
+
+        :param direction: The direction of movement.
+        :return: None
+        """
         if direction in [Direction.LEFT, Direction.RIGHT]:
             self.player.state_manager.apply_horizontal_velocity(direction)
         else:
             self.player.state_manager.apply_vertical_push()
 
     def get_player_pos(self):
+        """
+        Retrieves the player's current position as a tuple.
+
+        :return: A tuple (x, y).
+        """
         pos = self.player.get_position()
         return pos[0], pos[1]
 
     def get_where_array(self) -> list[Where]:
+        """
+        Generates a list of Where objects for all entities, used for rendering.
+
+        :return: A list of Where dataclasses.
+        """
         where = [self.player.state_manager.get_where()]
 
         for enemy in self.enemies:
-            where.append(enemy.state_manager.get_where(player_pos=self.player.get_position()))
+            where.append(enemy.state_manager.get_where())
 
         return where
 
     def get_entities(self):
+        """
+        Retrieves a list of all active entities (player and enemies).
+
+        :return: A list of Player and Enemy instances.
+        """
         ent_list = [self.player] + list(self.enemies)
         return ent_list
 
     def update_bullets(self):
+        """
+        Updates active bullets, removing those that have timed out or reached their maximum range.
+
+        :return: None
+        """
         to_be_removed = []
 
         for bullet, shape in self.bullets_dict.items():
@@ -280,6 +461,11 @@ class EntityManager:
             self._remove_bullet(bullet, shape.body.space)
 
     def get_bullet(self):
+        """
+        Creates a new bullet if the player's current weapon is ready to fire.
+
+        :return: A tuple (bullet_body, bullet_shape, bullet_instance) or (None, None, None).
+        """
         if not self.weapons[self.player.gun_held].can_shoot():
             return None, None, None
 
@@ -293,12 +479,25 @@ class EntityManager:
         return bullet.body, bullet.shape, bullet
 
     def _get_basic_bullet_info(self, weapon, ammo):
+        """
+        Prepares basic information for a new bullet.
+
+        :param weapon: The Weapon instance being fired.
+        :param ammo: The Ammo instance being used.
+        :return: A BasicBulletInfo dataclass.
+        """
         info = BasicBulletInfo(
             self._get_next_bullet_id(), self.player.get_gun_position(), weapon.reach, ammo.damage, ammo.bullet_name
         )
         return info
 
     def handle_kills(self, entities_to_kill: list):
+        """
+        Processes a list of entities to be killed (e.g., from environmental hazards).
+
+        :param entities_to_kill: A list of entities to remove.
+        :return: None
+        """
         # used to kill entities that touch water
         ents_to_remove = []
         for ent in entities_to_kill:
@@ -311,6 +510,13 @@ class EntityManager:
             entities_to_kill.remove(ent)
 
     def handle_hits(self, entities_hit: list, sim):
+        """
+        Processes bullet collisions with entities.
+
+        :param entities_hit: A list of (entity, bullet) tuples representing collisions.
+        :param sim: The physics simulation space.
+        :return: None
+        """
         for entity, bullet in entities_hit:
             if bullet.has_collided:
                 continue
@@ -320,6 +526,13 @@ class EntityManager:
         self.remove_killed(sim)
 
     def _remove_bullet(self, bullet, sim):
+        """
+        Removes a bullet from the physics simulation and the manager's records.
+
+        :param bullet: The Bullet instance to remove.
+        :param sim: The physics simulation space.
+        :return: None
+        """
         shape = self.bullets_dict[bullet]
         sim.remove(shape, shape.body)
         del self.bullets_dict[bullet]
@@ -327,6 +540,12 @@ class EntityManager:
         del shape
 
     def remove_killed(self, sim: pymunk.Space):
+        """
+        Identifies and processes all entities whose health has reached zero.
+
+        :param sim: The physics simulation space.
+        :return: None
+        """
         for entity in self.get_entities():
             if entity.name == "player" and self._check_debug():
                 continue
@@ -334,9 +553,21 @@ class EntityManager:
                 self._kill_entity(entity, sim)
 
     def _check_debug(self):
+        """
+        Checks if the player is currently immortal due to debug settings.
+
+        :return: True if the player is immortal, False otherwise.
+        """
         return self.settings["debug"]["player_immortal"]
 
     def _kill_entity(self, entity, sim: pymunk.Space):
+        """
+        Initiates the death process for an entity.
+
+        :param entity: The entity to kill.
+        :param sim: The physics simulation space.
+        :return: True if the entity has finished its death process and should be removed, False otherwise.
+        """
         if not entity.get_state() == StateName.DEATH:
             entity.change_state(StateName.DEATH)
             if entity.name != "player":
@@ -353,9 +584,20 @@ class EntityManager:
         return True
 
     def _get_next_bullet_id(self):
+        """
+        Generates a unique ID for a new bullet.
+
+        :return: A unique integer ID.
+        """
         return max([bullet.id for bullet in self.bullets_dict.keys()] + [0]) + 1
 
     def remove_entity(self, entity):
+        """
+        Removes an entity's physics components from the simulation and updates entity records.
+
+        :param entity: The entity to remove.
+        :return: None
+        """
         if None not in [entity.body.space, entity.shape.space, entity.feet.space]:
             self.sim.remove(entity.body, entity.shape, entity.feet)
         if entity.name == "player":

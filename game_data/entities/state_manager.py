@@ -1,3 +1,6 @@
+"""
+This module contains the StateManager class which acts as an interface between an entity and its state.
+"""
 from loguru import logger
 from pymunk import Vec2d
 from shared import *
@@ -6,7 +9,23 @@ from .entity_utils import get_ent_rect
 
 
 class StateManager:
+    """
+    The StateManager class handles high-level state transitions and physical forces for an entity.
+
+    Attributes:
+        entity (Player|Enemy): The entity instance this manager belongs to.
+        name (str): The name identifier of the entity.
+        movement (float): Horizontal movement speed of the entity.
+        state (State): The internal State instance tracking animation and physics.
+    """
+
     def __init__(self, entity):
+        """
+        Initializes the StateManager for a given entity.
+
+        :param entity: The entity instance.
+        :return: None
+        """
         self.entity = entity
 
         self.name = getattr(self.entity.name, "value", "player")
@@ -17,7 +36,12 @@ class StateManager:
 
         self.state = State(StateName.IDLE, self.entity.get_position(), self)
 
-    def get_where(self, player_pos: tuple[int, int] = None) -> Where:
+    def get_where(self) -> Where:
+        """
+        Gathers all necessary information about the entity to create a Where dataclass for rendering.
+
+        :return: A Where dataclass instance.
+        """
         # if player_pos is None:
         where = Where(
             position=self.entity.get_position(),
@@ -41,6 +65,11 @@ class StateManager:
         # return None
 
     def apply_vertical_push(self):
+        """
+        Applies an upward impulse to the entity's physics body if jumping is possible.
+
+        :return: None
+        """
         if not self.state.can_jump(self.entity.shape.body):
             return
 
@@ -55,6 +84,12 @@ class StateManager:
         self.entity.shape.body.apply_impulse_at_local_point(force)
 
     def apply_horizontal_velocity(self, direction: Direction):
+        """
+        Applies horizontal velocity to the entity in the specified direction.
+
+        :param direction: The Direction (LEFT or RIGHT) of movement.
+        :return: None
+        """
         if self._should_run():
             self.state.change_state(StateName.RUN, self.entity.get_position(), self.entity.shape.body)
 
@@ -65,6 +100,11 @@ class StateManager:
         self._calc_and_apply_velocity()
 
     def _should_run(self):
+        """
+        Checks if the entity should transition to the RUN state.
+
+        :return: True if the entity should run, False otherwise.
+        """
         return (
             self.state.get_state() != StateName.RUN
             and self.entity.shape.body.velocity.y == 0
@@ -73,6 +113,11 @@ class StateManager:
         )
 
     def _calc_and_apply_velocity(self):
+        """
+        Calculates and sets the final velocity on the entity's physics body.
+
+        :return: None
+        """
         velocity = Vec2d(
             self.movement if self.state.movement_direction == Direction.RIGHT else -self.movement,
             self.entity.shape.body.velocity.y,

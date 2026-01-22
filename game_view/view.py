@@ -1,3 +1,6 @@
+"""
+This module contains the View class which handles the overall rendering of the game.
+"""
 from shared import GameState
 from .ui import GameUI
 from .entity_renderer import *
@@ -11,7 +14,26 @@ import pymunk.pygame_util
 
 
 class View:
+    """
+    The View class is responsible for managing the game's window and rendering all game elements.
+
+    Attributes:
+        settings (dict): Dictionary containing game settings.
+        size (tuple): The width and height of the game window.
+        screen (pygame.Surface): The main display surface.
+        ui (GameUI): Handles user interface elements like menus.
+        sprite_loader (SpriteLoader): Manages loading and caching of sprites.
+        entity_renderer (EntityRenderer): Handles rendering of game entities.
+        map_renderer (MapRenderer): Handles rendering of the game map.
+    """
+
     def __init__(self, settings: dict):
+        """
+        Initializes the View with the given settings.
+
+        :param settings: Dictionary containing game settings.
+        :return: None
+        """
         logger.info("Initializing view...")
 
         self.settings = settings
@@ -28,6 +50,16 @@ class View:
         self.map_renderer = MapRenderer(self.size, self.settings)
 
     def render(self, player_pos, where_array: list[Where], bullets_set, debug_elements, game_state: GameState):
+        """
+        Renders the entire game scene based on the current game state.
+
+        :param player_pos: The current position of the player.
+        :param where_array: A list of Where objects containing information about where to render entities.
+        :param bullets_set: A set of active bullets to render.
+        :param debug_elements: An object containing debug information to render.
+        :param game_state: The current state of the game, a GameState enum value.
+        :return: None
+        """
         if game_state == GameState.MENU:
             self.ui.change_game_state = game_state
             self.ui.render(self.screen, events=pygame.event.get())
@@ -50,6 +82,13 @@ class View:
         pygame.display.flip()
 
     def _render_debug_info(self, player_pos, debug_elements):
+        """
+        Renders debug information such as hitboxes and patrol paths.
+
+        :param player_pos: The current position of the player.
+        :param debug_elements: An object containing debug information to render.
+        :return: None
+        """
         abs_camera_pos, rel_camera_pos = calc_camera_pos(self.settings, player_pos)
         vector = (rel_camera_pos[0] - abs_camera_pos[0], rel_camera_pos[1] - abs_camera_pos[1])
 
@@ -66,6 +105,12 @@ class View:
             self._render_bbs(debug_elements.bbs)
 
     def _render_bbs(self, bbs):
+        """
+        Renders bounding boxes for debugging.
+
+        :param bbs: A list of pygame.Rect objects representing bounding boxes.
+        :return: None
+        """
         if bbs is None:
             return
         for rect in bbs:
@@ -73,11 +118,25 @@ class View:
             pygame.draw.rect(self.screen, "red", rect)
 
     def _render_hitboxes(self, sim: pymunk.Space, vector: tuple[int, int]):
+        """
+        Renders hitboxes from the physics simulation for debugging.
+
+        :param sim: The pymunk Space object containing the physics simulation.
+        :param vector: The translation vector for the camera.
+        :return: None
+        """
         draw_options = pymunk.pygame_util.DrawOptions(self.screen)
         draw_options.transform = pymunk.Transform.translation(vector[0], vector[1])
         sim.debug_draw(draw_options)
 
     def _render_patrol_paths(self, patrol_paths, vector):
+        """
+        Renders patrol paths for enemies for debugging.
+
+        :param patrol_paths: A list of patrol path objects.
+        :param vector: The translation vector for the camera.
+        :return: None
+        """
         for path in patrol_paths:
             x1 = path.start[0]
             x2 = path.end[0]
