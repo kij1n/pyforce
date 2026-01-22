@@ -1,8 +1,6 @@
 import pygame
 from loguru import logger
-
-from game_data.entities.state_manager import Direction
-from shared import GameState
+from shared import GameState, Direction
 
 
 class InputHandler:
