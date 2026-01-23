@@ -112,7 +112,54 @@
         },
         "raycast_options": {
             "angle": 45,
-            "length": 50
+            "length": 100
+        },
+        "walls": {
+            "radius": 5,
+            "friction": 1.0,
+            "elasticity": 0.5,
+            "coordinates": [
+                [
+                    [
+                        0,
+                        0
+                    ],
+                    [
+                        0,
+                        912
+                    ]
+                ],
+                [
+                    [
+                        4800,
+                        0
+                    ],
+                    [
+                        4800,
+                        912
+                    ]
+                ],
+                [
+                    [
+                        0,
+                        0
+                    ],
+                    [
+                        4800,
+                        0
+                    ]
+                ],
+                [
+                    [
+                        0,
+                        912
+                    ],
+                    [
+                        4800,
+                        912
+                    ]
+                ]
+            ]
         }
     },
     "patrol_paths": [
@@ -121,33 +168,37 @@
                 0,
                 576
             ],
-            "height": 690
+            "height": 690,
+            "offset": 40
         },
         {
             "x_range": [
                 720,
                 1824
             ],
-            "height": 690
+            "height": 690,
+            "offset": 40
         },
         {
             "x_range": [
                 1968,
                 2496
             ],
-            "height": 690
+            "height": 690,
+            "offset": 40
         },
         {
             "x_range": [
                 2976,
                 4800
             ],
-            "height": 645
+            "height": 645,
+            "offset": 40
         }
     ],
     "enemy_info": {
         "goblin": {
-            "attack_distance": 100,
+            "attack_distance": 70,
             "health": 100,
             "damage": 50,
             "sight": 400,
@@ -342,10 +393,6 @@
             ],
             "start_positions": [
                 [
-                    792,
-                    681
-                ],
-                [
                     2096,
                     681
                 ],
@@ -358,6 +405,8 @@
             "feet_friction": 1
         },
         "skeleton": {
+            "damage": 50,
+            "attack_distance": 200,
             "health": 100,
             "sight": 200,
             "move_horizontal": 200,
@@ -641,27 +690,6 @@
                             0,
                             0
                         ]
-                    },
-                    {
-                        "path": "assets/enemies/skeleton/attack16.png",
-                        "offset": [
-                            0,
-                            0
-                        ]
-                    },
-                    {
-                        "path": "assets/enemies/skeleton/attack17.png",
-                        "offset": [
-                            0,
-                            0
-                        ]
-                    },
-                    {
-                        "path": "assets/enemies/skeleton/attack18.png",
-                        "offset": [
-                            0,
-                            0
-                        ]
                     }
                 ],
                 "death": [
@@ -780,7 +808,12 @@
                 50,
                 10
             ],
-            "start_positions": [],
+            "start_positions": [
+                [
+                    792,
+                    681
+                ]
+            ],
             "friction": 0,
             "feet_friction": 1
         }

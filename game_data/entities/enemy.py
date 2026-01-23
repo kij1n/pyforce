@@ -74,7 +74,7 @@ class Enemy:
 
     def __del__(self):
         """
-        Destructor for the Enemy instance, cleans up patrol path reference.
+        Destructor, for the Enemy instance, cleans up patrol path reference.
 
         :return: None
         """
@@ -88,8 +88,10 @@ class Enemy:
 
         :return: True if a new hit has occurred, False otherwise.
         """
-        if self.state_manager.state.previous_hits != self.state_manager.state.hits:
-            self.state_manager.state.previous_hits = self.state_manager.state.hits
+        state = self.state_manager.state
+        if state.has_hit and state.previous_hits < state.hits:
+            state.previous_hits = state.hits
+            state.has_hit = False
             return True
         return False
 
@@ -188,7 +190,7 @@ class Enemy:
                 self._set_patrol_path(path)
                 return True
             return False  # return false if a patrol path is not set
-        if self._is_at_end_of_path():
+        if self._should_bounce():
             self._bounce_on_path()
         return True
 
@@ -222,13 +224,17 @@ class Enemy:
             return Direction.RIGHT
         return Direction.LEFT
 
-    def _is_at_end_of_path(self):
+    def _should_bounce(self):
         """
-        Checks if the enemy has reached the end of its patrol path in its current direction.
+        Checks if the enemy has reached the end of its patrol path in its current direction
+        or collides with an enemy on the same path.
 
-        :return: True if at end of path, False otherwise.
+        :return: True if an entity should bounce, False otherwise.
         """
-        return self.patrol_path.is_at_end(self.shape.body.position.x, self.get_movement_direction())
+        return (
+            self.patrol_path.is_at_end(self.shape.body.position.x, self.get_movement_direction()) or
+            self.patrol_path.collides_with_another(self)
+        )
 
     def _set_patrol_path(self, path):
         """

@@ -112,7 +112,7 @@ class SpriteLoader:
         sprite_found = self.sprites.get(sprite_name, None)
 
         if sprite_found is None:
-            logger.error(f"Sprite not found: {sprite_name}")
+            # logger.error(f"Sprite not found: {sprite_name}")
             # fallback to run if sprite not found
             sprite_number = int(re.sub(r"\D", "", sprite_name))
             name = sprite_name.split("_")[0] + "_run" + str(sprite_number)

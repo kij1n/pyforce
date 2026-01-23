@@ -48,6 +48,9 @@ class Controller:
 
         self.running = False
 
+        self.game_mode = None
+        self.difficulty = None
+
     def run(self):
         """
         Starts and manages the main game loop.

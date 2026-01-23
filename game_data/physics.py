@@ -166,6 +166,19 @@ class PhysicsEngine:
             if obj.width > 1 and obj.height > 1:
                 self._add_collision_obj(obj)
 
+        walls = self.settings["physics"]["walls"]
+        radius = walls["radius"]
+        friction = walls["friction"]
+        elasticity = walls["elasticity"]
+
+        for wall in walls["coordinates"]:
+            a, b = wall
+            segment = pymunk.Segment(self.sim.static_body, (a[0], a[1]), (b[0], b[1]), radius)
+            segment.friction = friction
+            segment.elasticity = elasticity
+            self.sim.add(segment)
+
+
     def _add_collision_obj(self, obj):
         """
         Creates and adds a single collision shape to the simulation.

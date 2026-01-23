@@ -12,3 +12,19 @@ class GameState(Enum):
     PAUSE = "pause"
     PLAYING = "playing"
     QUIT = "quit"
+
+class GameMode(Enum):
+    """
+    Enum representing the game modes.
+    """
+    INFINITE = "infinite"
+    SPEEDRUN = "speedrun"
+
+
+class Difficulty(Enum):
+    """
+    Enum representing the difficulty levels.
+    """
+    EASY = "easy"
+    NORMAL = "normal"
+    HARD = "hard"

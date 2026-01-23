@@ -66,7 +66,7 @@ class EntityManager:
         """
         patrol_paths = []
         for path in self.settings["patrol_paths"]:
-            patrol_path = PatrolPath(path["x_range"], path["height"])
+            patrol_path = PatrolPath(path["x_range"], path["height"], path["offset"])
             patrol_paths.append(patrol_path)
 
         return patrol_paths
@@ -242,8 +242,8 @@ class EntityManager:
         if enemy.get_state() == StateName.DEATH:
             return
         elif self._check_for_attack(enemy):
-            self._resolve_enemy_hits(enemy)
             enemy.change_action(EnemyAction.ATTACK)
+            self._resolve_enemy_hits(enemy)
         elif self._check_for_aggro(enemy, sim):
             enemy.change_action(EnemyAction.AGGRO)
         elif enemy.update_patrol_state(self.patrol_paths):
@@ -274,7 +274,10 @@ class EntityManager:
         player_pos = self.player.get_position()
         enemy_pos = enemy.get_position()
         attack_dist = self.settings["enemy_info"][enemy.name.value]["attack_distance"]
-        return (player_pos - enemy_pos).length <= attack_dist
+        return (
+            (player_pos - enemy_pos).length <= attack_dist and
+            self._check_for_aggro(enemy, self.sim)
+        )
 
     def _check_for_aggro(self, enemy, sim):
         """
@@ -348,6 +351,7 @@ class EntityManager:
 
             jump_dir = Direction.LEFT if inv else Direction.RIGHT
             if info is None and jump_dir == enemy.get_movement_direction():
+                logger.debug("enemy jumping")
                 enemy.state_manager.apply_vertical_push()
 
     def _calc_gap_point(self, ent_pos: Vec2d, is_inverted):

@@ -3,7 +3,7 @@ This module contains the State class which manages the internal state and animat
 """
 from loguru import logger
 from pymunk import Vec2d
-from shared import StateName, Direction, EnemyAction
+from shared import StateName, Direction, EnemyAction, EnemyName
 
 
 class State:
@@ -46,6 +46,8 @@ class State:
         self.start_pos = position
         self.dead = False
 
+        self.dealt_damage = False
+        self.has_hit = False
         self.previous_hits = 0
         self.hits = 0
         self.start_time = 0
@@ -125,13 +127,39 @@ class State:
         :return: Sprite index.
         """
         if self.current_time >= self.attack_time:
-            # self.previous_hits = self.hits
-            self.hits += 1
             self.current_time = 0
+
+            if self.state_manager.entity.name == EnemyName.GOBLIN:
+                self.hits += 1
+                self.has_hit = True
+            else:
+                self.has_hit = False
+                self.dealt_damage = False
+
             return total_sprites - 1
 
         step = self.attack_time / total_sprites
+        if self._check_skeleton_hit(total_sprites, step):
+            self.has_hit = True
+            self.hits += 1
+            self.dealt_damage = True
+
         return int(self.current_time // step)
+
+    def _check_skeleton_hit(self, total_sprites, step):
+        """
+        Skeletons need to deal damage when they reach half the sprites
+        during animation.
+        :param total_sprites: Total number of sprites
+        :param step: Time per sprite
+        :return: Boolean whether a skeleton has hit
+        """
+        return (
+            int(self.current_time // step) >= total_sprites // 2 and
+            not self.has_hit and
+            self.state_manager.entity.name == EnemyName.SKELETON and
+            not self.dealt_damage
+        )
 
     def _handle_death(self, total_sprites):
         """

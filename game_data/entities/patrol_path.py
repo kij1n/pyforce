@@ -15,7 +15,7 @@ class PatrolPath:
         id (tuple): A unique identifier for the path based on its coordinates.
     """
 
-    def __init__(self, x_range, height):
+    def __init__(self, x_range, height, offset: int):
         """
         Initializes a PatrolPath with an X range and height.
 
@@ -23,6 +23,7 @@ class PatrolPath:
         :param height: The Y coordinate of the path.
         :return: None
         """
+        self.offset = offset
         self.start = (x_range[0], height)
         self.end = (x_range[1], height)
         self.enemies = set()
@@ -46,8 +47,8 @@ class PatrolPath:
         :param direction: The Direction the entity is moving.
         :return: True if at the end of the path, False otherwise.
         """
-        return (direction == Direction.LEFT and x - 40 <= self.start[0]) or (
-            direction == Direction.RIGHT and x + 40 >= self.end[0]
+        return (direction == Direction.LEFT and x - self.offset <= self.start[0]) or (
+            direction == Direction.RIGHT and x + self.offset >= self.end[0]
         )
 
     def add_enemy(self, enemy):
@@ -67,3 +68,19 @@ class PatrolPath:
         :return: None
         """
         self.enemies.discard(enemy)
+
+    def collides_with_another(self, entity):
+        bb1 = entity.shape.bb
+        ents = [ent for ent in self.enemies if ent != entity]
+        for ent in ents:
+            bb2 = ent.shape.bb
+            if bb1.intersects(bb2):
+                return True
+
+            try:  # we need to use try because of a bug in pymunk (crashes when there are no points)
+                query = entity.shape.shapes_collide(ent.shape)
+                return len(query.points) > 0
+            except AssertionError:
+                continue
+
+        return False
