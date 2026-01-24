@@ -46,6 +46,7 @@ class Enemy:
         self.entity_manager = entity_manager
 
         self.body, self.shape, self.feet = prepare_collision_box(name.value, settings, self, pos=pos, ent_id=ent_id)
+        self.ent_id = ent_id
 
         self.state_manager = StateManager(self)
 

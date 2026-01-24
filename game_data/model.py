@@ -1,7 +1,7 @@
 """
 This module contains the Model class which acts as the main data and logic coordinator for the game.
 """
-from shared import Where, DebugElements, Difficulty
+from shared import Where, DebugElements, Difficulty, GameMode
 from .physics import PhysicsEngine
 from . import entities
 from loguru import logger
@@ -19,7 +19,7 @@ class Model:
         debug_elements (DebugElements): Information used for debug rendering.
     """
 
-    def __init__(self, settings: dict):
+    def __init__(self, settings: dict, player_stats):
         """
         Initializes the Model with settings, physics engine, and entity manager.
 
@@ -29,6 +29,7 @@ class Model:
         logger.info("Initializing model...")
 
         self.settings = settings
+        self.player_stats = player_stats
 
         self.physics = PhysicsEngine(self.settings)
         self.entities = entities.EntityManager(self.settings, self.physics.sim)
@@ -40,13 +41,16 @@ class Model:
     def apply_difficulty(self, difficulty: Difficulty):
         self.entities.apply_difficulty(difficulty)
 
-    def game_not_lost(self):
+    def game_ended(self, game_mode: GameMode):
         """
         Checks if the game is still ongoing (player is alive).
 
         :return: True if the player exists, False otherwise.
         """
-        return self.entities.player is not None
+        if game_mode == GameMode.SPEEDRUN and len(self.entities.enemies) == 0:
+            return True
+
+        return self.entities.player is None
 
     def update(self, mouse_pos):
         """
@@ -67,6 +71,14 @@ class Model:
         self.physics.sim.step(self.settings["physics"]["time_step"])
         self.entities.handle_hits(self.physics.entities_hit, self.physics.sim)
         self.entities.handle_kills(self.physics.entities_to_kill)
+
+        if self.player_stats.game_mode == GameMode.INFINITE:
+            self._spawn_enemy()
+
+    def _spawn_enemy(self):
+        max_enemies = self.settings["difficulty_changes"][self.player_stats.difficulty.value]["max_enemies_on_map"]
+        if len(self.entities.enemies) < max_enemies:
+            self.entities.spawn_random_enemy()
 
     def _add_debug(self):
         """

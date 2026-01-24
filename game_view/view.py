@@ -75,7 +75,7 @@ class View:
         self.map_renderer.render(player_pos, self.screen, self.sprite_loader)
         self.entity_renderer.render(where_array, self.sprite_loader, self.screen, self.settings, player_pos)
         self.entity_renderer.render_bullets(bullets_set, self.sprite_loader, self.screen, self.settings, player_pos)
-        self.ui.render_player_stats(player_stats, game_state)
+        self.ui.render_player_stats(player_stats)
 
         # DEBUG DRAWING
         self._render_debug_info(player_pos, debug_elements)

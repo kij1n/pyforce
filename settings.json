@@ -1,9 +1,10 @@
 {
     "title": "Pyforce",
     "fps": 60,
+    "records_path": "records.jsonl",
     "debug": {
         "show_hitboxes": false,
-        "show_patrol_paths": false,
+        "show_patrol_paths": true,
         "show_fps": false,
         "show_bbs": false,
         "player_immortal": false
@@ -1092,6 +1093,7 @@
     },
     "difficulty_changes": {
         "easy": {
+            "max_enemies_on_map": 3,
             "goblin": {
                 "movement": 200,
                 "health": 50,
@@ -1104,6 +1106,7 @@
             }
         },
         "normal": {
+            "max_enemies_on_map": 4,
             "goblin": {
                 "movement": 250,
                 "health": 100,
@@ -1116,6 +1119,7 @@
             }
         },
         "hard": {
+            "max_enemies_on_map": 5,
             "goblin": {
                 "movement": 300,
                 "health": 200,
@@ -1139,5 +1143,8 @@
         ],
         "font_size": 20,
         "font_color": "white"
+    },
+    "enemy_spawning": {
+        "y_offset": 20
     }
 }

@@ -2,7 +2,7 @@
 This module contains the GameUI class which handles the user interface and menus.
 """
 import pygame_menu
-from pygame_menu.locals import ALIGN_CENTER, ALIGN_LEFT
+from pygame_menu.locals import ALIGN_CENTER
 import pygame
 from functools import partial
 from loguru import logger
@@ -61,7 +61,7 @@ class GameUI:
         self.pause_menu = self._create_pause_menu()
         self._add_pause_buttons()
 
-    def render_player_stats(self, stats, game_mode):
+    def render_player_stats(self, stats):
         settings = self.settings["player_stats"]
         font = pygame.font.Font(self.theme.widget_font, settings["font_size"])
         text = [

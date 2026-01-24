@@ -4,6 +4,8 @@ This module contains the JSONManager class which handles loading and saving sett
 import json
 from loguru import logger
 
+from shared import PlayerStats
+
 
 class JSONManager:
     """
@@ -58,9 +60,8 @@ class JSONManager:
 
         :return: None
         """
-        if (
-            len(self.settings.items()) == 0
-        ):  # in case of failed loading, don't overwrite existing settings
+        if len(self.settings.items()) == 0:
+            # in case of failed loading, don't overwrite existing settings
             return
         try:
             with open(self.path, "w") as f:
@@ -68,8 +69,31 @@ class JSONManager:
                 logger.info(f"Settings saved to {self.path}")
 
         except FileNotFoundError:
-            logger.warning("Settings file not found.")
+            logger.error("Settings file not found.")
         except json.JSONDecodeError:
-            logger.warning("Failed to load settings file, bad JSON format.")
+            logger.error("Failed to load settings file, bad JSON format.")
         except Exception as e:
             logger.error(f"Failed to load settings file: {e}")
+
+    def append_record(self, stats: PlayerStats):
+        path = self.settings["records_path"]
+        try:
+            with open(path, "a") as f:
+                record = self._create_dict(stats)
+                f.write(json.dumps(record) + "\n")
+
+        except FileNotFoundError:
+            logger.error("Records file not found.")
+        except Exception as e:
+            logger.error(f"Failed to append record: {e}")
+
+    @staticmethod
+    def _create_dict(stats: PlayerStats):
+        record = {
+            "username": stats.username,
+            "killed_enemies": stats.killed_enemies,
+            "time_elapsed": stats.time_elapsed / 1000,
+            "difficulty": stats.difficulty.value,
+            "game_mode": stats.game_mode.value
+        }
+        return record

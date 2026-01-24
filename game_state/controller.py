@@ -5,7 +5,7 @@ import pygame
 
 from game_view import View
 from game_data import Model
-from shared import GameState, PlayerStats
+from shared import GameState, PlayerStats, GameMode
 
 from .input_handler import InputHandler
 from .json_manager import JSONManager
@@ -38,20 +38,16 @@ class Controller:
 
         self.json_manager = JSONManager()
         self.settings = self.json_manager.settings
+        self.player_stats = PlayerStats()
 
         self.view = View(self.settings)
-        self.model = Model(self.settings)
+        self.model = Model(self.settings, self.player_stats)
 
         self.fps = pygame.time.Clock()
         self.input_handler = InputHandler(self)
         self.game_state = GameState.MENU
 
         self.running = False
-
-        # self.game_mode = None
-        # self.difficulty = None
-        # self.username = None
-        self.player_stats = PlayerStats()
 
     def run(self):
         """
@@ -61,7 +57,7 @@ class Controller:
         """
         self.running = True
 
-        while self.running and self.model.game_not_lost():
+        while self.running and not self.model.game_ended(self.player_stats.game_mode):
             self._update_player_stats()
 
             self.view.render(
@@ -84,7 +80,17 @@ class Controller:
 
             self.fps.tick(self.settings["fps"])
 
+        if self._should_save_score():
+            self._update_player_stats()
+            self.json_manager.append_record(self.player_stats)
         pygame.quit()
+
+    def _should_save_score(self):
+        return (
+            self.player_stats.game_mode == GameMode.INFINITE or
+            (self.player_stats.game_mode == GameMode.SPEEDRUN and len(self.model.entities.enemies) == 0)
+        )
 
     def _update_player_stats(self):
         self.player_stats.time_elapsed = pygame.time.get_ticks()
+        self.player_stats.killed_enemies = self.model.entities.enemies_killed

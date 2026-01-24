@@ -11,6 +11,7 @@ from pymunk import ShapeFilter, Vec2d
 from shared import *
 from math import cos, sin, radians
 import math
+import random
 
 
 from loguru import logger
@@ -45,6 +46,7 @@ class EntityManager:
         self.sim = sim
         self.player = Player(settings, self)
         self.enemies = self._load_enemies()
+        self.enemies_killed = 0
 
         logger.info(f"Player and enemies ({len(self.enemies)}) loaded successfully")
 
@@ -57,6 +59,30 @@ class EntityManager:
         self.patrol_paths = self._load_patrol_paths()  # list of PatrolPaths
 
         logger.info(f"Patrol paths ({len(self.patrol_paths)}) loaded successfully")
+
+    def spawn_random_enemy(self):
+        enemy_name = random.choice([EnemyName.GOBLIN, EnemyName.SKELETON])
+        pos = self._get_rand_pos()
+        enemy = Enemy(
+            name=get_enemy_name(enemy_name),
+            settings=self.settings,
+            pos=pos,
+            ent_id=self._get_next_enemy_id(),
+            entity_manager=self,
+        )
+        self.enemies.add(enemy)
+        self.sim.add(enemy.shape, enemy.feet, enemy.body)
+        logger.info(f"Spawned {enemy_name} at {pos}")
+
+    def _get_next_enemy_id(self):
+        return max([ent.ent_id for ent in self.enemies] + [1]) + 1  # player's id is 1
+
+
+    def _get_rand_pos(self) -> Vec2d:
+        path = random.choice(self.patrol_paths)
+        x = path.get_random_x()
+        y = path.height + self.settings["enemy_spawning"]["y_offset"]
+        return Vec2d(x, y)
 
     def apply_difficulty(self, difficulty):
         settings = self.settings["difficulty_changes"][difficulty.value]
@@ -359,7 +385,6 @@ class EntityManager:
 
             jump_dir = Direction.LEFT if inv else Direction.RIGHT
             if info is None and jump_dir == enemy.get_movement_direction():
-                logger.debug("enemy jumping")
                 enemy.state_manager.apply_vertical_push()
 
     def _calc_gap_point(self, ent_pos: Vec2d, is_inverted):
@@ -591,7 +616,6 @@ class EntityManager:
             return False
 
         self.enemies.discard(entity)
-        # sim.remove(entity.shape, entity.feet, entity.body)
         entity.kill()
         return True
 
@@ -612,6 +636,7 @@ class EntityManager:
         """
         if None not in [entity.body.space, entity.shape.space, entity.feet.space]:
             self.sim.remove(entity.body, entity.shape, entity.feet)
+            self.enemies_killed += 1
         if entity.name == "player":
             self.player = None
         else:

@@ -1,6 +1,8 @@
 """
 This module contains the PatrolPath class which defines horizontal paths for enemy patrolling.
 """
+import random
+
 from shared import Direction
 
 
@@ -26,6 +28,7 @@ class PatrolPath:
         self.offset = offset
         self.start = (x_range[0], height)
         self.end = (x_range[1], height)
+        self.height = height
         self.enemies = set()
         self.id = (x_range[0], x_range[1], height)
 
@@ -82,5 +85,7 @@ class PatrolPath:
                 return len(query.points) > 0
             except AssertionError:
                 continue
-
         return False
+
+    def get_random_x(self):
+        return random.randint(self.start[0] + self.offset, self.end[0] - self.offset)
