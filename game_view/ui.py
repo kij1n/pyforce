@@ -51,6 +51,7 @@ class GameUI:
         self.change_game_state = None
         self.selected_gamemode = None
         self.selected_difficulty = None
+        self.username = "player"
         self.settings = settings
         self.theme = self._create_theme()
 
@@ -59,6 +60,21 @@ class GameUI:
 
         self.pause_menu = self._create_pause_menu()
         self._add_pause_buttons()
+
+    def render_player_stats(self, stats, game_mode):
+        settings = self.settings["player_stats"]
+        font = pygame.font.Font(self.theme.widget_font, settings["font_size"])
+        text = [
+            f"Username: {stats.username}",
+            f"Enemies killed: {stats.killed_enemies}",
+            f"Time elapsed: {stats.time_elapsed / 1000:.2f}s",
+            f"Difficulty: {stats.difficulty.value}",
+            f"Gamemode: {stats.game_mode.value}"
+        ]
+        for line in text:
+            text_surf = font.render(line, True, settings["font_color"])
+            text_rect = text_surf.get_rect(center=(settings["position"][0], settings["position"][1] + settings["offset"][1] * text.index(line)))
+            self.screen.blit(text_surf, text_rect)
 
     def render_pause(self, sprite_loader,events):
         """
@@ -137,10 +153,19 @@ class GameUI:
         self.settings_menu.add.button("Keybindings", self.keybindings_menu)
         self.settings_menu.add.button("Back", pygame_menu.events.BACK)
 
-        self.menu.add.button("Play", self.gamemode_menu)
+        # username submenu
+        self.username_menu = self._create_submenu("Enter Username")
+        self.username_input = self.username_menu.add.text_input("", default="player", onchange=self._set_username)
+        self.username_menu.add.button("Next", self.gamemode_menu)
+        self.username_menu.add.button("Back", pygame_menu.events.BACK)
+
+        self.menu.add.button("Play", self.username_menu)
         self.menu.add.button("Difficulty", self.difficulty_menu)
         self.menu.add.button("Settings", self.settings_menu)
         self.menu.add.button("Quit", self._stop_game)
+
+    def _set_username(self, username):
+        self.username = username
 
     def _select_easy(self):
         self.selected_difficulty = Difficulty.EASY
@@ -232,7 +257,6 @@ class GameUI:
             display_text = self.mouse_dict.get(new_bind, new_bind)
             widget.set_title(display_text)
             logger.info(f"Keybinding for '{action}' updated to '{display_text}'.")
-
 
     @staticmethod
     def _listen_for_new_bind():

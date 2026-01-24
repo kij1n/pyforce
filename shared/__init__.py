@@ -20,5 +20,6 @@ __all__ = [
     "DebugElements",
     "GameState",
     "GameMode",
-    "Difficulty"
+    "Difficulty",
+    "PlayerStats"
 ]

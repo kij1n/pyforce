@@ -5,7 +5,7 @@ import pygame
 
 from game_view import View
 from game_data import Model
-from shared import GameState
+from shared import GameState, PlayerStats
 
 from .input_handler import InputHandler
 from .json_manager import JSONManager
@@ -48,8 +48,10 @@ class Controller:
 
         self.running = False
 
-        self.game_mode = None
-        self.difficulty = None
+        # self.game_mode = None
+        # self.difficulty = None
+        # self.username = None
+        self.player_stats = PlayerStats()
 
     def run(self):
         """
@@ -60,12 +62,15 @@ class Controller:
         self.running = True
 
         while self.running and self.model.game_not_lost():
+            self._update_player_stats()
+
             self.view.render(
                 self.model.get_center_pos(),
                 self.model.get_where_array(),
                 self.model.get_bullets_dict(),
                 self.model.debug_elements,
                 self.game_state,
+                self.player_stats
             )
 
             if self.game_state == GameState.PLAYING:
@@ -80,3 +85,6 @@ class Controller:
             self.fps.tick(self.settings["fps"])
 
         pygame.quit()
+
+    def _update_player_stats(self):
+        self.player_stats.time_elapsed = pygame.time.get_ticks()

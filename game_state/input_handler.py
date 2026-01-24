@@ -96,14 +96,15 @@ class InputHandler:
         """
         if ui.change_game_state == GameState.PLAYING:
             self.controller.game_state = GameState.PLAYING
-            self.controller.game_mode = ui.selected_gamemode
+            self.controller.player_stats.game_mode = ui.selected_gamemode
+            self.controller.player_stats.username = ui.username
 
             if ui.selected_difficulty is not None:
-                self.controller.difficulty = ui.selected_difficulty
+                self.controller.player_stats.difficulty = ui.selected_difficulty
                 self.controller.model.apply_difficulty(ui.selected_difficulty)
             else:
                 # if there is no selected difficulty, fallback to normal
-                self.controller.difficulty = Difficulty.NORMAL
+                self.controller.player_stats.difficulty = Difficulty.NORMAL
                 self.controller.model.apply_difficulty(Difficulty.NORMAL)
 
             ui.change_game_state = None

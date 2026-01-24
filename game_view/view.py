@@ -1,7 +1,7 @@
 """
 This module contains the View class which handles the overall rendering of the game.
 """
-from shared import GameState
+from shared import GameState, PlayerStats
 from .ui import GameUI
 from .entity_renderer import *
 from .sprite_loader import *
@@ -49,10 +49,11 @@ class View:
         self.entity_renderer = EntityRenderer()
         self.map_renderer = MapRenderer(self.size, self.settings)
 
-    def render(self, player_pos, where_array: list[Where], bullets_set, debug_elements, game_state: GameState):
+    def render(self, player_pos, where_array: list[Where], bullets_set, debug_elements, game_state: GameState, player_stats: PlayerStats):
         """
         Renders the entire game scene based on the current game state.
 
+        :param player_stats: PlayerStats object containing player stats.
         :param player_pos: The current position of the player.
         :param where_array: A list of Where objects containing information about where to render entities.
         :param bullets_set: A set of active bullets to render.
@@ -74,6 +75,7 @@ class View:
         self.map_renderer.render(player_pos, self.screen, self.sprite_loader)
         self.entity_renderer.render(where_array, self.sprite_loader, self.screen, self.settings, player_pos)
         self.entity_renderer.render_bullets(bullets_set, self.sprite_loader, self.screen, self.settings, player_pos)
+        self.ui.render_player_stats(player_stats, game_state)
 
         # DEBUG DRAWING
         self._render_debug_info(player_pos, debug_elements)

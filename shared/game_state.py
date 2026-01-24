@@ -1,6 +1,7 @@
 """
 This module defines the GameState enum representing the overall state of the application.
 """
+from dataclasses import dataclass
 from enum import Enum
 
 
@@ -28,3 +29,11 @@ class Difficulty(Enum):
     EASY = "easy"
     NORMAL = "normal"
     HARD = "hard"
+
+@dataclass
+class PlayerStats:
+    killed_enemies: int = 0
+    time_elapsed: float = 0
+    difficulty: Difficulty = None
+    game_mode: GameMode = None
+    username: str = None
