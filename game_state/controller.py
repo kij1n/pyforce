@@ -66,7 +66,8 @@ class Controller:
                 self.model.get_bullets_dict(),
                 self.model.debug_elements,
                 self.game_state,
-                self.player_stats
+                self.player_stats,
+                self.model.effects.get_effects()
             )
 
             if self.game_state == GameState.PLAYING:

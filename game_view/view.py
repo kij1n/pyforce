@@ -1,7 +1,9 @@
 """
 This module contains the View class which handles the overall rendering of the game.
 """
+from game_data.effects_manager import EffectsManager
 from shared import GameState, PlayerStats
+from .effects_renderer import EffectsRenderer
 from .ui import GameUI
 from .entity_renderer import *
 from .sprite_loader import *
@@ -48,8 +50,9 @@ class View:
         self.sprite_loader = SpriteLoader(self.settings)
         self.entity_renderer = EntityRenderer()
         self.map_renderer = MapRenderer(self.size, self.settings)
+        self.effects_renderer = EffectsRenderer(self.settings, self.screen)
 
-    def render(self, player_pos, where_array: list[Where], bullets_set, debug_elements, game_state: GameState, player_stats: PlayerStats):
+    def render(self, player_pos, where_array: list[Where], bullets_set, debug_elements, game_state: GameState, player_stats: PlayerStats, effects):
         """
         Renders the entire game scene based on the current game state.
 
@@ -76,6 +79,7 @@ class View:
         self.entity_renderer.render(where_array, self.sprite_loader, self.screen, self.settings, player_pos)
         self.entity_renderer.render_bullets(bullets_set, self.sprite_loader, self.screen, self.settings, player_pos)
         self.ui.render_player_stats(player_stats)
+        self.effects_renderer.render(effects, player_pos)
 
         # DEBUG DRAWING
         self._render_debug_info(player_pos, debug_elements)

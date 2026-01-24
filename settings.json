@@ -4,7 +4,7 @@
     "records_path": "records.jsonl",
     "debug": {
         "show_hitboxes": false,
-        "show_patrol_paths": true,
+        "show_patrol_paths": false,
         "show_fps": false,
         "show_bbs": false,
         "player_immortal": false
@@ -1146,5 +1146,29 @@
     },
     "enemy_spawning": {
         "y_offset": 20
+    },
+    "particles": {
+        "spawn_offset": 10,
+        "size_range": [
+            1,
+            10
+        ],
+        "speed_range": [
+            3,
+            5
+        ],
+        "y_vel_uniform": [
+            -1.0,
+            1.0
+        ],
+        "lifetime": 10,
+        "gravity": 10,
+        "color": [
+            152,
+            11,
+            11
+        ],
+        "qty": 60,
+        "step": 1
     }
 }

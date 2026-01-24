@@ -32,7 +32,7 @@ class EntityManager:
         patrol_paths (list[PatrolPath]): A list of available patrol paths in the level.
     """
 
-    def __init__(self, settings: dict, sim: pymunk.Space):
+    def __init__(self, settings: dict, sim: pymunk.Space, model):
         """
         Initializes the EntityManager with settings and a physics space.
 
@@ -42,6 +42,7 @@ class EntityManager:
         """
         logger.info("Initializing entity manager...")
 
+        self.model = model
         self.settings = settings
         self.sim = sim
         self.player = Player(settings, self)
@@ -295,6 +296,11 @@ class EntityManager:
         """
         if enemy.has_hit():
             self.player.take_damage(enemy.damage_dealt)
+            self.model.effects.add_particles(
+                self.settings["particles"]["qty"],
+                self.player.get_position(),
+                self._invert_direction(self._get_direction_to_entity(self.player.get_position()[0], enemy.get_position()[0]))
+            )
 
     def _check_for_attack(self, enemy) -> bool:
         """
@@ -363,7 +369,7 @@ class EntityManager:
 
         move_dir = enemy.get_movement_direction()
         if current_action in [EnemyAction.AGGRO, EnemyAction.ATTACK]:
-            move_dir = self._get_direction_to_player(enemy.get_position()[0], self.player.get_position()[0])
+            move_dir = self._get_direction_to_entity(enemy.get_position()[0], self.player.get_position()[0])
             self._jump_if_gap(enemy, sim)
 
         enemy.state_manager.apply_horizontal_velocity(move_dir)
@@ -424,15 +430,14 @@ class EntityManager:
         return query_filter
 
     @staticmethod
-    def _get_direction_to_player(x, player_x):
+    def _get_direction_to_entity(x1, x2):
         """
         Determines the horizontal direction from an X coordinate to the player's X coordinate.
 
         :param x: The source X coordinate.
-        :param player_x: The player's X coordinate.
         :return: The Direction (LEFT or RIGHT).
         """
-        if x > player_x:
+        if x1 > x2:
             return Direction.LEFT
         else:
             return Direction.RIGHT
@@ -560,7 +565,18 @@ class EntityManager:
             bullet.has_collided = True
             entity.take_damage(bullet.damage)
             self._remove_bullet(bullet, sim)
+
+            self.model.effects.add_particles(
+                self.settings["particles"]["qty"],
+                entity.get_position(),
+                self._invert_direction(self._get_direction_to_entity(entity.get_position()[0], self.player.get_position()[0]))
+            )
+
         self.remove_killed(sim)
+
+    @staticmethod
+    def _invert_direction(direction):
+        return Direction.LEFT if direction == Direction.RIGHT else Direction.RIGHT
 
     def _remove_bullet(self, bullet, sim):
         """

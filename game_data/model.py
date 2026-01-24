@@ -2,8 +2,10 @@
 This module contains the Model class which acts as the main data and logic coordinator for the game.
 """
 from shared import Where, DebugElements, Difficulty, GameMode
+from .effects_manager import EffectsManager
 from .physics import PhysicsEngine
 from . import entities
+from .effects_manager import EffectsManager
 from loguru import logger
 
 
@@ -32,11 +34,15 @@ class Model:
         self.player_stats = player_stats
 
         self.physics = PhysicsEngine(self.settings)
-        self.entities = entities.EntityManager(self.settings, self.physics.sim)
+        self.entities = entities.EntityManager(self.settings, self.physics.sim, self)
+        self.effects = EffectsManager(self.settings)
         self.insert_ents_to_sim()
 
         self.where_array = self._create_where()
         self.debug_elements = self._add_debug()
+
+    def get_effects(self):
+        return self.effects.particles
 
     def apply_difficulty(self, difficulty: Difficulty):
         self.entities.apply_difficulty(difficulty)
@@ -71,6 +77,7 @@ class Model:
         self.physics.sim.step(self.settings["physics"]["time_step"])
         self.entities.handle_hits(self.physics.entities_hit, self.physics.sim)
         self.entities.handle_kills(self.physics.entities_to_kill)
+        self.effects.update(self.settings["particles"]["step"])
 
         if self.player_stats.game_mode == GameMode.INFINITE:
             self._spawn_enemy()
