@@ -44,7 +44,7 @@ class View:
 
         pygame.init()
 
-        self.ui = GameUI(self.settings)
+        self.ui = GameUI(self.settings, self.screen)
         self.sprite_loader = SpriteLoader(self.settings)
         self.entity_renderer = EntityRenderer()
         self.map_renderer = MapRenderer(self.size, self.settings)
@@ -62,12 +62,12 @@ class View:
         """
         if game_state == GameState.MENU:
             self.ui.change_game_state = game_state
-            self.ui.render(self.screen, events=pygame.event.get())
+            self.ui.render(self.screen, self.sprite_loader, events=pygame.event.get())
             pygame.display.flip()
             return
         elif game_state == GameState.PAUSE:
             self.ui.change_game_state = game_state
-            self.ui.render_pause(self.screen, events=pygame.event.get())
+            self.ui.render_pause(events=pygame.event.get())
             pygame.display.flip()
             return
 

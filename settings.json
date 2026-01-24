@@ -69,8 +69,9 @@
         "size_x": 4800,
         "size_y": 912,
         "tile_size": 48,
-        "map_path": "assets/map/map2.tmx",
-        "object_layer_name": "platform_collisions"
+        "map_path": "assets/map/map3.tmx",
+        "object_layer_name": "platform_collisions",
+        "background_path": "assets/map/background.png"
     },
     "physics": {
         "gravity": 500,
@@ -1012,21 +1013,81 @@
         "color": "red",
         "background_color": "black"
     },
-    "theme_info": {
-        "menu_background_color": "black",
-        "background_color": [
-            0,
-            0,
-            0,
-            0
-        ],
-        "widget_padding": 10,
-        "font_size": 20,
-        "font_color": "white",
-        "font_shadow": true,
+    "menu": {
+        "theme_info": {
+            "menu_background_color": [
+                10,
+                10,
+                10,
+                100
+            ],
+            "widget_padding": 10,
+            "font_size": 20,
+            "font_color": "white",
+            "font_shadow": true
+        },
         "menu_height": 200,
         "menu_width": 300,
         "menu_title": "Main menu",
-        "pause_title": "Paused"
+        "pause_title": "Paused",
+        "submenu_width": 400,
+        "submenu_height": 300,
+        "background_path": "assets/menu/background.png",
+        "cell_padding": 5,
+        "keys_font_size": 15,
+        "keys_name_font_size": 18,
+        "mouse_motion_selection": true,
+        "frame_h": {
+            "width": 300,
+            "height": 60,
+            "padding": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "button_padding": 10,
+            "margin": [
+                0,
+                0
+            ],
+            "col1_w": 150,
+            "col2_w": 75,
+            "col3_w": 150
+        },
+        "button_margin": [
+            0,
+            0
+        ],
+        "overlay_color": [
+            0,
+            0,
+            0,
+            180
+        ],
+        "bind_change_font_size": 50,
+        "bind_cancel_font_size": 20,
+        "bind_cancel_offset": [
+            0,
+            40
+        ]
+    },
+    "key_bindings": {
+        "move_left": [
+            "a"
+        ],
+        "move_right": [
+            "d"
+        ],
+        "jump": [
+            "space",
+            "w"
+        ],
+        "shoot": [
+            "mouse_left"
+        ],
+        "pause": [
+            "escape"
+        ]
     }
 }

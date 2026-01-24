@@ -24,7 +24,34 @@ class SpriteLoader:
         """
         logger.info("Initializing sprite loader...")
 
-        self.sprites = self.load_player(settings) | self.load_enemies(settings)
+        self.sprites = (
+                self.load_player(settings) |
+                self.load_enemies(settings) |
+                self._load_menu_backgrounds(settings)
+        )
+
+    def _load_menu_backgrounds(self, settings: dict):
+        backgrounds = {}
+        for i in ["map", "menu"]:
+            path = self._get_path(settings[i]["background_path"])
+            try:
+                image = pygame.image.load(path).convert()
+                sprite = Sprite(image, None)
+                sprite_name = i + "_background"
+
+                backgrounds[sprite_name] = sprite
+            except FileNotFoundError:
+                logger.error(f"File not found: {settings[i]['background_path']}")
+            except pygame.error:
+                logger.error(f"Pygame could not load: {settings[i]['background_path']}")
+            except Exception as e:
+                logger.error(f"Unexpected error loading {settings[i]['background_path']}: {e}")
+
+        logger.info(f"Backgrounds loading complete")
+
+        return backgrounds
+
+
 
     def load_player(self, settings: dict):
         """

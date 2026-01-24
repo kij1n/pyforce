@@ -22,6 +22,11 @@ class InputHandler:
         :return: None
         """
         self.controller = controller
+        self.mouse_map = {
+            "mouse_left": 0,
+            "mouse_middle": 1,
+            "mouse_right": 2
+        }
 
     def handle(self):
         """
@@ -51,20 +56,36 @@ class InputHandler:
         :return: None
         """
         keys = pygame.key.get_pressed()
+        mouse = pygame.mouse.get_pressed()
+        key_bindings = self.controller.settings["key_bindings"]
 
-        if keys[pygame.K_a]:
-            self.controller.model.move_player(Direction.LEFT)
-        if keys[pygame.K_d]:
-            self.controller.model.move_player(Direction.RIGHT)
-        if keys[pygame.K_w] or keys[pygame.K_SPACE]:
-            self.controller.model.move_player(Direction.UP)
-        if keys[pygame.K_ESCAPE]:
+        if self._check_binds(keys, mouse, key_bindings["move_left"]):
+            self.controller.model.move_player(
+                Direction.LEFT
+            )
+        if self._check_binds(keys, mouse, key_bindings["move_right"]):
+            self.controller.model.move_player(
+                Direction.RIGHT
+            )
+        if self._check_binds(keys, mouse, key_bindings["jump"]):
+            self.controller.model.move_player(
+                Direction.UP
+            )
+        if self._check_binds(keys, mouse, key_bindings["pause"]):
             self.controller.game_state = GameState.PAUSE
-
-        keys = pygame.mouse.get_pressed()
-
-        if keys[0]:  # Left mouse button
+        if self._check_binds(keys, mouse, key_bindings["shoot"]):
             self.controller.model.player_shoot()
+
+    def _check_binds(self, keys, mouse, binds: list):
+        for key in binds:
+            if key.startswith("mouse_"):
+                num = self.mouse_map[key]
+                if mouse[num]:
+                    return True
+            else:
+                if keys[pygame.key.key_code(key)]:
+                    return True
+        return False
 
     def handle_menu_clicks(self, ui):
         """
@@ -75,5 +96,8 @@ class InputHandler:
         """
         if ui.change_game_state == GameState.PLAYING:
             self.controller.game_state = GameState.PLAYING
+            self.controller.game_mode = ui.selected_gamemode
+            ui.change_game_state = None
         elif ui.change_game_state == GameState.QUIT:
             self.controller.running = False
+            ui.change_game_state = None
