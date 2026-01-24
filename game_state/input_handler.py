@@ -3,7 +3,7 @@ This module contains the InputHandler class which manages user inputs.
 """
 import pygame
 from loguru import logger
-from shared import GameState, Direction
+from shared import GameState, Direction, Difficulty
 
 
 class InputHandler:
@@ -97,7 +97,18 @@ class InputHandler:
         if ui.change_game_state == GameState.PLAYING:
             self.controller.game_state = GameState.PLAYING
             self.controller.game_mode = ui.selected_gamemode
+
+            if ui.selected_difficulty is not None:
+                self.controller.difficulty = ui.selected_difficulty
+                self.controller.model.apply_difficulty(ui.selected_difficulty)
+            else:
+                # if there is no selected difficulty, fallback to normal
+                self.controller.difficulty = Difficulty.NORMAL
+                self.controller.model.apply_difficulty(Difficulty.NORMAL)
+
             ui.change_game_state = None
+            ui.selected_gamemode = None
+            ui.selected_difficulty = None
         elif ui.change_game_state == GameState.QUIT:
             self.controller.running = False
             ui.change_game_state = None

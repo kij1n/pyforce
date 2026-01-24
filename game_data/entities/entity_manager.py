@@ -58,6 +58,14 @@ class EntityManager:
 
         logger.info(f"Patrol paths ({len(self.patrol_paths)}) loaded successfully")
 
+    def apply_difficulty(self, difficulty):
+        settings = self.settings["difficulty_changes"][difficulty.value]
+        for ent in self.enemies:
+            ent.health = settings[ent.name.value]["health"]
+            ent.max_health = settings[ent.name.value]["health"]
+            ent.damage_dealt = settings[ent.name.value]["damage"]
+            ent.state_manager.movement = settings[ent.name.value]["movement"]
+
     def _load_patrol_paths(self) -> list[PatrolPath]:
         """
         Loads patrol paths from the settings.

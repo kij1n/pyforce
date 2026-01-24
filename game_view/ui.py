@@ -7,7 +7,7 @@ import pygame
 from functools import partial
 from loguru import logger
 
-from shared import GameState, GameMode
+from shared import GameState, GameMode, Difficulty
 
 
 class GameUI:
@@ -50,6 +50,7 @@ class GameUI:
 
         self.change_game_state = None
         self.selected_gamemode = None
+        self.selected_difficulty = None
         self.settings = settings
         self.theme = self._create_theme()
 
@@ -59,19 +60,19 @@ class GameUI:
         self.pause_menu = self._create_pause_menu()
         self._add_pause_buttons()
 
-    def render_pause(self, events):
+    def render_pause(self, sprite_loader,events):
         """
         Renders the pause menu.
 
-        :param screen: The pygame Surface to render onto.
+        :param sprite_loader:
         :param events: A list of pygame events to process.
         :return: None
         """
-        self.screen.fill(self.settings["menu"]["theme_info"]["background_color"])
+        self._render_background(self.screen, sprite_loader)
         self.pause_menu.update(events)
         self.pause_menu.draw(self.screen)
 
-    def render(self, screen, sprite_loader, events):
+    def render(self, sprite_loader, events):
         """
         Renders the main menu.
 
@@ -80,9 +81,9 @@ class GameUI:
         :param events: A list of pygame events to process.
         :return: None
         """
-        self._render_background(screen, sprite_loader)
+        self._render_background(self.screen, sprite_loader)
         self.menu.update(events)
-        self.menu.draw(screen)
+        self.menu.draw(self.screen)
 
     @staticmethod
     def _render_background(screen, sprite_loader):
@@ -121,6 +122,13 @@ class GameUI:
         self.gamemode_menu.add.button("Infinite", self._start_infinite)
         self.gamemode_menu.add.button("Back", pygame_menu.events.BACK)
 
+        # Difficulty sub-menu
+        self.difficulty_menu = self._create_submenu("Select Difficulty")
+        self.difficulty_menu.add.button("Easy", self._select_easy)
+        self.difficulty_menu.add.button("Normal", self._select_normal)
+        self.difficulty_menu.add.button("Hard", self._select_hard)
+        self.difficulty_menu.add.button("Back", pygame_menu.events.BACK)
+
         # Keybindings sub-menu
         self._create_key_binds_menu()
 
@@ -130,8 +138,21 @@ class GameUI:
         self.settings_menu.add.button("Back", pygame_menu.events.BACK)
 
         self.menu.add.button("Play", self.gamemode_menu)
+        self.menu.add.button("Difficulty", self.difficulty_menu)
         self.menu.add.button("Settings", self.settings_menu)
         self.menu.add.button("Quit", self._stop_game)
+
+    def _select_easy(self):
+        self.selected_difficulty = Difficulty.EASY
+        self.difficulty_menu.reset(1)
+
+    def _select_normal(self):
+        self.selected_difficulty = Difficulty.NORMAL
+        self.difficulty_menu.reset(1)
+
+    def _select_hard(self):
+        self.selected_difficulty = Difficulty.HARD
+        self.difficulty_menu.reset(1)
 
     def _create_key_binds_menu(self):
         self.keybindings_menu = self._create_submenu("Keybindings")
@@ -349,6 +370,7 @@ class GameUI:
 
         :return: None
         """
+        logger.info("Starting game...")
         self.change_game_state = GameState.PLAYING
 
     def _stop_game(self):

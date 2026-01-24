@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="100" height="19" tilewidth="48" tileheight="48" infinite="0" nextlayerid="11" nextobjectid="41">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="100" height="19" tilewidth="48" tileheight="48" infinite="0" nextlayerid="11" nextobjectid="42">
  <tileset firstgid="1" name="Industrial" tilewidth="48" tileheight="48" tilecount="81" columns="0">
   <grid orientation="orthogonal" width="1" height="1"/>
   <tile id="0">
@@ -624,23 +624,22 @@
    <image source="tiles/Pointer2.png" width="48" height="48"/>
   </tile>
  </tileset>
- <objectgroup id="2" name="platform_collisions">
+ <objectgroup id="2" name="platform_collisions" locked="1">
   <object id="6" type="terrain" x="0" y="720" width="576" height="192"/>
   <object id="9" type="terrain" x="720" y="720" width="1104" height="192"/>
-  <object id="10" type="terrain" x="864" y="576" width="48" height="48"/>
-  <object id="11" type="terrain" x="1008" y="528" width="48" height="48"/>
-  <object id="12" type="terrain" x="1152" y="480" width="192" height="48"/>
-  <object id="13" type="terrain" x="1440" y="576" width="192" height="48"/>
-  <object id="14" type="terrain" x="2064" y="480" width="48" height="48"/>
-  <object id="15" type="terrain" x="2208" y="576" width="192" height="48"/>
+  <object id="10" type="terrain" x="864" y="576" width="48" height="24.5"/>
+  <object id="11" type="terrain" x="1008" y="528" width="48" height="24"/>
+  <object id="12" type="terrain" x="1152" y="480" width="192" height="24.3333"/>
+  <object id="14" type="terrain" x="2064" y="480" width="48" height="24"/>
+  <object id="15" type="terrain" x="2208" y="576" width="192" height="24.5"/>
   <object id="16" type="terrain" x="1968" y="720" width="528" height="192"/>
-  <object id="17" type="terrain" x="2592" y="624" width="288" height="48"/>
+  <object id="17" type="terrain" x="2592" y="624" width="288" height="24"/>
   <object id="18" type="terrain" x="2976" y="672" width="1824" height="240"/>
   <object id="19" type="terrain" x="3168" y="528" width="192" height="48"/>
-  <object id="20" type="terrain" x="3456" y="432" width="192" height="48"/>
-  <object id="21" type="terrain" x="3792" y="528" width="144" height="48"/>
-  <object id="22" type="terrain" x="4080" y="432" width="48" height="48"/>
-  <object id="23" type="terrain" x="4224" y="336" width="48" height="48"/>
+  <object id="20" type="terrain" x="3456" y="432" width="192" height="24.5"/>
+  <object id="21" type="terrain" x="3792" y="528" width="144" height="23.6667"/>
+  <object id="22" type="terrain" x="4080" y="432" width="48" height="24"/>
+  <object id="23" type="terrain" x="4224" y="336" width="48" height="24"/>
   <object id="26" type="water" x="576" y="768" width="144" height="144"/>
   <object id="27" type="water" x="1824" y="768" width="144" height="144"/>
   <object id="28" type="water" x="2496" y="768" width="480" height="144"/>
@@ -648,12 +647,13 @@
   <object id="30" type="terrain" x="336" y="528" width="96" height="48"/>
   <object id="33" type="terrain" x="4416" y="240" width="384" height="96"/>
   <object id="34" type="terrain" x="4464" y="96" width="336" height="48"/>
-  <object id="35" type="explosive" x="96" y="432" width="48" height="48"/>
-  <object id="36" type="explosive" x="2304" y="528" width="48" height="48"/>
-  <object id="37" type="explosive" x="4416" y="624" width="48" height="48"/>
-  <object id="39" type="explosive" x="4656" y="192" width="48" height="48"/>
+  <object id="35" type="explosive" x="96" y="442.25" width="27" height="37.75"/>
+  <object id="36" type="explosive" x="2304" y="538" width="26.625" height="38"/>
+  <object id="37" type="explosive" x="4416" y="633.625" width="27.375" height="38.375"/>
+  <object id="39" type="explosive" x="4656" y="202" width="27.25" height="38"/>
+  <object id="41" type="terrain" x="1392" y="576" width="288" height="48"/>
  </objectgroup>
- <layer id="9" name="background" width="100" height="19">
+ <layer id="9" name="background" width="100" height="19" locked="1">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -676,7 +676,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer id="8" name="map" width="100" height="19">
+ <layer id="8" name="map" width="100" height="19" locked="1">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -699,7 +699,7 @@
 13,14,14,14,14,14,14,14,14,14,14,15,40,41,42,13,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,15,40,41,42,13,14,14,14,14,14,14,14,14,14,15,40,41,41,41,41,41,41,41,41,42,13,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,15
 </data>
  </layer>
- <layer id="10" name="background_obj" width="100" height="19">
+ <layer id="10" name="background_obj" width="100" height="19" locked="1">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

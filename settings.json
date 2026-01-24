@@ -407,7 +407,7 @@
         },
         "skeleton": {
             "damage": 50,
-            "attack_distance": 200,
+            "attack_distance": 100,
             "health": 100,
             "sight": 200,
             "move_horizontal": 200,
@@ -1089,5 +1089,43 @@
         "pause": [
             "escape"
         ]
+    },
+    "difficulty_changes": {
+        "easy": {
+            "goblin": {
+                "movement": 200,
+                "health": 50,
+                "damage": 10
+            },
+            "skeleton": {
+                "movement": 200,
+                "health": 50,
+                "damage": 10
+            }
+        },
+        "normal": {
+            "goblin": {
+                "movement": 250,
+                "health": 100,
+                "damage": 25
+            },
+            "skeleton": {
+                "movement": 250,
+                "health": 100,
+                "damage": 25
+            }
+        },
+        "hard": {
+            "goblin": {
+                "movement": 300,
+                "health": 200,
+                "damage": 50
+            },
+            "skeleton": {
+                "movement": 300,
+                "health": 200,
+                "damage": 50
+            }
+        }
     }
 }

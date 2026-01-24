@@ -1,7 +1,7 @@
 """
 This module contains the Model class which acts as the main data and logic coordinator for the game.
 """
-from shared import Where, DebugElements
+from shared import Where, DebugElements, Difficulty
 from .physics import PhysicsEngine
 from . import entities
 from loguru import logger
@@ -36,6 +36,9 @@ class Model:
 
         self.where_array = self._create_where()
         self.debug_elements = self._add_debug()
+
+    def apply_difficulty(self, difficulty: Difficulty):
+        self.entities.apply_difficulty(difficulty)
 
     def game_not_lost(self):
         """
