@@ -34,7 +34,7 @@
                 "run": 20,
                 "jump": 30,
                 "attack_time": 100,
-                "death_time": 300,
+                "death_time": 85,
                 "wait_after_death": 300
             }
         },
@@ -1161,14 +1161,27 @@
             -1.0,
             1.0
         ],
+        "y_vel_multiplier": 2,
         "lifetime": 10,
         "gravity": 10,
-        "color": [
-            152,
-            11,
-            11
-        ],
         "qty": 60,
-        "step": 1
+        "step": 1,
+        "color": {
+            "skeleton": [
+                35,
+                42,
+                68
+            ],
+            "goblin": [
+                152,
+                11,
+                11
+            ],
+            "player": [
+                152,
+                11,
+                11
+            ]
+        }
     }
 }

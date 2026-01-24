@@ -108,7 +108,6 @@ class InputHandler:
                 self.controller.model.apply_difficulty(Difficulty.NORMAL)
 
             ui.change_game_state = None
-            ui.selected_gamemode = None
             ui.selected_difficulty = None
         elif ui.change_game_state == GameState.QUIT:
             self.controller.running = False

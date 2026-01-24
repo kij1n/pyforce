@@ -60,6 +60,13 @@ class Controller:
         while self.running and not self.model.game_ended(self.player_stats.game_mode):
             self._update_player_stats()
 
+            if self.game_state == GameState.PLAYING:
+                # only update the model if the game is running
+                self.model.update(pygame.mouse.get_pos())
+
+            if self.game_state in [GameState.MENU, GameState.PAUSE]:
+                self.input_handler.handle_menu_clicks(self.view.ui)
+
             self.view.render(
                 self.model.get_center_pos(),
                 self.model.get_where_array(),
@@ -69,13 +76,6 @@ class Controller:
                 self.player_stats,
                 self.model.effects.get_effects()
             )
-
-            if self.game_state == GameState.PLAYING:
-                # only update the model if the game is running
-                self.model.update(pygame.mouse.get_pos())
-
-            if self.game_state in [GameState.MENU, GameState.PAUSE]:
-                self.input_handler.handle_menu_clicks(self.view.ui)
 
             self.input_handler.handle()
 

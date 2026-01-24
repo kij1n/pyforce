@@ -69,7 +69,7 @@ class GameUI:
             f"Enemies killed: {stats.killed_enemies}",
             f"Time elapsed: {stats.time_elapsed / 1000:.2f}s",
             f"Difficulty: {stats.difficulty.value}",
-            f"Gamemode: {stats.game_mode.value}"
+            f"Gamemode: {getattr(stats.game_mode, 'value', 'None')}"
         ]
         for line in text:
             text_surf = font.render(line, True, settings["font_color"])

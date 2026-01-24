@@ -299,7 +299,8 @@ class EntityManager:
             self.model.effects.add_particles(
                 self.settings["particles"]["qty"],
                 self.player.get_position(),
-                self._invert_direction(self._get_direction_to_entity(self.player.get_position()[0], enemy.get_position()[0]))
+                self._invert_direction(self._get_direction_to_entity(self.player.get_position()[0], enemy.get_position()[0])),
+                "player"
             )
 
     def _check_for_attack(self, enemy) -> bool:
@@ -569,7 +570,8 @@ class EntityManager:
             self.model.effects.add_particles(
                 self.settings["particles"]["qty"],
                 entity.get_position(),
-                self._invert_direction(self._get_direction_to_entity(entity.get_position()[0], self.player.get_position()[0]))
+                self._invert_direction(self._get_direction_to_entity(entity.get_position()[0], self.player.get_position()[0])),
+                entity.name
             )
 
         self.remove_killed(sim)
