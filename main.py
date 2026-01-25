@@ -20,7 +20,11 @@ def setup_logging():
 
 def main():
     game = game_state.Controller()
-    game.run()
+
+    while game.run():
+        logger.info("Restarting game...")  # run returns true if player wants to restart
+
+
     logger.info("Game ended")
 
 

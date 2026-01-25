@@ -5,6 +5,7 @@ import pymunk
 import pytmx
 import os
 from loguru import logger
+from pymunk import ShapeFilter
 
 
 class PhysicsEngine:
@@ -241,4 +242,12 @@ class PhysicsEngine:
             categories=settings["physics"]["collision_categories"]["platform"],
             mask=settings["physics"]["collision_masks"]["platform"],
         )
+
+        if obj.type == "explosive":  # override settings for explosive objects
+            shape.collision_type = settings["physics"]["collision_types"]["explosive"]
+            shape.filter = ShapeFilter(
+                categories=settings["physics"]["collision_categories"]["explosive"],
+                mask=settings["physics"]["collision_masks"]["explosive"],
+            )
+
         return [shape, body]

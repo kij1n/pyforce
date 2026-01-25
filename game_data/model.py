@@ -82,23 +82,39 @@ class Model:
         :param mouse_pos: The current position of the mouse.
         :return: None
         """
+        self._update_entities(mouse_pos)
+        self._update_effects()
+        self._update_pickups()
+        self._update_where_array()
+        self.physics.sim.step(self.settings["physics"]["time_step"])
+        self._update_damage()
+        self._spawn()
+
+    def _spawn(self):
+        if self.player_stats.game_mode == GameMode.INFINITE:
+            self._spawn_enemy()
+            self._spawn_pickup()
+
+    def _update_damage(self):
+        self.entities.handle_hits(self.physics.entities_hit, self.physics.sim)
+        self.entities.handle_kills(self.physics.entities_to_kill)
+
+    def _update_where_array(self):
+        self.where_array = self.entities.get_where_array()
+
+    def _update_effects(self):
+        self.effects.update(self.settings["particles"]["step"])
+
+    def _update_pickups(self):
+        self.pickups.update_pickups_pos(self.settings["pickups"]["settings"]["step"])
+
+    def _update_entities(self, mouse_pos):
         self.entities.update_entity_states()
         self.entities.update_timers()
         self.entities.update_ground_contact(self.physics.entities_touching_ground)
         self.entities.update_enemy_action(self.physics.sim)
         self.entities.update_player_aim(mouse_pos)
         self.entities.update_bullets()
-        self.effects.update(self.settings["particles"]["step"])
-
-        self.where_array = self.entities.get_where_array()
-
-        self.physics.sim.step(self.settings["physics"]["time_step"])
-        self.entities.handle_hits(self.physics.entities_hit, self.physics.sim)
-        self.entities.handle_kills(self.physics.entities_to_kill)
-
-        if self.player_stats.game_mode == GameMode.INFINITE:
-            self._spawn_enemy()
-            self._spawn_pickup()
 
     def _spawn_pickup(self):
         pass

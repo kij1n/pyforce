@@ -105,7 +105,8 @@
             "bullet": 4,
             "enemy": 5,
             "enemy_feet": 6,
-            "water": 7
+            "water": 7,
+            "explosive": 8
         },
         "collision_categories": {
             "player": 1,
@@ -113,7 +114,8 @@
             "platform": 4,
             "player_bullet": 8,
             "enemy": 16,
-            "enemy_feet": 32
+            "enemy_feet": 32,
+            "explosive": 64
         },
         "collision_masks": {
             "player": 52,
@@ -122,7 +124,8 @@
             "player_bullet": 28,
             "enemy": 31,
             "enemy_feet": 63,
-            "line_of_sight": 15
+            "line_of_sight": 15,
+            "explosive": 8
         },
         "timeout": {
             "bullet": 1000
@@ -1240,7 +1243,6 @@
         ]
     },
     "pickups": {
-        "range": 20,
         "static": [
             {
                 "type": "health",
@@ -1269,6 +1271,15 @@
         },
         "paths": {
             "health": "assets/player/pickup_health.png"
+        },
+        "settings": {
+            "range": 20,
+            "movement_range": [
+                -5,
+                5
+            ],
+            "movement_speed": 3,
+            "step": 0.1
         }
     }
 }

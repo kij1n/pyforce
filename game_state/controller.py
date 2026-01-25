@@ -88,6 +88,8 @@ class Controller:
             self.json_manager.append_record(self.player_stats)
         pygame.quit()
 
+        return False
+
     def _prepare_render_info(self):
         info = self.model.get_render_info()
         info.game_state = self.game_state
