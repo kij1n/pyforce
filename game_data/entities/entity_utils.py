@@ -1,6 +1,8 @@
 """
 This module provides utility functions for creating and managing entity physics components.
 """
+import weakref
+
 from pymunk import Body, Vec2d, Poly, ShapeFilter
 from pygame import Rect
 
@@ -45,8 +47,8 @@ def _add_ents_to_shapes(shape, feet, entity):
     :param entity: The entity instance.
     :return: None
     """
-    shape.entity = entity
-    feet.entity = entity
+    shape.entity = weakref.proxy(entity)
+    feet.entity = weakref.proxy(entity)
 
 
 def _create_body(mass, moment, ent_settings, pos=None):

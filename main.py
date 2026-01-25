@@ -22,6 +22,7 @@ def main():
     game = game_state.Controller()
 
     while game.run():
+        game = game_state.Controller()  # reinitialize controller
         logger.info("Restarting game...")  # run returns true if player wants to restart
 
 

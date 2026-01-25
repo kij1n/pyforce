@@ -61,6 +61,45 @@ class GameUI:
         self.pause_menu = self._create_pause_menu()
         self._add_pause_buttons()
 
+        self.restart = None
+        self.save_score = False
+
+        self.save_menu = self._create_submenu("Save score?")
+        self._add_save_button()
+        self.restart_menu = self._create_submenu("Restart?")
+        self._add_restart_button()
+
+    def start_restart_mainloop(self):
+        self.restart_menu.enable()
+        self.restart_menu.mainloop(self.screen)
+
+    def start_save_mainloop(self):
+        self.save_menu.mainloop(self.screen)
+
+    def _add_restart_button(self):
+        self.restart_menu.add.button(
+            "Yes", self._restart_game
+        )
+        self.restart_menu.add.button(
+            "No", self.restart_menu.disable
+        )
+
+    def _restart_game(self):
+        self.restart = True
+        self.restart_menu.disable()
+
+    def _add_save_button(self):
+        self.save_menu.add.button(
+            "Yes", self._save_score
+        )
+        self.save_menu.add.button(
+            "No", self.save_menu.disable
+        )
+
+    def _save_score(self):
+        self.save_score = True
+        self.save_menu.disable()
+
     def render_player_weapons(self, player_where, sprite_loader):
         for index, gun in enumerate(player_where.guns_available):
             sprite = sprite_loader.get_sprite(gun)
@@ -91,7 +130,6 @@ class GameUI:
 
         pygame.draw.rect(surf, color + [opacity], surf.get_rect(), width)
         self.screen.blit(surf, surf.get_rect(center=rect.center))
-
 
     def render_player_stats(self, stats):
         settings = self.settings["player_stats"]

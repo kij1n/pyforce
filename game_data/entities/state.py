@@ -1,6 +1,8 @@
 """
 This module contains the State class which manages the internal state and animation logic of an entity.
 """
+import weakref
+
 from loguru import logger
 from pymunk import Vec2d
 from shared import StateName, Direction, EnemyAction, EnemyName
@@ -39,7 +41,7 @@ class State:
         :param state_manager: The StateManager instance.
         :return: None
         """
-        self.state_manager = state_manager
+        self.state_manager = weakref.proxy(state_manager)
         self.settings = state_manager.entity.settings
 
         self.state = state

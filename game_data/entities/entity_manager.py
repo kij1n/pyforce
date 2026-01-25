@@ -12,6 +12,7 @@ from shared import *
 from math import cos, sin, radians
 import math
 import random
+import weakref
 
 
 from loguru import logger
@@ -42,7 +43,7 @@ class EntityManager:
         """
         logger.info("Initializing entity manager...")
 
-        self.model = model
+        self.model = weakref.proxy(model)
         self.settings = settings
         self.sim = sim
         self.player = Player(settings, self)
@@ -555,10 +556,13 @@ class EntityManager:
         # used to kill entities that touch water
         ents_to_remove = []
         for ent in entities_to_kill:
-            if ent.name == "player" and self._check_debug():
+            try:
+                if ent.name == "player" and self._check_debug():
+                    continue
+                if self._kill_entity(ent, self.sim):
+                    ents_to_remove.append(ent)
+            except ReferenceError:
                 continue
-            if self._kill_entity(ent, self.sim):
-                ents_to_remove.append(ent)
 
         for ent in ents_to_remove:
             entities_to_kill.remove(ent)
@@ -664,7 +668,8 @@ class EntityManager:
         """
         if None not in [entity.body.space, entity.shape.space, entity.feet.space]:
             self.sim.remove(entity.body, entity.shape, entity.feet)
-            self.enemies_killed += 1
+            if entity.name != "player":
+                self.enemies_killed += 1
         if entity.name == "player":
             self.player = None
         else:

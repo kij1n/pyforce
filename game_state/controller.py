@@ -62,14 +62,6 @@ class Controller:
 
             self.view.render(
                 self._prepare_render_info()
-                # self.model.get_center_pos(),
-                # self.model.get_where_array(),
-                # self.model.get_bullets_dict(),
-                # self.model.debug_elements,
-                # self.game_state,
-                # self.player_stats,
-                # self.model.effects.get_effects(),
-                # self.model.pickups.get_pickups()
             )
 
             if self.game_state == GameState.PLAYING:
@@ -83,12 +75,17 @@ class Controller:
 
             self.fps.tick(self.settings["fps"])
 
-        if self._should_save_score():
-            self._update_player_stats()
-            self.json_manager.append_record(self.player_stats)
-        pygame.quit()
+        return self._should_restart()
 
-        return False
+    def _should_restart(self):
+        if self._can_save_score():
+            self.view.ui.start_save_mainloop()
+            if self.view.ui.save_score:
+                self._update_player_stats()
+                self.json_manager.append_record(self.player_stats)
+
+        self.view.ui.start_restart_mainloop()
+        return self.view.ui.restart
 
     def _prepare_render_info(self):
         info = self.model.get_render_info()
@@ -96,7 +93,7 @@ class Controller:
         info.player_stats = self.player_stats
         return info
 
-    def _should_save_score(self):
+    def _can_save_score(self):
         return (
             self.player_stats.game_mode == GameMode.INFINITE or
             (self.player_stats.game_mode == GameMode.SPEEDRUN and len(self.model.entities.enemies) == 0)

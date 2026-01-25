@@ -1,6 +1,8 @@
 """
 This module contains the StateManager class which acts as an interface between an entity and its state.
 """
+import weakref
+
 from loguru import logger
 from pymunk import Vec2d
 from shared import *
@@ -26,7 +28,7 @@ class StateManager:
         :param entity: The entity instance.
         :return: None
         """
-        self.entity = entity
+        self.entity = weakref.proxy(entity)
 
         self.name = getattr(self.entity.name, "value", "player")
         if self.name == "player":

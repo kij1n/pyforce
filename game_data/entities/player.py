@@ -1,6 +1,8 @@
 """
 This module contains the Player class which represents the player entity.
 """
+import weakref
+
 from loguru import logger
 
 from shared import StateName
@@ -38,7 +40,7 @@ class Player:
         """
         self.name = "player"
         self.settings = settings
-        self.entity_manager = entity_manager
+        self.entity_manager = weakref.proxy(entity_manager)
         self.health = self.settings["player_info"]["health"]
         self.max_health = self.health
 

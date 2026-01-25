@@ -1,6 +1,8 @@
 """
 This module contains the InputHandler class which manages user inputs.
 """
+import weakref
+
 import pygame
 from loguru import logger
 from shared import GameState, Direction, Difficulty
@@ -21,7 +23,7 @@ class InputHandler:
         :param controller: The main controller instance.
         :return: None
         """
-        self.controller = controller
+        self.controller = weakref.proxy(controller)
         self.mouse_map = {
             "mouse_left": 0,
             "mouse_middle": 1,
@@ -47,7 +49,7 @@ class InputHandler:
             return
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.controller.running = False
+                pygame.quit()
             if event.type == pygame.KEYDOWN:
                 if event.key in self._get_key_list("switch_weapon"):
                     self.controller.model.player_switch_weapon()

@@ -1,12 +1,13 @@
+import weakref
 from dataclasses import dataclass
 from pymunk import Vec2d
-from game_data.pickup import Pickup
+from .pickup import Pickup
 
 
 class PickupManager:
     def __init__(self, settings, model):
         self.settings = settings
-        self.model = model
+        self.model = weakref.proxy(model)
         self.pickups = []
         self._load_static_pickups()
 

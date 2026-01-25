@@ -1,6 +1,8 @@
 """
 This module contains the Enemy class, which represents an enemy entity in the game.
 """
+import weakref
+
 from .state_manager import StateManager
 from .entity_utils import prepare_collision_box
 from loguru import logger
@@ -43,7 +45,7 @@ class Enemy:
         self.health = self.settings["enemy_info"][name.value]["health"]
         self.max_health = self.health
         self.damage_dealt = self.settings["enemy_info"][name.value]["damage"]
-        self.entity_manager = entity_manager
+        self.entity_manager = weakref.proxy(entity_manager)
 
         self.body, self.shape, self.feet = prepare_collision_box(name.value, settings, self, pos=pos, ent_id=ent_id)
         self.ent_id = ent_id
