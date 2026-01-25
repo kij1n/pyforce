@@ -82,6 +82,8 @@ class JSONManager:
                 record = self._create_dict(stats)
                 f.write(json.dumps(record) + "\n")
 
+            logger.info(f"Record saved to {path}")
+
         except FileNotFoundError:
             logger.error("Records file not found.")
         except Exception as e:

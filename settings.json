@@ -50,13 +50,28 @@
     "weapons": {
         "base": {
             "rate_of_fire": 10,
-            "reach": 4000
+            "reach": 1000,
+            "multishot": 1,
+            "accuracy": 1
+        },
+        "shotgun": {
+            "rate_of_fire": 10,
+            "reach": 200,
+            "multishot": 30,
+            "accuracy": 0.8
         }
     },
     "ammo": {
         "base": {
             "velocity": 2500,
             "damage": 10,
+            "bullet_mass": 1,
+            "bullet_radius": 1,
+            "bullet_name": "bullet"
+        },
+        "shotgun": {
+            "velocity": 2500,
+            "damage": 1,
             "bullet_mass": 1,
             "bullet_radius": 1,
             "bullet_name": "bullet"
@@ -973,6 +988,14 @@
                         0,
                         0
                     ]
+                },
+                {
+                    "path": "assets/player/shotgun.png",
+                    "offset": [
+                        0,
+                        0
+                    ],
+                    "rotation": -45
                 }
             ],
             "bullet": [
@@ -1089,6 +1112,12 @@
         ],
         "pause": [
             "escape"
+        ],
+        "switch_weapon": [
+            "tab"
+        ],
+        "pickup": [
+            "f"
         ]
     },
     "difficulty_changes": {
@@ -1182,6 +1211,64 @@
                 11,
                 11
             ]
+        }
+    },
+    "weapons_ui": {
+        "position": [
+            50,
+            200
+        ],
+        "offset": [
+            0,
+            30
+        ],
+        "color": [
+            255,
+            255,
+            255
+        ],
+        "held_color": [
+            8,
+            13,
+            53
+        ],
+        "opacity": 200,
+        "width": 3,
+        "frame_size": [
+            50,
+            25
+        ]
+    },
+    "pickups": {
+        "range": 20,
+        "static": [
+            {
+                "type": "health",
+                "amount": 50,
+                "position": [
+                    194,
+                    425
+                ]
+            },
+            {
+                "type": "weapon",
+                "name": "shotgun",
+                "position": [
+                    4562,
+                    164
+                ]
+            }
+        ],
+        "dynamic": {
+            "health": {
+                "range": [
+                    10,
+                    50
+                ]
+            }
+        },
+        "paths": {
+            "health": "assets/player/pickup_health.png"
         }
     }
 }

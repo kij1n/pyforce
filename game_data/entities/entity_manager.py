@@ -144,6 +144,8 @@ class EntityManager:
                 rate_of_fire=settings["weapons"][name]["rate_of_fire"],
                 reach=settings["weapons"][name]["reach"],
                 ammo=None,
+                accuracy=settings["weapons"][name]["accuracy"],
+                multishot=settings["weapons"][name]["multishot"]
             )
             weapons[name] = weapon
         return weapons
@@ -499,6 +501,8 @@ class EntityManager:
                 to_be_removed.append((bullet, shape))
             elif (bullet.start_pos - shape.body.position).length >= bullet.reach:
                 to_be_removed.append((bullet, shape))
+            elif bullet.has_collided:
+                to_be_removed.append((bullet, shape))
 
         for bullet, shape in to_be_removed:
             self._remove_bullet(bullet, shape.body.space)
@@ -512,14 +516,21 @@ class EntityManager:
         if not self.weapons[self.player.gun_held].can_shoot():
             return None, None, None
 
+        bullets = []
+
         weapon = self.weapons[self.player.gun_held]
         ammo = self.ammo[self.player.ammo_used]
 
-        info = self._get_basic_bullet_info(weapon, ammo)
-
-        bullet = Bullet(info=info, arm_deg=self.player.arm_deg, ammo=ammo, settings=self.settings)
-
-        return bullet.body, bullet.shape, bullet
+        accuracy = weapon.accuracy
+        for _ in range(weapon.multishot):
+            info = self._get_basic_bullet_info(weapon, ammo)
+            max_deviation = (1 - accuracy) * 90  # maximum bullet spread angle from arm deg
+            deviation = random.uniform(-max_deviation, max_deviation)
+            angle = self.player.arm_deg + deviation
+            bullet = Bullet(info=info, arm_deg=angle, ammo=ammo, settings=self.settings)
+            bullets.append(bullet)
+            self.bullets_dict[bullet] = bullet.shape
+        return bullets
 
     def _get_basic_bullet_info(self, weapon, ammo):
         """
@@ -565,7 +576,7 @@ class EntityManager:
                 continue
             bullet.has_collided = True
             entity.take_damage(bullet.damage)
-            self._remove_bullet(bullet, sim)
+            # self._remove_bullet(bullet, sim)
 
             self.model.effects.add_particles(
                 self.settings["particles"]["qty"],
@@ -588,11 +599,10 @@ class EntityManager:
         :param sim: The physics simulation space.
         :return: None
         """
-        shape = self.bullets_dict[bullet]
+        shape = self.bullets_dict.get(bullet, None)
+
         sim.remove(shape, shape.body)
-        del self.bullets_dict[bullet]
-        del bullet
-        del shape
+        self.bullets_dict.pop(bullet)
 
     def remove_killed(self, sim: pymunk.Space):
         """

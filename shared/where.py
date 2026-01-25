@@ -32,3 +32,4 @@ class Where:
     hitbox: Rect
     health_percent: float
     is_dead: bool = False  # used for player
+    guns_available: list[str] = None  # used for player

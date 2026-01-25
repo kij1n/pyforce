@@ -60,22 +60,24 @@ class Controller:
         while self.running and not self.model.game_ended(self.player_stats.game_mode):
             self._update_player_stats()
 
+            self.view.render(
+                self._prepare_render_info()
+                # self.model.get_center_pos(),
+                # self.model.get_where_array(),
+                # self.model.get_bullets_dict(),
+                # self.model.debug_elements,
+                # self.game_state,
+                # self.player_stats,
+                # self.model.effects.get_effects(),
+                # self.model.pickups.get_pickups()
+            )
+
             if self.game_state == GameState.PLAYING:
                 # only update the model if the game is running
                 self.model.update(pygame.mouse.get_pos())
 
             if self.game_state in [GameState.MENU, GameState.PAUSE]:
                 self.input_handler.handle_menu_clicks(self.view.ui)
-
-            self.view.render(
-                self.model.get_center_pos(),
-                self.model.get_where_array(),
-                self.model.get_bullets_dict(),
-                self.model.debug_elements,
-                self.game_state,
-                self.player_stats,
-                self.model.effects.get_effects()
-            )
 
             self.input_handler.handle()
 
@@ -85,6 +87,12 @@ class Controller:
             self._update_player_stats()
             self.json_manager.append_record(self.player_stats)
         pygame.quit()
+
+    def _prepare_render_info(self):
+        info = self.model.get_render_info()
+        info.game_state = self.game_state
+        info.player_stats = self.player_stats
+        return info
 
     def _should_save_score(self):
         return (

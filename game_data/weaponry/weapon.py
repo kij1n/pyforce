@@ -14,7 +14,7 @@ class Weapon:
         last_shot (int): The number of ticks since the last shot was fired.
     """
 
-    def __init__(self, rate_of_fire, reach, ammo):
+    def __init__(self, rate_of_fire, reach, ammo, accuracy, multishot):
         """
         Initializes a Weapon instance.
 
@@ -27,6 +27,8 @@ class Weapon:
         self.reach = reach
         self.ammo = ammo
         self.last_shot = 0  # ticks since last shot
+        self.accuracy = accuracy
+        self.multishot = multishot
 
     def can_shoot(self):
         """

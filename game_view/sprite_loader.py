@@ -27,8 +27,25 @@ class SpriteLoader:
         self.sprites = (
                 self.load_player(settings) |
                 self.load_enemies(settings) |
-                self._load_menu_backgrounds(settings)
+                self._load_menu_backgrounds(settings) |
+                self._load_pickups(settings)
         )
+
+    def _load_pickups(self, settings: dict):
+        pickups = {}
+        pickup_info = settings["pickups"]["paths"]
+        for path in pickup_info.values():
+            try:
+                image = pygame.image.load(self._get_path(path)).convert_alpha()
+                sprite_name = path.split(".")[0].split('/')[-1]
+                pickups[sprite_name] = Sprite(image, None)
+            except FileNotFoundError:
+                logger.error(f"File not found: {path}")
+            except pygame.error:
+                logger.error(f"Pygame could not load: {path}")
+            except Exception as e:
+                logger.error(f"Unexpected error loading {path}: {e}")
+        return pickups
 
     def _load_menu_backgrounds(self, settings: dict):
         backgrounds = {}
@@ -47,11 +64,9 @@ class SpriteLoader:
             except Exception as e:
                 logger.error(f"Unexpected error loading {settings[i]['background_path']}: {e}")
 
-        logger.info(f"Backgrounds loading complete")
+        logger.info("Backgrounds loading complete")
 
         return backgrounds
-
-
 
     def load_player(self, settings: dict):
         """
@@ -69,8 +84,10 @@ class SpriteLoader:
                 try:
                     path = self._get_path(sprite_info["path"])
                     offset = sprite_info["offset"]
+                    rotation = sprite_info.get("rotation", 0)
 
                     image = pygame.image.load(path).convert_alpha()
+                    image = pygame.transform.rotate(image, rotation)
                     sprite = Sprite(image, offset)
 
                     if sprite_type == "arm":

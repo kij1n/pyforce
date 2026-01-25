@@ -3,6 +3,9 @@ This module contains the EntityRenderer class and helper functions for rendering
 """
 import pygame
 from math import cos, sin, radians, sqrt
+
+from loguru import logger
+
 from shared import Where
 
 

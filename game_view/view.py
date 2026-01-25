@@ -2,7 +2,7 @@
 This module contains the View class which handles the overall rendering of the game.
 """
 from game_data.effects_manager import EffectsManager
-from shared import GameState, PlayerStats
+from shared import GameState, PlayerStats, RenderInfo
 from .effects_renderer import EffectsRenderer
 from .ui import GameUI
 from .entity_renderer import *
@@ -52,37 +52,34 @@ class View:
         self.map_renderer = MapRenderer(self.size, self.settings)
         self.effects_renderer = EffectsRenderer(self.settings, self.screen)
 
-    def render(self, player_pos, where_array: list[Where], bullets_set, debug_elements, game_state: GameState, player_stats: PlayerStats, effects):
+    def render(self, info: RenderInfo):
         """
         Renders the entire game scene based on the current game state.
 
-        :param player_stats: PlayerStats object containing player stats.
-        :param player_pos: The current position of the player.
-        :param where_array: A list of Where objects containing information about where to render entities.
-        :param bullets_set: A set of active bullets to render.
-        :param debug_elements: An object containing debug information to render.
-        :param game_state: The current state of the game, a GameState enum value.
+        :param info: RenderInfo object containing all game data.
         :return: None
         """
-        if game_state == GameState.MENU:
-            self.ui.change_game_state = game_state
+        if info.game_state == GameState.MENU:
+            self.ui.change_game_state = info.game_state
             self.ui.render(self.sprite_loader, events=pygame.event.get())
             pygame.display.flip()
             return
-        if game_state == GameState.PAUSE:
-            self.ui.change_game_state = game_state
+        if info.game_state == GameState.PAUSE:
+            self.ui.change_game_state = info.game_state
             self.ui.render_pause(self.sprite_loader, events=pygame.event.get())
             pygame.display.flip()
             return
 
-        self.map_renderer.render(player_pos, self.screen, self.sprite_loader)
-        self.entity_renderer.render(where_array, self.sprite_loader, self.screen, self.settings, player_pos)
-        self.entity_renderer.render_bullets(bullets_set, self.sprite_loader, self.screen, self.settings, player_pos)
-        self.ui.render_player_stats(player_stats)
-        self.effects_renderer.render(effects, player_pos)
+        self.map_renderer.render(info.player_pos, self.screen, self.sprite_loader)
+        self.entity_renderer.render(info.where_array, self.sprite_loader, self.screen, self.settings, info.player_pos)
+        self.entity_renderer.render_bullets(info.bullets_dict, self.sprite_loader, self.screen, self.settings, info.player_pos)
+        self.ui.render_player_stats(info.player_stats)
+        self.ui.render_player_weapons(info.where_array[0], self.sprite_loader)  # player's Where instance is always the first
+        self.effects_renderer.render(info.effects, info.player_pos)
+        self.effects_renderer.render_pickups(info.pickups, self.sprite_loader, info.player_pos)
 
         # DEBUG DRAWING
-        self._render_debug_info(player_pos, debug_elements)
+        self._render_debug_info(info.player_pos, info.debug_elements)
         # DEBUG DRAWING
 
         pygame.display.flip()

@@ -59,6 +59,7 @@ class StateManager:
             hitbox=get_ent_rect(self.entity),
             is_dead=True if self.state.get_state() == StateName.DEATH else False,
             health_percent=self.entity.health / self.entity.max_health,
+            guns_available=getattr(self.entity, "guns_available", None),
         )
 
         return where

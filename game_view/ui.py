@@ -61,6 +61,38 @@ class GameUI:
         self.pause_menu = self._create_pause_menu()
         self._add_pause_buttons()
 
+    def render_player_weapons(self, player_where, sprite_loader):
+        for index, gun in enumerate(player_where.guns_available):
+            sprite = sprite_loader.get_sprite(gun)
+            image = sprite.image
+
+            pos = self.settings["weapons_ui"]["position"]
+            offset = self.settings["weapons_ui"]["offset"]
+            pos = (
+                pos[0] + offset[0] * index,
+                pos[1] + offset[1] * index
+            )
+            rect = image.get_rect(center=pos)
+
+            if gun == player_where.gun_name:
+                color = self.settings["weapons_ui"]["held_color"]
+            else:
+                color = self.settings["weapons_ui"]["color"]
+
+            self._render_weapon_frame(color, rect)
+            self.screen.blit(image, rect)
+
+    def _render_weapon_frame(self, color, rect):
+        frame_size = self.settings["weapons_ui"]["frame_size"]
+        surf = pygame.Surface(frame_size, pygame.SRCALPHA)
+
+        opacity = self.settings["weapons_ui"]["opacity"]
+        width = self.settings["weapons_ui"]["width"]
+
+        pygame.draw.rect(surf, color + [opacity], surf.get_rect(), width)
+        self.screen.blit(surf, surf.get_rect(center=rect.center))
+
+
     def render_player_stats(self, stats):
         settings = self.settings["player_stats"]
         font = pygame.font.Font(self.theme.widget_font, settings["font_size"])

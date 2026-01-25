@@ -1,12 +1,13 @@
 """
 This module contains the Model class which acts as the main data and logic coordinator for the game.
 """
-from shared import Where, DebugElements, Difficulty, GameMode
-from .effects_manager import EffectsManager
+from shared import Where, DebugElements, Difficulty, GameMode, RenderInfo
 from .physics import PhysicsEngine
 from . import entities
 from .effects_manager import EffectsManager
 from loguru import logger
+
+from .pickup_manager import PickupManager
 
 
 class Model:
@@ -36,10 +37,23 @@ class Model:
         self.physics = PhysicsEngine(self.settings)
         self.entities = entities.EntityManager(self.settings, self.physics.sim, self)
         self.effects = EffectsManager(self.settings)
+        self.pickups = PickupManager(self.settings, self)
+
         self.insert_ents_to_sim()
 
         self.where_array = self._create_where()
         self.debug_elements = self._add_debug()
+
+    def get_render_info(self):
+        info = RenderInfo(
+            player_pos=self.entities.get_player_pos(),
+            where_array=self.get_where_array(),
+            bullets_dict=self.get_bullets_dict(),
+            debug_elements=self.debug_elements,
+            effects=self.effects.get_effects(),
+            pickups=self.pickups.get_pickups()
+        )
+        return info
 
     def get_effects(self):
         return self.effects.particles
@@ -58,6 +72,9 @@ class Model:
 
         return self.entities.player is None
 
+    def player_pickup(self):
+        self.pickups.activate_if_in_range(self.entities.get_player_pos())
+
     def update(self, mouse_pos):
         """
         Updates the game state for a single frame.
@@ -71,16 +88,20 @@ class Model:
         self.entities.update_enemy_action(self.physics.sim)
         self.entities.update_player_aim(mouse_pos)
         self.entities.update_bullets()
+        self.effects.update(self.settings["particles"]["step"])
 
         self.where_array = self.entities.get_where_array()
 
         self.physics.sim.step(self.settings["physics"]["time_step"])
         self.entities.handle_hits(self.physics.entities_hit, self.physics.sim)
         self.entities.handle_kills(self.physics.entities_to_kill)
-        self.effects.update(self.settings["particles"]["step"])
 
         if self.player_stats.game_mode == GameMode.INFINITE:
             self._spawn_enemy()
+            self._spawn_pickup()
+
+    def _spawn_pickup(self):
+        pass
 
     def _spawn_enemy(self):
         max_enemies = self.settings["difficulty_changes"][self.player_stats.difficulty.value]["max_enemies_on_map"]
@@ -173,10 +194,32 @@ class Model:
         if self.entities.player.is_dying():
             return
 
-        body, shape, bullet = self.entities.get_bullet()
+        bullets = self.entities.get_bullet()
 
-        if body is None or shape is None or bullet is None:
-            return
+        for bullet in bullets:
+            body = getattr(bullet, "body", None)
+            shape = getattr(bullet, "shape", None)
 
-        self.physics.sim.add(body, shape)
-        self.entities.bullets_dict[bullet] = shape
+            if body is None or shape is None or bullet is None:
+                continue
+
+            self.physics.sim.add(body, shape)
+
+    def player_switch_weapon(self):
+        current = self.entities.player.gun_held
+        gun_list = self.entities.player.guns_available
+
+        try:
+            index = gun_list.index(current)
+        except ValueError:
+            index = 0
+
+        new_index = (index + 1) % len(gun_list)
+        new_gun = gun_list[new_index]
+        self.entities.player.gun_held = new_gun
+
+    def pickup_weapon(self, weapon):
+        self.entities.player.guns_available.append(weapon)
+
+    def pickup_health(self, health):
+        self.entities.player.health += health

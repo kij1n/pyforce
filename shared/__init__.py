@@ -9,6 +9,7 @@ from .weapon_utils import BasicBulletInfo
 from .debug_elements import DebugElements
 from .game_state import *
 from .effects_enum import Effect
+from .render_info import RenderInfo
 
 __all__ = [
     "Where",
@@ -23,5 +24,6 @@ __all__ = [
     "GameMode",
     "Difficulty",
     "PlayerStats",
-    "Effect"
+    "Effect",
+    "RenderInfo"
 ]

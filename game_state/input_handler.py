@@ -48,6 +48,9 @@ class InputHandler:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.controller.running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key in self._get_key_list("switch_weapon"):
+                    self.controller.model.player_switch_weapon()
 
     def handle_keys(self):
         """
@@ -75,6 +78,20 @@ class InputHandler:
             self.controller.game_state = GameState.PAUSE
         if self._check_binds(keys, mouse, key_bindings["shoot"]):
             self.controller.model.player_shoot()
+        if self._check_binds(keys,mouse,key_bindings["pickup"]):
+            self.controller.model.player_pickup()
+
+    def _get_key_list(self, action: str):
+        binds = self.controller.settings["key_bindings"][action]
+
+        output = []
+        for bind in binds:
+            if bind is not None:
+                output.append(pygame.key.key_code(bind))
+            else:
+                output.append(None)
+
+        return output
 
     def _check_binds(self, keys, mouse, binds: list):
         for key in binds:
