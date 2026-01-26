@@ -647,7 +647,11 @@ class EntityManager:
         if not entity.is_over_dying():
             return False
 
-        self.enemies.discard(entity)
+        try:
+            self.enemies.discard(entity)
+        except TypeError:
+            return True
+
         entity.kill()
         return True
 
