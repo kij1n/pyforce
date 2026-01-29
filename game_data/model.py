@@ -45,6 +45,11 @@ class Model:
         self.debug_elements = self._add_debug()
 
     def get_render_info(self):
+        """
+        Gathers all information required for rendering the current frame.
+
+        :return: A RenderInfo instance containing position and state information.
+        """
         info = RenderInfo(
             player_pos=self.entities.get_player_pos(),
             where_array=self.get_where_array(),
@@ -56,9 +61,20 @@ class Model:
         return info
 
     def get_effects(self):
+        """
+        Retrieves the current active particles/effects.
+
+        :return: A list of active particles.
+        """
         return self.effects.particles
 
     def apply_difficulty(self, difficulty: Difficulty):
+        """
+        Applies the specified difficulty setting to the game entities.
+
+        :param difficulty: The Difficulty level to apply.
+        :return: None
+        """
         self.entities.apply_difficulty(difficulty)
 
     def game_ended(self, game_mode: GameMode):
@@ -73,6 +89,11 @@ class Model:
         return self.entities.player is None
 
     def player_pickup(self):
+        """
+        Attempts to pick up any items within range of the player.
+
+        :return: None
+        """
         self.pickups.activate_if_in_range(self.entities.get_player_pos())
 
     def update(self, mouse_pos):
@@ -91,21 +112,46 @@ class Model:
         self._spawn()
 
     def _spawn(self):
+        """
+        Handles spawning of enemies and pickups based on the current game mode.
+
+        :return: None
+        """
         if self.player_stats.game_mode == GameMode.INFINITE:
             self._spawn_enemy()
             self._spawn_pickup()
 
     def _update_damage(self):
+        """
+        Processes entity hits and kills from the last physics step.
+
+        :return: None
+        """
         self.entities.handle_hits(self.physics.entities_hit, self.physics.sim)
         self.entities.handle_kills(self.physics.entities_to_kill)
 
     def _update_where_array(self):
+        """
+        Updates the rendering information for all entities.
+
+        :return: None
+        """
         self.where_array = self.entities.get_where_array()
 
     def _update_effects(self):
+        """
+        Updates the state of active effects/particles.
+
+        :return: None
+        """
         self.effects.update(self.settings["particles"]["step"])
 
     def _update_pickups(self):
+        """
+        Updates the positions and states of active pickups.
+
+        :return: None
+        """
         self.pickups.update_pickups_pos(self.settings["pickups"]["settings"]["step"])
 
     def _update_entities(self, mouse_pos):

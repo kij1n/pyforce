@@ -1,6 +1,0 @@
-__pycache__/
-.venv/
-logs/
-!logs/.gitkeep
-backups/
-records.jsonl

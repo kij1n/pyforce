@@ -78,27 +78,55 @@ class Controller:
         return self._should_restart()
 
     def _should_restart(self):
+        """
+        Determines if the game should restart based on user input after the game ends.
+        Also handles saving the player's score if applicable.
+
+        :return: True if the game should restart, False otherwise.
+        """
         if self._can_save_score():
-            self.view.ui.start_save_mainloop()
-            if self.view.ui.save_score:
-                self._update_player_stats()
-                self.json_manager.append_record(self.player_stats)
+            self._save_score()
 
         self.view.ui.start_restart_mainloop()
         return self.view.ui.restart
 
+    def _save_score(self):
+        """
+        Helper method to ask whether to save and save the player's score if applicable.
+        :return:
+        """
+        self.view.ui.start_save_mainloop()
+        if self.view.ui.save_score:
+            self._update_player_stats()
+            self.json_manager.append_record(self.player_stats)
+
     def _prepare_render_info(self):
+        """
+        Collects and prepares all necessary information for rendering the current game state.
+
+        :return: A RenderInfo instance containing data for the view.
+        """
         info = self.model.get_render_info()
         info.game_state = self.game_state
         info.player_stats = self.player_stats
         return info
 
     def _can_save_score(self):
+        """
+        Checks if the current game conditions allow for saving the player's score.
+
+        :return: True if the score can be saved, False otherwise.
+        """
         return (
             self.player_stats.game_mode == GameMode.INFINITE or
             (self.player_stats.game_mode == GameMode.SPEEDRUN and len(self.model.entities.enemies) == 0)
         )
 
     def _update_player_stats(self):
+        """
+        Updates the player's statistics with the latest game data.
+
+        :return: None
+        """
         self.player_stats.time_elapsed = pygame.time.get_ticks()
         self.player_stats.killed_enemies = self.model.entities.enemies_killed

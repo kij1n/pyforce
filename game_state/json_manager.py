@@ -76,6 +76,12 @@ class JSONManager:
             logger.error(f"Failed to load settings file: {e}")
 
     def append_record(self, stats: PlayerStats):
+        """
+        Appends a player's statistics as a record to the file specified in the settings.
+
+        :param stats: The PlayerStats instance containing the game results.
+        :return: None
+        """
         path = self.settings["records_path"]
         try:
             with open(path, "a") as f:
@@ -91,6 +97,12 @@ class JSONManager:
 
     @staticmethod
     def _create_dict(stats: PlayerStats):
+        """
+        Creates a dictionary representation of the player's statistics.
+
+        :param stats: The PlayerStats instance to convert.
+        :return: A dictionary containing player statistics.
+        """
         record = {
             "username": stats.username,
             "killed_enemies": stats.killed_enemies,

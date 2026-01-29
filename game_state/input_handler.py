@@ -84,6 +84,12 @@ class InputHandler:
             self.controller.model.player_pickup()
 
     def _get_key_list(self, action: str):
+        """
+        Retrieves a list of pygame key codes associated with a specific action.
+
+        :param action: The action name as defined in the key bindings settings.
+        :return: A list of pygame key codes.
+        """
         binds = self.controller.settings["key_bindings"][action]
 
         output = []
@@ -96,6 +102,14 @@ class InputHandler:
         return output
 
     def _check_binds(self, keys, mouse, binds: list):
+        """
+        Checks if any of the given bindings are currently pressed.
+
+        :param keys: The state of all keyboard keys.
+        :param mouse: The state of all mouse buttons.
+        :param binds: A list of key or mouse button strings to check.
+        :return: True if any binding is pressed, False otherwise.
+        """
         for key in binds:
             if key.startswith("mouse_"):
                 num = self.mouse_map[key]

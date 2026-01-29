@@ -1,3 +1,6 @@
+"""
+This module is the entry point of the application. It sets up logging and starts the game loop.
+"""
 import sys
 import game_state
 import datetime
@@ -5,6 +8,11 @@ from loguru import logger
 
 
 def setup_logging():
+    """
+    Sets up the logging configuration for the game, including console and file output.
+
+    :return: None
+    """
     logger.remove()
     logger.add(
         sys.stderr,
@@ -19,6 +27,11 @@ def setup_logging():
 
 
 def main():
+    """
+    The main entry point of the game. Initializes the game controller and starts the game loop.
+
+    :return: None
+    """
     game = game_state.Controller()
 
     while game.run():
