@@ -1,6 +1,7 @@
 """
 This module contains utility dataclasses for weaponry and projectiles.
 """
+
 from dataclasses import dataclass
 from pymunk import Vec2d
 
@@ -17,6 +18,7 @@ class BasicBulletInfo:
         damage (int): The amount of damage the bullet deals.
         name (str): The name or type of the bullet.
     """
+
     id: int
     start_pos: Vec2d
     reach: float

@@ -2,6 +2,7 @@
 This module contains the EntityManager class which manages all entities in the game,
 including the player, enemies, bullets, and their interactions.
 """
+
 from game_data.weaponry import *
 from .patrol_path import PatrolPath
 from .player import Player
@@ -79,7 +80,6 @@ class EntityManager:
     def _get_next_enemy_id(self):
         return max([ent.ent_id for ent in self.enemies] + [1]) + 1  # player's id is 1
 
-
     def _get_rand_pos(self) -> Vec2d:
         path = random.choice(self.patrol_paths)
         x = path.get_random_x()
@@ -146,7 +146,7 @@ class EntityManager:
                 reach=settings["weapons"][name]["reach"],
                 ammo=None,
                 accuracy=settings["weapons"][name]["accuracy"],
-                multishot=settings["weapons"][name]["multishot"]
+                multishot=settings["weapons"][name]["multishot"],
             )
             weapons[name] = weapon
         return weapons
@@ -302,8 +302,10 @@ class EntityManager:
             self.model.effects.add_particles(
                 self.settings["particles"]["qty"],
                 self.player.get_position(),
-                self._invert_direction(self._get_direction_to_entity(self.player.get_position()[0], enemy.get_position()[0])),
-                "player"
+                self._invert_direction(
+                    self._get_direction_to_entity(self.player.get_position()[0], enemy.get_position()[0])
+                ),
+                "player",
             )
 
     def _check_for_attack(self, enemy) -> bool:
@@ -318,10 +320,7 @@ class EntityManager:
         player_pos = self.player.get_position()
         enemy_pos = enemy.get_position()
         attack_dist = self.settings["enemy_info"][enemy.name.value]["attack_distance"]
-        return (
-            (player_pos - enemy_pos).length <= attack_dist and
-            self._check_for_aggro(enemy, self.sim)
-        )
+        return (player_pos - enemy_pos).length <= attack_dist and self._check_for_aggro(enemy, self.sim)
 
     def _check_for_aggro(self, enemy, sim):
         """
@@ -585,8 +584,10 @@ class EntityManager:
             self.model.effects.add_particles(
                 self.settings["particles"]["qty"],
                 entity.get_position(),
-                self._invert_direction(self._get_direction_to_entity(entity.get_position()[0], self.player.get_position()[0])),
-                entity.name
+                self._invert_direction(
+                    self._get_direction_to_entity(entity.get_position()[0], self.player.get_position()[0])
+                ),
+                entity.name,
             )
 
         self.remove_killed(sim)

@@ -1,6 +1,7 @@
 """
 This module contains the JSONManager class which handles loading and saving settings in JSON format.
 """
+
 import json
 from loguru import logger
 
@@ -108,6 +109,6 @@ class JSONManager:
             "killed_enemies": stats.killed_enemies,
             "time_elapsed": stats.time_elapsed / 1000,
             "difficulty": stats.difficulty.value,
-            "game_mode": stats.game_mode.value
+            "game_mode": stats.game_mode.value,
         }
         return record

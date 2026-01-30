@@ -1,6 +1,7 @@
 """
 This module contains the Player class which represents the player entity.
 """
+
 import weakref
 
 from loguru import logger

@@ -1,6 +1,7 @@
 """
 This module contains the Controller class which is the main entry point for the game logic.
 """
+
 import pygame
 
 from game_view import View
@@ -60,9 +61,7 @@ class Controller:
         while self.running and not self.model.game_ended(self.player_stats.game_mode):
             self._update_player_stats()
 
-            self.view.render(
-                self._prepare_render_info()
-            )
+            self.view.render(self._prepare_render_info())
 
             if self.game_state == GameState.PLAYING:
                 # only update the model if the game is running
@@ -117,9 +116,8 @@ class Controller:
 
         :return: True if the score can be saved, False otherwise.
         """
-        return (
-            self.player_stats.game_mode == GameMode.INFINITE or
-            (self.player_stats.game_mode == GameMode.SPEEDRUN and len(self.model.entities.enemies) == 0)
+        return self.player_stats.game_mode == GameMode.INFINITE or (
+            self.player_stats.game_mode == GameMode.SPEEDRUN and len(self.model.entities.enemies) == 0
         )
 
     def _update_player_stats(self):

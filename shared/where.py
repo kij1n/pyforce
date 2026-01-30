@@ -1,6 +1,7 @@
 """
 This module defines the Where dataclass used for conveying entity state for rendering.
 """
+
 from dataclasses import dataclass
 from pygame import Rect
 
@@ -22,6 +23,7 @@ class Where:
         health_percent (float): The current health of the entity as a percentage (0.0 to 1.0).
         is_dead (bool): Flag indicating if the entity is dead.
     """
+
     position: tuple[int, int]
     name: str
     state: str

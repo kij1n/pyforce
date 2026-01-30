@@ -24,13 +24,10 @@ class Pickup:
             self._change_movement_direction()
 
         movement_speed = self.info.movement_speed
-        self.pos = Vec2d(
-            self.pos[0], self.pos[1] + movement_speed * dt * self._get_multiplier()
-        )
+        self.pos = Vec2d(self.pos[0], self.pos[1] + movement_speed * dt * self._get_multiplier())
 
     def _get_multiplier(self):
         return 1 if self.direction == Direction.DOWN else -1
-
 
     def _change_movement_direction(self):
         self.direction = Direction.DOWN if self.direction == Direction.UP else Direction.UP

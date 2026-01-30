@@ -1,6 +1,7 @@
 """
 This module provides utility functions for creating and managing entity physics components.
 """
+
 import weakref
 
 from pymunk import Body, Vec2d, Poly, ShapeFilter

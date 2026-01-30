@@ -1,6 +1,7 @@
 """
 This module defines the StateName enum for entity animation states.
 """
+
 from enum import Enum
 
 
@@ -17,6 +18,7 @@ class StateName(Enum):
         DEATH (str): Entity is in a death state or animation.
         ATTACK (str): Entity is performing an attack.
     """
+
     IDLE = "idle"
     RUN = "run"
     JUMP = "jump"

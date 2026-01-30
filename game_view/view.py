@@ -1,6 +1,7 @@
 """
 This module contains the View class which handles the overall rendering of the game.
 """
+
 from game_data.effects_manager import EffectsManager
 from shared import GameState, PlayerStats, RenderInfo
 from .effects_renderer import EffectsRenderer
@@ -72,9 +73,13 @@ class View:
 
         self.map_renderer.render(info.player_pos, self.screen, self.sprite_loader)
         self.entity_renderer.render(info.where_array, self.sprite_loader, self.screen, self.settings, info.player_pos)
-        self.entity_renderer.render_bullets(info.bullets_dict, self.sprite_loader, self.screen, self.settings, info.player_pos)
+        self.entity_renderer.render_bullets(
+            info.bullets_dict, self.sprite_loader, self.screen, self.settings, info.player_pos
+        )
         self.ui.render_player_stats(info.player_stats)
-        self.ui.render_player_weapons(info.where_array[0], self.sprite_loader)  # player's Where instance is always the first
+        self.ui.render_player_weapons(
+            info.where_array[0], self.sprite_loader
+        )  # player's Where instance is always the first
         self.effects_renderer.render(info.effects, info.player_pos)
         self.effects_renderer.render_pickups(info.pickups, self.sprite_loader, info.player_pos)
 

@@ -30,11 +30,9 @@ class PickupManager:
                 movement_range=self.settings["pickups"]["settings"]["movement_range"],
                 amount=pickup.get("amount"),
                 name=pickup.get("name"),
-                movement_speed=self.settings["pickups"]["settings"]["movement_speed"]
+                movement_speed=self.settings["pickups"]["settings"]["movement_speed"],
             )
-            pos = Vec2d(
-                pickup["position"][0], pickup["position"][1]
-            )
+            pos = Vec2d(pickup["position"][0], pickup["position"][1])
             p = Pickup(pos, info, self._get_callback(info.type))
             self.pickups.append(p)
 

@@ -1,6 +1,7 @@
 """
 This module contains the PatrolPath class which defines horizontal paths for enemy patrolling.
 """
+
 import random
 
 from shared import Direction

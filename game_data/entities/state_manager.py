@@ -1,6 +1,7 @@
 """
 This module contains the StateManager class which acts as an interface between an entity and its state.
 """
+
 import weakref
 
 from loguru import logger

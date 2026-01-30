@@ -1,6 +1,7 @@
 """
 This module contains the PhysicsEngine class which manages the physical simulation of the game world.
 """
+
 import pymunk
 import pytmx
 import os
@@ -195,7 +196,6 @@ class PhysicsEngine:
             segment.friction = friction
             segment.elasticity = elasticity
             self.sim.add(segment)
-
 
     def _add_collision_obj(self, obj):
         """

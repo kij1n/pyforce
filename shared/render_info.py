@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from game_data.pickup import Pickup
     from pymunk import Vec2d, Shape
 
+
 @dataclass
 class RenderInfo:
     player_pos: Vec2d

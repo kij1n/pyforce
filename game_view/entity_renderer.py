@@ -1,6 +1,7 @@
 """
 This module contains the EntityRenderer class and helper functions for rendering game entities.
 """
+
 import pygame
 from math import cos, sin, radians, sqrt
 

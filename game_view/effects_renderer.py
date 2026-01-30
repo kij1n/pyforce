@@ -2,6 +2,7 @@ import pygame
 
 from .entity_renderer import convert_abs_to_rel, calc_camera_pos
 
+
 class EffectsRenderer:
     def __init__(self, settings, screen):
         self.settings = settings

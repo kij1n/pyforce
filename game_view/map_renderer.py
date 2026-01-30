@@ -1,6 +1,7 @@
 """
 This module contains classes for loading and rendering the game map.
 """
+
 import pytmx
 import pyscroll
 import os
@@ -51,6 +52,7 @@ class MapRenderer:
         bg_sprite = sprite_loader.get_sprite("map_background")
         if bg_sprite:
             self.map.draw_background(target, screen, bg_sprite.image)
+
 
 class MapLoader:
     """

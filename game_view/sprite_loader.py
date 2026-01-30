@@ -1,6 +1,7 @@
 """
 This module contains classes for loading and managing game sprites.
 """
+
 import pygame
 import os
 from loguru import logger
@@ -25,10 +26,10 @@ class SpriteLoader:
         logger.info("Initializing sprite loader...")
 
         self.sprites = (
-                self.load_player(settings) |
-                self.load_enemies(settings) |
-                self._load_menu_backgrounds(settings) |
-                self._load_pickups(settings)
+            self.load_player(settings)
+            | self.load_enemies(settings)
+            | self._load_menu_backgrounds(settings)
+            | self._load_pickups(settings)
         )
 
     def _load_pickups(self, settings: dict):
@@ -37,7 +38,7 @@ class SpriteLoader:
         for path in pickup_info.values():
             try:
                 image = pygame.image.load(self._get_path(path)).convert_alpha()
-                sprite_name = path.split(".")[0].split('/')[-1]
+                sprite_name = path.split(".")[0].split("/")[-1]
                 pickups[sprite_name] = Sprite(image, None)
             except FileNotFoundError:
                 logger.error(f"File not found: {path}")

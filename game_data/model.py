@@ -1,6 +1,7 @@
 """
 This module contains the Model class which acts as the main data and logic coordinator for the game.
 """
+
 from shared import Where, DebugElements, Difficulty, GameMode, RenderInfo
 from .physics import PhysicsEngine
 from . import entities
@@ -56,7 +57,7 @@ class Model:
             bullets_dict=self.get_bullets_dict(),
             debug_elements=self.debug_elements,
             effects=self.effects.get_effects(),
-            pickups=self.pickups.get_pickups()
+            pickups=self.pickups.get_pickups(),
         )
         return info
 

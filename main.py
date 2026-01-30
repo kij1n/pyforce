@@ -1,6 +1,7 @@
 """
 This module is the entry point of the application. It sets up logging and starts the game loop.
 """
+
 import sys
 import game_state
 import datetime
@@ -37,7 +38,6 @@ def main():
     while game.run():
         game = game_state.Controller()  # reinitialize controller
         logger.info("Restarting game...")  # run returns true if player wants to restart
-
 
     logger.info("Game ended")
 

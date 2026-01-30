@@ -1,6 +1,7 @@
 """
 This module contains the InputHandler class which manages user inputs.
 """
+
 import weakref
 
 import pygame
@@ -24,11 +25,7 @@ class InputHandler:
         :return: None
         """
         self.controller = weakref.proxy(controller)
-        self.mouse_map = {
-            "mouse_left": 0,
-            "mouse_middle": 1,
-            "mouse_right": 2
-        }
+        self.mouse_map = {"mouse_left": 0, "mouse_middle": 1, "mouse_right": 2}
 
     def handle(self):
         """
@@ -65,22 +62,16 @@ class InputHandler:
         key_bindings = self.controller.settings["key_bindings"]
 
         if self._check_binds(keys, mouse, key_bindings["move_left"]):
-            self.controller.model.move_player(
-                Direction.LEFT
-            )
+            self.controller.model.move_player(Direction.LEFT)
         if self._check_binds(keys, mouse, key_bindings["move_right"]):
-            self.controller.model.move_player(
-                Direction.RIGHT
-            )
+            self.controller.model.move_player(Direction.RIGHT)
         if self._check_binds(keys, mouse, key_bindings["jump"]):
-            self.controller.model.move_player(
-                Direction.UP
-            )
+            self.controller.model.move_player(Direction.UP)
         if self._check_binds(keys, mouse, key_bindings["pause"]):
             self.controller.game_state = GameState.PAUSE
         if self._check_binds(keys, mouse, key_bindings["shoot"]):
             self.controller.model.player_shoot()
-        if self._check_binds(keys,mouse,key_bindings["pickup"]):
+        if self._check_binds(keys, mouse, key_bindings["pickup"]):
             self.controller.model.player_pickup()
 
     def _get_key_list(self, action: str):

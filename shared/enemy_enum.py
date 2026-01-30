@@ -1,6 +1,7 @@
 """
 This module contains enums and utilities related to enemy identification and actions.
 """
+
 from enum import Enum
 
 
@@ -8,6 +9,7 @@ class EnemyName(Enum):
     """
     Enum representing the names of different enemy types.
     """
+
     SKELETON = "skeleton"
     GOBLIN = "goblin"
 
@@ -23,6 +25,7 @@ class EnemyAction(Enum):
         ATTACK (str): Enemy is performing an attack.
         DEATH (str): Enemy is in the death state.
     """
+
     AGGRO = "aggro"
     PATROL = "patrol"
     IDLE = "idle"

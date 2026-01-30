@@ -1,6 +1,7 @@
 """
 This module contains the State class which manages the internal state and animation logic of an entity.
 """
+
 import weakref
 
 from loguru import logger
@@ -157,10 +158,10 @@ class State:
         :return: Boolean whether a skeleton has hit
         """
         return (
-            int(self.current_time // step) >= total_sprites // 2 and
-            not self.has_hit and
-            self.state_manager.entity.name == EnemyName.SKELETON and
-            not self.dealt_damage
+            int(self.current_time // step) >= total_sprites // 2
+            and not self.has_hit
+            and self.state_manager.entity.name == EnemyName.SKELETON
+            and not self.dealt_damage
         )
 
     def _handle_death(self, total_sprites):

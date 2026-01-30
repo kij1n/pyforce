@@ -48,22 +48,16 @@ class EffectsManager:
 
             vel = Vec2d(
                 random.randint(speed_min, speed_max) * (-1 if direction == Direction.LEFT else 1),
-                random.randint(speed_min, speed_max) * random.uniform(y_vel_min, y_vel_max) * y_vel_multiplier
+                random.randint(speed_min, speed_max) * random.uniform(y_vel_min, y_vel_max) * y_vel_multiplier,
             )
 
             size = random.randint(size_min, size_max)
-            p = Particle(
-                position + Vec2d(x, y),
-                vel, size, color,
-                lifetime, gravity
-            )
+            p = Particle(position + Vec2d(x, y), vel, size, color, lifetime, gravity)
             self.particles.append(p)
 
     def get_effects(self):
         effects = []
         for p in self.particles:
-            effect = Effect(
-                pos=p.pos, size=p.size, color=p.color, opacity=p.opacity()
-            )
+            effect = Effect(pos=p.pos, size=p.size, color=p.color, opacity=p.opacity())
             effects.append(effect)
         return effects

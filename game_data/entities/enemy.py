@@ -1,6 +1,7 @@
 """
 This module contains the Enemy class, which represents an enemy entity in the game.
 """
+
 import weakref
 
 from .state_manager import StateManager
@@ -234,10 +235,9 @@ class Enemy:
 
         :return: True if an entity should bounce, False otherwise.
         """
-        return (
-            self.patrol_path.is_at_end(self.shape.body.position.x, self.get_movement_direction()) or
-            self.patrol_path.collides_with_another(self)
-        )
+        return self.patrol_path.is_at_end(
+            self.shape.body.position.x, self.get_movement_direction()
+        ) or self.patrol_path.collides_with_another(self)
 
     def _set_patrol_path(self, path):
         """

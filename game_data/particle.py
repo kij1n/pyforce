@@ -1,6 +1,7 @@
 from pymunk import Vec2d
 from pygame import Rect
 
+
 class Particle:
     def __init__(self, pos: Vec2d, vel: Vec2d, size, color, lifetime, gravity):
         self.pos = pos

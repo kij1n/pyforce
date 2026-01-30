@@ -1,6 +1,7 @@
 """
 This module contains the GameUI class which handles the user interface and menus.
 """
+
 import pygame_menu
 from pygame_menu.locals import ALIGN_CENTER
 import pygame
@@ -33,7 +34,6 @@ class GameUI:
     # with each difficulty
     # high score is time
 
-
     def __init__(self, settings: dict, screen):
         """
         Initializes the GameUI with settings and creates menus.
@@ -41,11 +41,7 @@ class GameUI:
         :param settings: Dictionary containing game settings.
         :return: None
         """
-        self.mouse_dict = {
-            "mouse_left": "mouse1",
-            "mouse_middle": "mouse3",
-            "mouse_right": "mouse2"
-        }
+        self.mouse_dict = {"mouse_left": "mouse1", "mouse_middle": "mouse3", "mouse_right": "mouse2"}
         self.screen = screen
 
         self.change_game_state = None
@@ -77,24 +73,16 @@ class GameUI:
         self.save_menu.mainloop(self.screen)
 
     def _add_restart_button(self):
-        self.restart_menu.add.button(
-            "Yes", self._restart_game
-        )
-        self.restart_menu.add.button(
-            "No", self.restart_menu.disable
-        )
+        self.restart_menu.add.button("Yes", self._restart_game)
+        self.restart_menu.add.button("No", self.restart_menu.disable)
 
     def _restart_game(self):
         self.restart = True
         self.restart_menu.disable()
 
     def _add_save_button(self):
-        self.save_menu.add.button(
-            "Yes", self._save_score
-        )
-        self.save_menu.add.button(
-            "No", self.save_menu.disable
-        )
+        self.save_menu.add.button("Yes", self._save_score)
+        self.save_menu.add.button("No", self.save_menu.disable)
 
     def _save_score(self):
         self.save_score = True
@@ -107,10 +95,7 @@ class GameUI:
 
             pos = self.settings["weapons_ui"]["position"]
             offset = self.settings["weapons_ui"]["offset"]
-            pos = (
-                pos[0] + offset[0] * index,
-                pos[1] + offset[1] * index
-            )
+            pos = (pos[0] + offset[0] * index, pos[1] + offset[1] * index)
             rect = image.get_rect(center=pos)
 
             if gun == player_where.gun_name:
@@ -139,14 +124,16 @@ class GameUI:
             f"Enemies killed: {stats.killed_enemies}",
             f"Time elapsed: {stats.time_elapsed / 1000:.2f}s",
             f"Difficulty: {stats.difficulty.value}",
-            f"Gamemode: {getattr(stats.game_mode, 'value', 'None')}"
+            f"Gamemode: {getattr(stats.game_mode, 'value', 'None')}",
         ]
         for line in text:
             text_surf = font.render(line, True, settings["font_color"])
-            text_rect = text_surf.get_rect(center=(settings["position"][0], settings["position"][1] + settings["offset"][1] * text.index(line)))
+            text_rect = text_surf.get_rect(
+                center=(settings["position"][0], settings["position"][1] + settings["offset"][1] * text.index(line))
+            )
             self.screen.blit(text_surf, text_rect)
 
-    def render_pause(self, sprite_loader,events):
+    def render_pause(self, sprite_loader, events):
         """
         Renders the pause menu.
 
@@ -277,11 +264,13 @@ class GameUI:
                 padding=padding,
                 align=ALIGN_CENTER,
                 font_size=font_size,
-                margin=margin
+                margin=margin,
             )
 
             c1_frame = self.keybindings_menu.add.frame_h(width=col1_w, height=height, padding=padding, margin=margin)
-            label = self.keybindings_menu.add.label(action, font_size=keys_name_font_size, padding=btn_padding, margin=margin)
+            label = self.keybindings_menu.add.label(
+                action, font_size=keys_name_font_size, padding=btn_padding, margin=margin
+            )
             c1_frame.pack(label, align=ALIGN_CENTER)
 
             c2_frame = self.keybindings_menu.add.frame_h(width=col2_w, height=height, padding=padding, margin=margin)
@@ -378,8 +367,10 @@ class GameUI:
         text_rect = text_surf.get_rect(center=self.screen.get_rect().center)
         self.screen.blit(text_surf, text_rect)
 
-        text_rect2 = text_surf2.get_rect(center=(self.screen.get_rect().centerx, self.screen.get_rect().centery + settings["bind_cancel_offset"][1]))
-        self.screen.blit(text_surf2,text_rect2)
+        text_rect2 = text_surf2.get_rect(
+            center=(self.screen.get_rect().centerx, self.screen.get_rect().centery + settings["bind_cancel_offset"][1])
+        )
+        self.screen.blit(text_surf2, text_rect2)
 
         pygame.display.flip()
 
