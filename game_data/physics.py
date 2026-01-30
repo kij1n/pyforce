@@ -73,6 +73,23 @@ class PhysicsEngine:
             self.settings["physics"]["collision_types"]["water"],
             begin=self._add_to_kill_list,
         )
+        self.sim.on_collision(
+            self.settings["physics"]["collision_types"]["player_feet"],
+            self.settings["physics"]["collision_types"]["enemy"],
+            begin=self._should_touch_ground,
+            separate=self._entity_leaving_ground,
+        )
+
+    def _should_touch_ground(self, arbiter, space, data):
+        """
+        Method to determine if the player standing on an enemy should be treated as touching ground.
+        :param arbiter: The pymunk Arbiter instance.
+        :param space: The pymunk Space.
+        :param data: Arbitrary data passed to the callback.
+        """
+        normal = arbiter.normal
+        if normal.y > 0:  # normal is down (y-axis is inverted)
+            self._entity_touching_ground(arbiter, space, data)
 
     def _add_to_kill_list(self, arbiter, space, data):
         """
