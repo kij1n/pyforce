@@ -1,0 +1,10 @@
+cffi==2.0.0
+loguru==0.7.3
+pycparser==2.23
+pygame==2.6.1
+pygame-menu==4.5.2
+pymunk==7.2.0
+pyperclip==1.11.0
+pyscroll==2.31
+PyTMX==3.32
+typing_extensions==4.15.0
