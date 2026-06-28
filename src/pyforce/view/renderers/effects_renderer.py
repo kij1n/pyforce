@@ -1,6 +1,6 @@
 import pygame
 
-from view.core import convert_abs_to_rel, calc_camera_pos
+from view.renderers import convert_abs_to_rel, calc_camera_pos
 
 
 class EffectsRenderer:

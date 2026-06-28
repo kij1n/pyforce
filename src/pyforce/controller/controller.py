@@ -4,8 +4,8 @@ This module contains the Controller class which is the main entry point for the 
 
 import pygame
 
-from model.core import Model
-from view.core import View
+from model import Model
+from view import View
 
 from structures import PlayerStats
 from constants import GameState, GameMode

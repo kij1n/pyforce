@@ -4,7 +4,7 @@ This module is the entry point of the application. It sets up logging and starts
 
 import sys
 import datetime
-from controller.core import Controller
+from controller import Controller
 from loguru import logger
 
 

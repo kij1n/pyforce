@@ -6,7 +6,7 @@ from constants import GameState
 
 if TYPE_CHECKING:
     from model.weaponry import Bullet
-    from model.core import Pickup
+    from model.pickups import Pickup
     from pymunk import Vec2d, Shape
 
 
