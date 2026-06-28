@@ -4,7 +4,7 @@ This module contains the Bullet class which represents a projectile in the game.
 
 from math import cos, radians, sin
 from pymunk import Body, Circle, ShapeFilter
-from shared import BasicBulletInfo
+from structures import BasicBulletInfo
 
 
 class Bullet:

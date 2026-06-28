@@ -1,6 +1,5 @@
 from pymunk import Vec2d
-
-from shared import Direction
+from constants import Direction
 
 
 class Pickup:

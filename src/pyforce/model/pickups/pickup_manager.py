@@ -1,8 +1,7 @@
 import weakref
-from dataclasses import dataclass
+from structures import PickupInfo
 from pymunk import Vec2d
-from .pickup import Pickup
-
+from model.pickups import Pickup
 
 class PickupManager:
     def __init__(self, settings, model):
@@ -42,12 +41,3 @@ class PickupManager:
     def update_pickups_pos(self, dt):
         for pickup in self.pickups:
             pickup.update_pos(dt)
-
-
-@dataclass
-class PickupInfo:
-    type: str
-    movement_range: tuple[int, int]
-    movement_speed: float
-    amount: int = None
-    name: str = None

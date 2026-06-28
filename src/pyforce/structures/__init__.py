@@ -8,6 +8,7 @@ from .player_stats import PlayerStats
 from .render_info import RenderInfo
 from .weapon_utils import BasicBulletInfo
 from .where import Where
+from .pickup_info import PickupInfo
 
 __all__ = [
     "DebugElements",
@@ -15,5 +16,6 @@ __all__ = [
     "PlayerStats",
     "RenderInfo",
     "BasicBulletInfo",
-    "Where"
+    "Where",
+    "PickupInfo"
 ]
