@@ -109,7 +109,7 @@ class SpriteLoader:
                 except Exception as e:
                     logger.error(f"Unexpected error loading {sprite_info} for player: {e}")
 
-        logger.info(f"Player sprites loading complete")
+        logger.info("Player sprites loading complete")
         return player
 
     def load_enemies(self, settings: dict):

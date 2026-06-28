@@ -1,7 +1,6 @@
 import random
 from math import radians, cos, sin
 
-from loguru import logger
 from pymunk import Vec2d
 
 from shared import Direction, Effect, EnemyName
