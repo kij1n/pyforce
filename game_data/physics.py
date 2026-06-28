@@ -223,7 +223,7 @@ class PhysicsEngine:
             object_layer = pytmx.TiledMap(path).get_layer_by_name(self.settings["map"]["object_layer_name"])
             return object_layer
         except FileNotFoundError:
-            logger.error(f"Map file not found")
+            logger.error("Map file not found")
         except Exception as e:
             logger.error(f"Unexpected error loading map: {e}")
 

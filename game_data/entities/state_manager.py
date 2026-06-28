@@ -4,7 +4,6 @@ This module contains the StateManager class which acts as an interface between a
 
 import weakref
 
-from loguru import logger
 from pymunk import Vec2d
 from shared import *
 from .state import *

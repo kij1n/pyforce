@@ -1,5 +1,4 @@
 from pymunk import Vec2d
-from pygame import Rect
 
 
 class Particle:

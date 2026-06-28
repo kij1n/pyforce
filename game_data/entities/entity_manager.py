@@ -244,7 +244,7 @@ class EntityManager:
         return (
             entity.shape.body.velocity == (0, 0)
             and entity.state_manager.state.is_on_ground
-            and not entity.state_manager.state.get_state() in [StateName.IDLE, StateName.DEATH]
+            and entity.state_manager.state.get_state() not in [StateName.IDLE, StateName.DEATH]
         )
 
     @staticmethod

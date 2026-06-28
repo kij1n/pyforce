@@ -5,7 +5,6 @@ This module contains the InputHandler class which manages user inputs.
 import weakref
 
 import pygame
-from loguru import logger
 from shared import GameState, Direction, Difficulty
 
 

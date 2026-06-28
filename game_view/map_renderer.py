@@ -5,7 +5,6 @@ This module contains classes for loading and rendering the game map.
 import pytmx
 import pyscroll
 import os
-import pygame
 from loguru import logger
 
 
@@ -93,7 +92,7 @@ class MapLoader:
             self.group = pyscroll.PyscrollGroup(map_layer=self.map_layer)
 
         except FileNotFoundError:
-            logger.error(f"Map file not found")
+            logger.error("Map file not found")
         except Exception as e:
             logger.error(f"Unexpected error loading map: {e}")
 

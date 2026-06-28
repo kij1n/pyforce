@@ -2,8 +2,7 @@
 This module contains the View class which handles the overall rendering of the game.
 """
 
-from game_data.effects_manager import EffectsManager
-from shared import GameState, PlayerStats, RenderInfo
+from shared import GameState, RenderInfo
 from .effects_renderer import EffectsRenderer
 from .ui import GameUI
 from .entity_renderer import *

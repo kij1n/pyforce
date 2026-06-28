@@ -1,3 +1,20 @@
-[tool.black]
-line-length = 120
-target-version = ['py313']
+[project]
+name = "pyforce"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "loguru>=0.7.3",
+    "pygame>=2.6.1",
+    "pygame-menu>=4.5.2",
+    "pymunk>=7.3.0",
+    "pyscroll>=2.31",
+    "pytmx>=3.32",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=2.1.0",
+    "ruff>=0.15.20",
+]
