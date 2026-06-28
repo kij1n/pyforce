@@ -2,15 +2,22 @@
 This module contains the View class which handles the overall rendering of the game.
 """
 
-from shared import GameState, RenderInfo
-from .effects_renderer import EffectsRenderer
-from .ui import GameUI
-from .entity_renderer import *
-from .sprite_loader import *
-from .map_renderer import MapRenderer
+# from shared import GameState, RenderInfo
+# from .effects_renderer import EffectsRenderer
+# from .ui import GameUI
+# from .entity_renderer import *
+# from .sprite_loader import *
+# from .map_renderer import MapRenderer
+
+from structures import RenderInfo
+from constants import GameState
+from view.ui import GameUI
+from view.renderers import EntityRenderer, MapRenderer, EffectsRenderer, calc_camera_pos
+from view.loaders import SpriteLoader
 
 from loguru import logger
 
+import pygame
 import pymunk
 import pymunk.pygame_util
 

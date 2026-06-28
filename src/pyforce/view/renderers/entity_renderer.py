@@ -4,9 +4,7 @@ This module contains the EntityRenderer class and helper functions for rendering
 
 import pygame
 from math import cos, sin, radians, sqrt
-
-
-from shared import Where
+from structures import Where
 
 
 def convert_abs_to_rel(position, abs_camera_pos, rel_camera_pos):

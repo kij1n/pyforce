@@ -7,9 +7,7 @@ from pygame_menu.locals import ALIGN_CENTER
 import pygame
 from functools import partial
 from loguru import logger
-
-from shared import GameState, GameMode, Difficulty
-
+from constants import GameState, GameMode, Difficulty
 
 class GameUI:
     """
