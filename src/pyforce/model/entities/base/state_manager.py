@@ -5,8 +5,9 @@ This module contains the StateManager class which acts as an interface between a
 import weakref
 
 from pymunk import Vec2d
-from shared import *
-from .state import *
+from structures import Where
+from constants import StateName, Direction, EnemyAction
+from model.entities.base import State
 from .entity_utils import get_ent_rect
 
 

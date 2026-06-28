@@ -6,8 +6,7 @@ import weakref
 
 from loguru import logger
 from pymunk import Vec2d
-from shared import StateName, Direction, EnemyAction, EnemyName
-
+from constants import StateName, Direction, EnemyAction, EnemyName
 
 class State:
     """

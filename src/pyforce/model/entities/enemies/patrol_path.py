@@ -4,7 +4,7 @@ This module contains the PatrolPath class which defines horizontal paths for ene
 
 import random
 
-from shared import Direction
+from constants import Direction
 
 
 class PatrolPath:

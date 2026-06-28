@@ -3,18 +3,18 @@ This module contains the EntityManager class which manages all entities in the g
 including the player, enemies, bullets, and their interactions.
 """
 
-from game_data.weaponry import *
-from .patrol_path import PatrolPath
 from .player import Player
-from .enemy import Enemy
 import pymunk
 from pymunk import ShapeFilter, Vec2d
-from shared import *
 from math import cos, sin, radians
 import math
 import random
 import weakref
 
+from constants import EnemyName, StateName, EnemyAction, Direction
+from structures import Where, BasicBulletInfo
+from model.entities.enemies import Enemy, PatrolPath
+from model.weaponry import Weapon, Ammo, Bullet
 
 from loguru import logger
 
@@ -67,7 +67,7 @@ class EntityManager:
         enemy_name = random.choice([EnemyName.GOBLIN, EnemyName.SKELETON])
         pos = self._get_rand_pos()
         enemy = Enemy(
-            name=get_enemy_name(enemy_name),
+            name=EnemyName(enemy_name),
             settings=self.settings,
             pos=pos,
             ent_id=self._get_next_enemy_id(),
@@ -120,7 +120,7 @@ class EntityManager:
             for pos in ent_settings["start_positions"]:
                 pos = (pos[0], pos[1])
                 enemy = Enemy(
-                    name=get_enemy_name(enemy_type),
+                    name=EnemyName(enemy_type),
                     settings=self.settings,
                     pos=pos,
                     ent_id=len(enemies) + 2,  # player's id is 1

@@ -5,12 +5,9 @@ This module contains the Player class which represents the player entity.
 import weakref
 
 from loguru import logger
-
-from shared import StateName
-from .state_manager import StateManager
-from .entity_utils import prepare_collision_box
 from pymunk import Vec2d
-
+from constants import StateName
+from model.entities.base import StateManager, prepare_collision_box
 
 class Player:
     """

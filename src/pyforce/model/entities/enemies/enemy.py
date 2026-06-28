@@ -3,12 +3,9 @@ This module contains the Enemy class, which represents an enemy entity in the ga
 """
 
 import weakref
-
-from .state_manager import StateManager
-from .entity_utils import prepare_collision_box
+from model.entities.base import StateManager, prepare_collision_box
 from loguru import logger
-from shared import *
-
+from constants import EnemyName, StateName, EnemyAction, Direction
 
 class Enemy:
     """
