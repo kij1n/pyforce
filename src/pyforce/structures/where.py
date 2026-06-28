@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pygame import Rect
 
 
-@dataclass
+@dataclass(frozen=True)
 class Where:
     """
     The Where dataclass stores all necessary information to render an entity on the screen.

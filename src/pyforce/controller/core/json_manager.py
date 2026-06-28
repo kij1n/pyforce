@@ -4,8 +4,7 @@ This module contains the JSONManager class which handles loading and saving sett
 
 import json
 from loguru import logger
-
-from shared import PlayerStats
+from structures import PlayerStats
 
 
 class JSONManager:

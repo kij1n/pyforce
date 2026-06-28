@@ -3,8 +3,8 @@ This module is the entry point of the application. It sets up logging and starts
 """
 
 import sys
-import game_state
 import datetime
+from controller.core import Controller
 from loguru import logger
 
 
@@ -33,10 +33,10 @@ def main():
 
     :return: None
     """
-    game = game_state.Controller()
+    game = Controller()
 
     while game.run():
-        game = game_state.Controller()  # reinitialize controller
+        game = Controller()  # reinitialize controller
         logger.info("Restarting game...")  # run returns true if player wants to restart
 
     logger.info("Game ended")

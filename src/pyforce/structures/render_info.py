@@ -1,11 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
-from shared import Where, DebugElements, GameState, PlayerStats, Effect
+from structures import Where, DebugElements, Effect, PlayerStats
+from constants import GameState
 
 if TYPE_CHECKING:
-    from game_data.weaponry import Bullet
-    from game_data.pickup import Pickup
+    from model.weaponry import Bullet
+    from model.core import Pickup
     from pymunk import Vec2d, Shape
 
 
