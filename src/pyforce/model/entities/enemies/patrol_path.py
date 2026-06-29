@@ -1,11 +1,14 @@
 """
 This module contains the PatrolPath class which defines horizontal paths for enemy patrolling.
 """
-
+from __future__ import annotations
 import random
+from typing import TYPE_CHECKING
 
 from pyforce.constants import Direction
-from pyforce.model.entities.enemies import Enemy
+
+if TYPE_CHECKING:
+    from pyforce.model.entities.enemies.enemy import Enemy
 
 
 class PatrolPath:

@@ -7,9 +7,8 @@ import weakref
 from pymunk import Vec2d
 from pyforce.structures import Where
 from pyforce.constants import StateName, Direction, EnemyAction
-from pyforce.model.entities.base import State
-from pyforce.model.entities.base import get_ent_rect
-
+from pyforce.model.entities.base.state import State
+from pyforce.model.entities.base.entity_utils import get_ent_rect
 
 class StateManager:
     """

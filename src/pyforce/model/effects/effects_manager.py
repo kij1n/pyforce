@@ -4,7 +4,7 @@ from math import radians, cos, sin
 from pymunk import Vec2d
 from pyforce.constants import Direction, EnemyName
 from pyforce.structures import Effect
-from pyforce.model.effects import Particle
+from pyforce.model.effects.particle import Particle
 
 
 class EffectsManager:

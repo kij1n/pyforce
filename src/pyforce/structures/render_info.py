@@ -1,8 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
-from pyforce.structures import Where, DebugElements, Effect, PlayerStats
 from pyforce.constants import GameState
+from pyforce.structures.where import Where
+from pyforce.structures.debug_elements import DebugElements
+from pyforce.structures.effect import Effect
+from pyforce.structures.player_stats import PlayerStats
 
 if TYPE_CHECKING:
     from pyforce.model.weaponry import Bullet

@@ -6,7 +6,7 @@ import weakref
 from pyforce.model.entities.base import StateManager, prepare_collision_box
 from loguru import logger
 from pyforce.constants import EnemyName, StateName, EnemyAction, Direction
-from pyforce.model.entities.enemies import PatrolPath
+from pyforce.model.entities.enemies.patrol_path import PatrolPath
 
 
 class Enemy:

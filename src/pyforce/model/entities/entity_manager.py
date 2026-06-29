@@ -3,7 +3,6 @@ This module contains the EntityManager class which manages all entities in the g
 including the player, enemies, bullets, and their interactions.
 """
 
-from pyforce.model.entities import Player
 import pymunk
 from pymunk import ShapeFilter, Vec2d, Shape
 from math import cos, sin, radians
@@ -11,6 +10,7 @@ import math
 import random
 import weakref
 
+from pyforce.model.entities.player import Player
 from pyforce.constants import EnemyName, StateName, EnemyAction, Direction
 from pyforce.structures import Where, BasicBulletInfo
 from pyforce.model.entities.enemies import Enemy, PatrolPath
