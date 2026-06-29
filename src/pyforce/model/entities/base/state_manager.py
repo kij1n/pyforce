@@ -5,10 +5,10 @@ This module contains the StateManager class which acts as an interface between a
 import weakref
 
 from pymunk import Vec2d
-from structures import Where
-from constants import StateName, Direction, EnemyAction
-from model.entities.base import State
-from .entity_utils import get_ent_rect
+from pyforce.structures import Where
+from pyforce.constants import StateName, Direction, EnemyAction
+from pyforce.model.entities.base import State
+from pyforce.model.entities.base import get_ent_rect
 
 
 class StateManager:
@@ -35,7 +35,9 @@ class StateManager:
         if self.name == "player":
             self.movement = self.entity.settings["player_info"]["move_horizontal"]
         else:
-            self.movement = self.entity.settings["enemy_info"][self.name]["move_horizontal"]
+            self.movement = self.entity.settings["enemy_info"][self.name][
+                "move_horizontal"
+            ]
 
         self.state = State(StateName.IDLE, self.entity.get_position(), self)
 
@@ -52,7 +54,9 @@ class StateManager:
             sprite_index=self.state.get_sprite_index(
                 self.entity.get_position(),
                 self.entity.get_sprite_qty(self.state.get_state_str()),
-                self.entity.settings["sprites"]["cycle_lengths"][self.name].get(self.state.get_state_str(), None),
+                self.entity.settings["sprites"]["cycle_lengths"][self.name].get(
+                    self.state.get_state_str(), None
+                ),
                 self.entity.shape.body.velocity,
             ),
             state=self.state.get_state(),
@@ -80,7 +84,10 @@ class StateManager:
         if self.state.get_state() != StateName.JUMP:
             # logger.debug(f"Jumping {self.entity.name}, state before change: {self.state.get_state()}")
             self.state.change_state(
-                StateName.JUMP, self.entity.get_position(), self.entity.shape.body, settings=self.entity.settings
+                StateName.JUMP,
+                self.entity.get_position(),
+                self.entity.shape.body,
+                settings=self.entity.settings,
             )
             # logger.debug(f"Jumping {self.entity.name}, state after change: {self.state.get_state()}")
 
@@ -95,12 +102,18 @@ class StateManager:
         :return: None
         """
         if self._should_run():
-            self.state.change_state(StateName.RUN, self.entity.get_position(), self.entity.shape.body)
+            self.state.change_state(
+                StateName.RUN, self.entity.get_position(), self.entity.shape.body
+            )
 
         if direction == Direction.LEFT:
-            self.state.set_direction(Direction.LEFT, position=self.entity.get_position())
+            self.state.set_direction(
+                Direction.LEFT, position=self.entity.get_position()
+            )
         else:
-            self.state.set_direction(Direction.RIGHT, position=self.entity.get_position())
+            self.state.set_direction(
+                Direction.RIGHT, position=self.entity.get_position()
+            )
         self._calc_and_apply_velocity()
 
     def _should_run(self):
@@ -123,7 +136,9 @@ class StateManager:
         :return: None
         """
         velocity = Vec2d(
-            self.movement if self.state.movement_direction == Direction.RIGHT else -self.movement,
+            self.movement
+            if self.state.movement_direction == Direction.RIGHT
+            else -self.movement,
             self.entity.shape.body.velocity.y,
         )
         self.entity.shape.body.velocity = velocity

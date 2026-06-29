@@ -4,11 +4,11 @@ This module contains the Controller class which is the main entry point for the 
 
 import pygame
 
-from model import Model
-from view import View
+from pyforce.model import Model
+from pyforce.view import View
 
-from structures import PlayerStats
-from constants import GameState, GameMode
+from pyforce.structures import PlayerStats
+from pyforce.constants import GameState, GameMode
 
 from .input_handler import InputHandler
 from .json_manager import JSONManager
@@ -122,7 +122,8 @@ class Controller:
         :return: True if the score can be saved, False otherwise.
         """
         return self.player_stats.game_mode == GameMode.INFINITE or (
-            self.player_stats.game_mode == GameMode.SPEEDRUN and len(self.model.entities.enemies) == 0
+            self.player_stats.game_mode == GameMode.SPEEDRUN
+            and len(self.model.entities.enemies) == 0
         )
 
     def _update_player_stats(self):

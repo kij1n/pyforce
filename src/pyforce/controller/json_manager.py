@@ -4,7 +4,7 @@ This module contains the JSONManager class which handles loading and saving sett
 
 import json
 from loguru import logger
-from structures import PlayerStats
+from pyforce.structures import PlayerStats
 
 
 class JSONManager:
@@ -103,11 +103,14 @@ class JSONManager:
         :param stats: The PlayerStats instance to convert.
         :return: A dictionary containing player statistics.
         """
+
         record = {
             "username": stats.username,
             "killed_enemies": stats.killed_enemies,
             "time_elapsed": stats.time_elapsed / 1000,
-            "difficulty": stats.difficulty.value,
-            "game_mode": stats.game_mode.value,
+            "difficulty": stats.difficulty.value
+            if stats.difficulty is not None
+            else None,
+            "game_mode": stats.game_mode.value if stats.game_mode is not None else None,
         }
         return record

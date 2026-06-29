@@ -1,7 +1,8 @@
 import weakref
-from structures import PickupInfo
+from pyforce.structures import PickupInfo
 from pymunk import Vec2d
-from model.pickups import Pickup
+from pyforce.model.pickups import Pickup
+
 
 class PickupManager:
     def __init__(self, settings, model):
@@ -13,7 +14,9 @@ class PickupManager:
     def activate_if_in_range(self, pos: Vec2d):
         pickups_to_remove = []
         for pickup in self.pickups:
-            if (pickup.pos - pos).length < self.settings["pickups"]["settings"]["range"]:
+            if (pickup.pos - pos).length < self.settings["pickups"]["settings"][
+                "range"
+            ]:
                 pickup.activate()
                 pickups_to_remove.append(pickup)
         for pickup in pickups_to_remove:

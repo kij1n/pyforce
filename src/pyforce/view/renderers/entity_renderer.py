@@ -4,7 +4,7 @@ This module contains the EntityRenderer class and helper functions for rendering
 
 import pygame
 from math import cos, sin, radians, sqrt
-from structures import Where
+from pyforce.structures import Where
 
 
 def convert_abs_to_rel(position, abs_camera_pos, rel_camera_pos):
@@ -39,7 +39,10 @@ def calc_camera_pos(settings, player_pos):
 
     abs_camera_pos = (_clamp(h_scr_x, x, max_map_x), _clamp(h_scr_y, y, max_map_y))
 
-    rel_camera_pos = (settings["screen"]["size_x"] // 2, settings["screen"]["size_y"] // 2)
+    rel_camera_pos = (
+        settings["screen"]["size_x"] // 2,
+        settings["screen"]["size_y"] // 2,
+    )
     return abs_camera_pos, rel_camera_pos
 
 
@@ -51,7 +54,10 @@ def calc_vector(abs_camera_pos, rel_camera_pos):
     :param rel_camera_pos: The relative position of the camera on the screen.
     :return: A tuple representing the translation vector.
     """
-    vector = (rel_camera_pos[0] - abs_camera_pos[0], rel_camera_pos[1] - abs_camera_pos[1])
+    vector = (
+        rel_camera_pos[0] - abs_camera_pos[0],
+        rel_camera_pos[1] - abs_camera_pos[1],
+    )
     return vector
 
 
@@ -88,7 +94,9 @@ class EntityRenderer:
             )
 
     @staticmethod
-    def _handle_single_bullet(abs_camera_pos, rel_camera_pos, bullet, pos, sprite_loader, screen):
+    def _handle_single_bullet(
+        abs_camera_pos, rel_camera_pos, bullet, pos, sprite_loader, screen
+    ):
         """
         Renders a single bullet.
 
@@ -106,7 +114,9 @@ class EntityRenderer:
         )
         screen.blit(sprite.image, sprite.image.get_rect(center=bullet_relative_pos))
 
-    def render(self, where_array: list[Where], sprite_loader, screen, settings, player_pos):
+    def render(
+        self, where_array: list[Where], sprite_loader, screen, settings, player_pos
+    ):
         """
         Renders all game entities and their health bars.
 
@@ -127,7 +137,9 @@ class EntityRenderer:
                 settings=settings,
                 screen=screen,
             )
-            self._handle_health_bar(where, screen, abs_camera_pos, rel_camera_pos, settings)
+            self._handle_health_bar(
+                where, screen, abs_camera_pos, rel_camera_pos, settings
+            )
 
     @staticmethod
     def _handle_health_bar(where, screen, abs_camera_pos, rel_camera_pos, settings):
@@ -142,7 +154,9 @@ class EntityRenderer:
         :return: None
         """
         ent_relative_pos = convert_abs_to_rel(
-            position=where.position, abs_camera_pos=abs_camera_pos, rel_camera_pos=rel_camera_pos
+            position=where.position,
+            abs_camera_pos=abs_camera_pos,
+            rel_camera_pos=rel_camera_pos,
         )
 
         offset = settings["health_bar_info"]["offset"]
@@ -156,14 +170,18 @@ class EntityRenderer:
         health_bar_rect_full = pygame.Rect((0, 0), (width, height))
         health_bar_rect_full.center = pos
 
-        health_bar_rect_filled = pygame.Rect((0, 0), (width * where.health_percent, height))
+        health_bar_rect_filled = pygame.Rect(
+            (0, 0), (width * where.health_percent, height)
+        )
         health_bar_rect_filled.center = health_bar_rect_full.center
         health_bar_rect_filled.left = health_bar_rect_full.left
 
         pygame.draw.rect(screen, back_color, health_bar_rect_full)
         pygame.draw.rect(screen, color, health_bar_rect_filled)
 
-    def _handle_single_entity(self, abs_camera_pos, rel_camera_pos, where, sprite_loader, settings, screen):
+    def _handle_single_entity(
+        self, abs_camera_pos, rel_camera_pos, where, sprite_loader, settings, screen
+    ):
         """
         Handles the rendering process for a single entity.
 
@@ -176,16 +194,25 @@ class EntityRenderer:
         :return: None
         """
         ent_relative_pos = convert_abs_to_rel(
-            position=where.position, abs_camera_pos=abs_camera_pos, rel_camera_pos=rel_camera_pos
+            position=where.position,
+            abs_camera_pos=abs_camera_pos,
+            rel_camera_pos=rel_camera_pos,
         )
 
-        ent_sprite_name = where.name + "_" + where.state.value + str(where.sprite_index + 1)
-        ent_sprite = sprite_loader.get_sprite(ent_sprite_name)  # Sprite instance, not pygame Surface
+        ent_sprite_name = (
+            where.name + "_" + where.state.value + str(where.sprite_index + 1)
+        )
+        ent_sprite = sprite_loader.get_sprite(
+            ent_sprite_name
+        )  # Sprite instance, not pygame Surface
         if ent_sprite is None:
             return
 
         ent_surface, ent_rect = self._prepare_entity(
-            ent_relative_pos, ent_sprite, where, calc_vector(abs_camera_pos, rel_camera_pos)
+            ent_relative_pos,
+            ent_sprite,
+            where,
+            calc_vector(abs_camera_pos, rel_camera_pos),
         )
 
         if where.arm_deg is None:
@@ -202,7 +229,9 @@ class EntityRenderer:
             ent_data=(ent_surface, ent_rect),
         )
 
-    def _handle_complex_entity(self, where, ent_relative_pos, sprite_loader, settings, screen, ent_data):
+    def _handle_complex_entity(
+        self, where, ent_relative_pos, sprite_loader, settings, screen, ent_data
+    ):
         """
         Handles the rendering process for a complex entity (e.g., player with arm and gun).
 
@@ -224,8 +253,14 @@ class EntityRenderer:
                 sprite=arm_sprite,
                 is_inverted=where.inversion,
                 deg=where.arm_deg,
-                offset=(settings["sprites"]["arm_disp_vector_x"], settings["sprites"]["arm_disp_vector_y"]),
-                rotation=(settings["sprites"]["arm_rotation_x"], settings["sprites"]["arm_rotation_y"]),
+                offset=(
+                    settings["sprites"]["arm_disp_vector_x"],
+                    settings["sprites"]["arm_disp_vector_y"],
+                ),
+                rotation=(
+                    settings["sprites"]["arm_rotation_x"],
+                    settings["sprites"]["arm_rotation_y"],
+                ),
             )
 
         gun_surface = gun_rect = None
@@ -238,7 +273,10 @@ class EntityRenderer:
                 hand_position=self._calc_hand_position(
                     arm_rect.center,
                     where.arm_deg,
-                    (settings["sprites"]["arm_hand_x"], settings["sprites"]["arm_hand_y"]),
+                    (
+                        settings["sprites"]["arm_hand_x"],
+                        settings["sprites"]["arm_hand_y"],
+                    ),
                 ),
                 sprite=gun_sprite,
                 deg=where.arm_deg,
@@ -308,7 +346,10 @@ class EntityRenderer:
         """
         img = sprite.image
 
-        pos = (ent_relative_pos[0] + sprite.offset[0], ent_relative_pos[1] + sprite.offset[1])
+        pos = (
+            ent_relative_pos[0] + sprite.offset[0],
+            ent_relative_pos[1] + sprite.offset[1],
+        )
 
         where.hitbox.move_ip(vector)
 
@@ -344,9 +385,15 @@ class EntityRenderer:
         rect = img.get_rect()
 
         if is_inverted:
-            handle_position_offset = (handle_position_offset[0] * (-1), handle_position_offset[1])
+            handle_position_offset = (
+                handle_position_offset[0] * (-1),
+                handle_position_offset[1],
+            )
 
-        rect.center = (hand_position[0] - handle_position_offset[0], hand_position[1] - handle_position_offset[1])
+        rect.center = (
+            hand_position[0] - handle_position_offset[0],
+            hand_position[1] - handle_position_offset[1],
+        )
 
         return img, rect
 
@@ -379,7 +426,10 @@ class EntityRenderer:
         if is_inverted:
             offset = (offset[0] * (-1), offset[1])
 
-        center_pos = (ent_relative_pos[0] + offset[0] + vector[0], ent_relative_pos[1] + offset[1] + vector[1])
+        center_pos = (
+            ent_relative_pos[0] + offset[0] + vector[0],
+            ent_relative_pos[1] + offset[1] + vector[1],
+        )
 
         img = pygame.transform.rotate(sprite.image, deg)
         if is_on_left:

@@ -4,7 +4,7 @@ This module contains the InputHandler class which manages user inputs.
 
 import weakref
 import pygame
-from constants import GameState, Difficulty, Direction
+from pyforce.constants import GameState, Difficulty, Direction
 
 
 class InputHandler:
@@ -81,7 +81,7 @@ class InputHandler:
         """
         binds = self.controller.settings["key_bindings"][action]
 
-        output = []
+        output: list[int | None] = []
         for bind in binds:
             if bind is not None:
                 output.append(pygame.key.key_code(bind))

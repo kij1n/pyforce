@@ -9,7 +9,7 @@ import pymunk
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from model.entities import PatrolPath
+    from pyforce.model.entities.enemies import PatrolPath
 
 
 @dataclass

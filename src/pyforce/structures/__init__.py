@@ -17,5 +17,5 @@ __all__ = [
     "RenderInfo",
     "BasicBulletInfo",
     "Where",
-    "PickupInfo"
+    "PickupInfo",
 ]

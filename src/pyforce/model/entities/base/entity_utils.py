@@ -65,7 +65,9 @@ def _create_body(mass, moment, ent_settings, pos=None):
     moment = float("inf") if moment is None else moment
     body = Body(mass=mass, moment=moment, body_type=Body.DYNAMIC)
     if pos is None:  # if position is None it's a player
-        body.position = Vec2d(ent_settings["start_pos"][0], ent_settings["start_pos"][1])
+        body.position = Vec2d(
+            ent_settings["start_pos"][0], ent_settings["start_pos"][1]
+        )
     else:
         body.position = Vec2d(pos[0], pos[1])
     return body
@@ -169,7 +171,8 @@ def _get_collision_filter(name, settings, is_feet=False):
     if is_feet:
         ent += "_feet"
     return ShapeFilter(
-        categories=settings["physics"]["collision_categories"][ent], mask=settings["physics"]["collision_masks"][ent]
+        categories=settings["physics"]["collision_categories"][ent],
+        mask=settings["physics"]["collision_masks"][ent],
     )
 
 

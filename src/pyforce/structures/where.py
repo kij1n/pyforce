@@ -29,9 +29,9 @@ class Where:
     state: str
     sprite_index: int
     inversion: bool
-    arm_deg: int
-    gun_name: str
+    arm_deg: int | None
+    gun_name: str | None
     hitbox: Rect
     health_percent: float
     is_dead: bool = False  # used for player
-    guns_available: list[str] = None  # used for player
+    guns_available: list[str] | None = None  # used for player

@@ -4,7 +4,8 @@ This module contains the PatrolPath class which defines horizontal paths for ene
 
 import random
 
-from constants import Direction
+from pyforce.constants import Direction
+from pyforce.model.entities.enemies import Enemy
 
 
 class PatrolPath:
@@ -30,7 +31,7 @@ class PatrolPath:
         self.start = (x_range[0], height)
         self.end = (x_range[1], height)
         self.height = height
-        self.enemies = set()
+        self.enemies: set[Enemy] = set()
         self.id = (x_range[0], x_range[1], height)
 
     def is_in(self, x, y_range: tuple[int, int]):
@@ -41,7 +42,10 @@ class PatrolPath:
         :param y_range: A tuple containing (min_y, max_y).
         :return: True if the coordinate is within the path, False otherwise.
         """
-        return self.start[0] <= x <= self.end[0] and y_range[1] <= self.start[1] <= y_range[0]
+        return (
+            self.start[0] <= x <= self.end[0]
+            and y_range[1] <= self.start[1] <= y_range[0]
+        )
 
     def is_at_end(self, x, direction):
         """

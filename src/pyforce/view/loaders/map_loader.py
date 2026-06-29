@@ -3,6 +3,7 @@ import pytmx
 import pyscroll
 from loguru import logger
 
+
 class MapLoader:
     """
     The MapLoader class handles loading TMX map data and preparing it for rendering.
@@ -56,8 +57,12 @@ class MapLoader:
         :return: None
         """
         target = (
-            self.settings["screen"]["size_x"] // 2 if target[0] < self.settings["screen"]["size_x"] // 2 else target[0],
-            self.settings["screen"]["size_y"] // 2 if target[1] < self.settings["screen"]["size_y"] // 2 else target[1],
+            self.settings["screen"]["size_x"] // 2
+            if target[0] < self.settings["screen"]["size_x"] // 2
+            else target[0],
+            self.settings["screen"]["size_y"] // 2
+            if target[1] < self.settings["screen"]["size_y"] // 2
+            else target[1],
         )
         self.group.center(target)
 
@@ -92,8 +97,16 @@ class MapLoader:
         else:
             ty = 0.5
 
-        bx = -tx * (bg_width - screen_width) if bg_width > screen_width else (screen_width - bg_width) / 2
-        by = -ty * (bg_height - screen_height) if bg_height > screen_height else (screen_height - bg_height) / 2
+        bx = (
+            -tx * (bg_width - screen_width)
+            if bg_width > screen_width
+            else (screen_width - bg_width) / 2
+        )
+        by = (
+            -ty * (bg_height - screen_height)
+            if bg_height > screen_height
+            else (screen_height - bg_height) / 2
+        )
 
         surface.blit(background_image, (bx, by))
 

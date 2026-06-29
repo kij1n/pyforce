@@ -1,4 +1,3 @@
-
 from .sprite_loader import SpriteLoader, Sprite
 from .map_loader import MapLoader
 

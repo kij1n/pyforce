@@ -9,11 +9,16 @@ This module contains the View class which handles the overall rendering of the g
 # from .sprite_loader import *
 # from .map_renderer import MapRenderer
 
-from structures import RenderInfo
-from constants import GameState
-from view.ui import GameUI
-from view.renderers import EntityRenderer, MapRenderer, EffectsRenderer, calc_camera_pos
-from view.loaders import SpriteLoader
+from pyforce.structures import RenderInfo
+from pyforce.constants import GameState
+from pyforce.view.ui import GameUI
+from pyforce.view.renderers import (
+    EntityRenderer,
+    MapRenderer,
+    EffectsRenderer,
+    calc_camera_pos,
+)
+from pyforce.view.loaders import SpriteLoader
 
 from loguru import logger
 
@@ -78,16 +83,28 @@ class View:
             return
 
         self.map_renderer.render(info.player_pos, self.screen, self.sprite_loader)
-        self.entity_renderer.render(info.where_array, self.sprite_loader, self.screen, self.settings, info.player_pos)
+        self.entity_renderer.render(
+            info.where_array,
+            self.sprite_loader,
+            self.screen,
+            self.settings,
+            info.player_pos,
+        )
         self.entity_renderer.render_bullets(
-            info.bullets_dict, self.sprite_loader, self.screen, self.settings, info.player_pos
+            info.bullets_dict,
+            self.sprite_loader,
+            self.screen,
+            self.settings,
+            info.player_pos,
         )
         self.ui.render_player_stats(info.player_stats)
         self.ui.render_player_weapons(
             info.where_array[0], self.sprite_loader
         )  # player's Where instance is always the first
         self.effects_renderer.render(info.effects, info.player_pos)
-        self.effects_renderer.render_pickups(info.pickups, self.sprite_loader, info.player_pos)
+        self.effects_renderer.render_pickups(
+            info.pickups, self.sprite_loader, info.player_pos
+        )
 
         # DEBUG DRAWING
         self._render_debug_info(info.player_pos, info.debug_elements)
@@ -104,7 +121,10 @@ class View:
         :return: None
         """
         abs_camera_pos, rel_camera_pos = calc_camera_pos(self.settings, player_pos)
-        vector = (rel_camera_pos[0] - abs_camera_pos[0], rel_camera_pos[1] - abs_camera_pos[1])
+        vector = (
+            rel_camera_pos[0] - abs_camera_pos[0],
+            rel_camera_pos[1] - abs_camera_pos[1],
+        )
 
         if self.settings["debug"]["show_hitboxes"]:
             self._render_hitboxes(debug_elements.sim, vector)

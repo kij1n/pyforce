@@ -2,13 +2,13 @@
 This module contains the Model class which acts as the main data and logic coordinator for the game.
 """
 
-from shared import Where, DebugElements, Difficulty, GameMode, RenderInfo
-from .physics import PhysicsEngine
-from . import entities
-from .effects_manager import EffectsManager
+from pyforce.model.physics import PhysicsEngine
 from loguru import logger
-
-from .pickup_manager import PickupManager
+from pyforce.structures import Where, DebugElements, RenderInfo
+from pyforce.constants import Difficulty, GameMode, Direction
+from pyforce.model.effects import EffectsManager
+from pyforce.model.pickups import PickupManager
+from pyforce.model.entities import EntityManager
 
 
 class Model:
@@ -36,7 +36,7 @@ class Model:
         self.player_stats = player_stats
 
         self.physics = PhysicsEngine(self.settings)
-        self.entities = entities.EntityManager(self.settings, self.physics.sim, self)
+        self.entities = EntityManager(self.settings, self.physics.sim, self)
         self.effects = EffectsManager(self.settings)
         self.pickups = PickupManager(self.settings, self)
 
@@ -167,7 +167,9 @@ class Model:
         pass
 
     def _spawn_enemy(self):
-        max_enemies = self.settings["difficulty_changes"][self.player_stats.difficulty.value]["max_enemies_on_map"]
+        max_enemies = self.settings["difficulty_changes"][
+            self.player_stats.difficulty.value
+        ]["max_enemies_on_map"]
         if len(self.entities.enemies) < max_enemies:
             self.entities.spawn_random_enemy()
 
@@ -177,7 +179,9 @@ class Model:
 
         :return: A DebugElements instance.
         """
-        return DebugElements(self.physics.sim, self.entities.patrol_paths, self._add_bbs())
+        return DebugElements(
+            self.physics.sim, self.entities.patrol_paths, self._add_bbs()
+        )
 
     def _add_bbs(self):
         """
@@ -187,7 +191,6 @@ class Model:
         """
         bbs = []
         if self.settings["debug"]["show_bbs"]:
-
             for i in self.where_array:
                 bbs.append(i.hitbox)
         return bbs
@@ -246,7 +249,7 @@ class Model:
         if self.entities.player.is_dying():
             return
 
-        self.entities.move_player(direction)
+        self.entities.move_player(Direction(direction))
 
     def player_shoot(self):
         """

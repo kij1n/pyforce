@@ -6,8 +6,9 @@ import weakref
 
 from loguru import logger
 from pymunk import Vec2d
-from constants import StateName
-from model.entities.base import StateManager, prepare_collision_box
+from pyforce.constants import StateName
+from pyforce.model.entities.base import StateManager, prepare_collision_box
+
 
 class Player:
     """
@@ -42,7 +43,9 @@ class Player:
         self.health = self.settings["player_info"]["health"]
         self.max_health = self.health
 
-        self.body, self.shape, self.feet = prepare_collision_box(self.name, settings, self)
+        self.body, self.shape, self.feet = prepare_collision_box(
+            self.name, settings, self
+        )
         self.state_manager = StateManager(self)
 
         self.arm_deg = 0  # 0 means pointing down, turns counter-clockwise

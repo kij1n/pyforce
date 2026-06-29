@@ -7,7 +7,8 @@ from pygame_menu.locals import ALIGN_CENTER
 import pygame
 from functools import partial
 from loguru import logger
-from constants import GameState, GameMode, Difficulty
+from pyforce.constants import GameState, GameMode, Difficulty
+
 
 class GameUI:
     """
@@ -39,10 +40,14 @@ class GameUI:
         :param settings: Dictionary containing game settings.
         :return: None
         """
-        self.mouse_dict = {"mouse_left": "mouse1", "mouse_middle": "mouse3", "mouse_right": "mouse2"}
+        self.mouse_dict = {
+            "mouse_left": "mouse1",
+            "mouse_middle": "mouse3",
+            "mouse_right": "mouse2",
+        }
         self.screen = screen
 
-        self.change_game_state = None
+        self.change_game_state: GameState | None = None
         self.selected_gamemode = None
         self.selected_difficulty = None
         self.username = "player"
@@ -127,7 +132,10 @@ class GameUI:
         for line in text:
             text_surf = font.render(line, True, settings["font_color"])
             text_rect = text_surf.get_rect(
-                center=(settings["position"][0], settings["position"][1] + settings["offset"][1] * text.index(line))
+                center=(
+                    settings["position"][0],
+                    settings["position"][1] + settings["offset"][1] * text.index(line),
+                )
             )
             self.screen.blit(text_surf, text_rect)
 
@@ -210,7 +218,9 @@ class GameUI:
 
         # username submenu
         self.username_menu = self._create_submenu("Enter Username")
-        self.username_input = self.username_menu.add.text_input("", default="player", onchange=self._set_username)
+        self.username_input = self.username_menu.add.text_input(
+            "", default="player", onchange=self._set_username
+        )
         self.username_menu.add.button("Next", self.gamemode_menu)
         self.username_menu.add.button("Back", pygame_menu.events.BACK)
 
@@ -265,22 +275,35 @@ class GameUI:
                 margin=margin,
             )
 
-            c1_frame = self.keybindings_menu.add.frame_h(width=col1_w, height=height, padding=padding, margin=margin)
+            c1_frame = self.keybindings_menu.add.frame_h(
+                width=col1_w, height=height, padding=padding, margin=margin
+            )
             label = self.keybindings_menu.add.label(
-                action, font_size=keys_name_font_size, padding=btn_padding, margin=margin
+                action,
+                font_size=keys_name_font_size,
+                padding=btn_padding,
+                margin=margin,
             )
             c1_frame.pack(label, align=ALIGN_CENTER)
 
-            c2_frame = self.keybindings_menu.add.frame_h(width=col2_w, height=height, padding=padding, margin=margin)
-            btn = self.keybindings_menu.add.button(key, font_size=font_size, padding=btn_padding, margin=margin)
+            c2_frame = self.keybindings_menu.add.frame_h(
+                width=col2_w, height=height, padding=padding, margin=margin
+            )
+            btn = self.keybindings_menu.add.button(
+                key, font_size=font_size, padding=btn_padding, margin=margin
+            )
 
             callback = partial(self.start_rebinding, btn, action, 0)
             btn.set_onreturn(callback)
 
             c2_frame.pack(btn, align=ALIGN_CENTER)
 
-            c3_frame = self.keybindings_menu.add.frame_h(width=col3_w, height=height, padding=padding, margin=margin)
-            btn_alt = self.keybindings_menu.add.button(alt, font_size=font_size, padding=btn_padding, margin=margin)
+            c3_frame = self.keybindings_menu.add.frame_h(
+                width=col3_w, height=height, padding=padding, margin=margin
+            )
+            btn_alt = self.keybindings_menu.add.button(
+                alt, font_size=font_size, padding=btn_padding, margin=margin
+            )
 
             callback = partial(self.start_rebinding, btn_alt, action, 1)
             btn_alt.set_onreturn(callback)
@@ -366,7 +389,10 @@ class GameUI:
         self.screen.blit(text_surf, text_rect)
 
         text_rect2 = text_surf2.get_rect(
-            center=(self.screen.get_rect().centerx, self.screen.get_rect().centery + settings["bind_cancel_offset"][1])
+            center=(
+                self.screen.get_rect().centerx,
+                self.screen.get_rect().centery + settings["bind_cancel_offset"][1],
+            )
         )
         self.screen.blit(text_surf2, text_rect2)
 

@@ -6,7 +6,8 @@ import weakref
 
 from loguru import logger
 from pymunk import Vec2d
-from constants import StateName, Direction, EnemyAction, EnemyName
+from pyforce.constants import StateName, Direction, EnemyAction, EnemyName
+
 
 class State:
     """
@@ -54,10 +55,16 @@ class State:
         self.hits = 0
         self.start_time = 0
         self.current_time = 0
-        self.death_time = self.settings["sprites"]["cycle_lengths"][self.state_manager.name]["death_time"]
-        self.wait_after_death = self.settings["sprites"]["cycle_lengths"][self.state_manager.name]["wait_after_death"]
+        self.death_time = self.settings["sprites"]["cycle_lengths"][
+            self.state_manager.name
+        ]["death_time"]
+        self.wait_after_death = self.settings["sprites"]["cycle_lengths"][
+            self.state_manager.name
+        ]["wait_after_death"]
         self.dead = False
-        self.attack_time = self.settings["sprites"]["cycle_lengths"][self.state_manager.name]["attack_time"]
+        self.attack_time = self.settings["sprites"]["cycle_lengths"][
+            self.state_manager.name
+        ]["attack_time"]
 
         self.start_y = None
         self.highest_y = None
@@ -93,7 +100,11 @@ class State:
         self.is_on_ground = is_on_ground
 
     def get_sprite_index(
-        self, current_position: Vec2d, total_sprites: int, cycle_length: float, velocity: Vec2d
+        self,
+        current_position: Vec2d,
+        total_sprites: int,
+        cycle_length: float,
+        velocity: Vec2d,
     ) -> int:
         """
         Calculates the current sprite frame index based on state, position, and time.
@@ -276,7 +287,9 @@ class State:
             self.movement_direction = direction
             self.start_pos = position
 
-    def change_state(self, new_state: EnemyAction, position: Vec2d, body, settings=None):
+    def change_state(
+        self, new_state: EnemyAction, position: Vec2d, body, settings=None
+    ):
         """
         Transitions the internal state to a new StateName and resets relevant timers and counters.
 

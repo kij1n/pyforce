@@ -2,7 +2,7 @@
 This module contains classes for loading and rendering the game map.
 """
 
-from view.loaders import MapLoader
+from pyforce.view.loaders import MapLoader
 
 
 class MapRenderer:

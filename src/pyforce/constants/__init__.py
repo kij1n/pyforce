@@ -14,5 +14,5 @@ __all__ = [
     "GameMode",
     "GameState",
     "Difficulty",
-    "StateName"
+    "StateName",
 ]

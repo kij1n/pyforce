@@ -7,6 +7,8 @@ import pytmx
 import os
 from loguru import logger
 from pymunk import ShapeFilter
+from pyforce.model.entities import Player
+from pyforce.model.entities.enemies import Enemy
 
 
 class PhysicsEngine:
@@ -36,10 +38,12 @@ class PhysicsEngine:
         self._set_collision_handlers()
 
         # stores entity ids touching the ground
-        self.entities_touching_ground = []
+        self.entities_touching_ground: list[Player | Enemy] = []
 
-        self.entities_hit = []  # list to store all entities hit by bullets, emptied after hit is resolved
-        self.entities_to_kill = []
+        self.entities_hit: list[
+            Enemy
+        ] = []  # list to store all entities hit by bullets, emptied after hit is resolved
+        self.entities_to_kill: list[Enemy] = []
 
     def _set_collision_handlers(self):
         """
@@ -118,7 +122,9 @@ class PhysicsEngine:
         :return: True to allow the collision to be processed.
         """
         bullet = getattr(arbiter.shapes[0], "bullet", None)
-        entity = getattr(arbiter.shapes[1], "entity", None)  # a bullet is the first shape in the arbiter
+        entity = getattr(
+            arbiter.shapes[1], "entity", None
+        )  # a bullet is the first shape in the arbiter
 
         if entity is not None and bullet is not None:
             self.entities_hit.append((entity, bullet))
@@ -192,7 +198,9 @@ class PhysicsEngine:
 
         for wall in walls["coordinates"]:
             a, b = wall
-            segment = pymunk.Segment(self.sim.static_body, (a[0], a[1]), (b[0], b[1]), radius)
+            segment = pymunk.Segment(
+                self.sim.static_body, (a[0], a[1]), (b[0], b[1]), radius
+            )
             segment.friction = friction
             segment.elasticity = elasticity
             self.sim.add(segment)
@@ -220,7 +228,9 @@ class PhysicsEngine:
             if os.name == "nt":
                 path = path.replace("/", "\\")
 
-            object_layer = pytmx.TiledMap(path).get_layer_by_name(self.settings["map"]["object_layer_name"])
+            object_layer = pytmx.TiledMap(path).get_layer_by_name(
+                self.settings["map"]["object_layer_name"]
+            )
             return object_layer
         except FileNotFoundError:
             logger.error("Map file not found")
@@ -245,7 +255,12 @@ class PhysicsEngine:
 
         shape = pymunk.Poly(
             body,
-            [(-h_width, h_height), (-h_width, -h_height), (h_width, -h_height), (h_width, h_height)],
+            [
+                (-h_width, h_height),
+                (-h_width, -h_height),
+                (h_width, -h_height),
+                (h_width, h_height),
+            ],
             radius=settings["physics"]["radius"],
         )
         shape.friction = settings["physics"]["friction"]

@@ -4,7 +4,7 @@ This module is the entry point of the application. It sets up logging and starts
 
 import sys
 import datetime
-from controller import Controller
+from pyforce.controller import Controller
 from loguru import logger
 
 
@@ -17,13 +17,17 @@ def setup_logging():
     logger.remove()
     logger.add(
         sys.stderr,
-        format="[<red>{time:HH:mm:ss}</red>] | {file} | >> " "<yellow>{level}</yellow>: " "<cyan>{message}</cyan>",
+        format="[<red>{time:HH:mm:ss}</red>] | {file} | >> "
+        "<yellow>{level}</yellow>: "
+        "<cyan>{message}</cyan>",
     )
     logger.add(
         f"logs/{datetime.datetime.now().strftime('%Y-%m-%d_session-%H-%M-%S')}.log",
         rotation="10 MB",
         retention="3 days",
-        format="[<red>{elapsed}</red>] >> " "<yellow>{level}</yellow>: " "<cyan>{message}</cyan>",
+        format="[<red>{elapsed}</red>] >> "
+        "<yellow>{level}</yellow>: "
+        "<cyan>{message}</cyan>",
     )
 
 

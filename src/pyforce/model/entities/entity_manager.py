@@ -3,18 +3,18 @@ This module contains the EntityManager class which manages all entities in the g
 including the player, enemies, bullets, and their interactions.
 """
 
-from .player import Player
+from pyforce.model.entities import Player
 import pymunk
-from pymunk import ShapeFilter, Vec2d
+from pymunk import ShapeFilter, Vec2d, Shape
 from math import cos, sin, radians
 import math
 import random
 import weakref
 
-from constants import EnemyName, StateName, EnemyAction, Direction
-from structures import Where, BasicBulletInfo
-from model.entities.enemies import Enemy, PatrolPath
-from model.weaponry import Weapon, Ammo, Bullet
+from pyforce.constants import EnemyName, StateName, EnemyAction, Direction
+from pyforce.structures import Where, BasicBulletInfo
+from pyforce.model.entities.enemies import Enemy, PatrolPath
+from pyforce.model.weaponry import Weapon, Ammo, Bullet
 
 from loguru import logger
 
@@ -56,9 +56,11 @@ class EntityManager:
         self.weapons = self._load_weapons(self.settings)  # dict name: Weapon
         self.ammo = self._load_ammo(self.settings)  # dict name: Ammo
 
-        logger.info(f"Weapons ({len(self.weapons)}) and ammunition ({len(self.ammo)}) loaded successfully")
+        logger.info(
+            f"Weapons ({len(self.weapons)}) and ammunition ({len(self.ammo)}) loaded successfully"
+        )
 
-        self.bullets_dict = {}  # dict Bullet: Shape
+        self.bullets_dict: dict[Bullet, Shape] = {}  # dict Bullet: Shape
         self.patrol_paths = self._load_patrol_paths()  # list of PatrolPaths
 
         logger.info(f"Patrol paths ({len(self.patrol_paths)}) loaded successfully")
@@ -113,7 +115,7 @@ class EntityManager:
 
         :return: A set of Enemy instances.
         """
-        enemies = set()
+        enemies: set[Enemy] = set()
 
         for enemy_type in self.settings["enemy_info"].keys():
             ent_settings = self.settings["enemy_info"][enemy_type]
@@ -244,7 +246,8 @@ class EntityManager:
         return (
             entity.shape.body.velocity == (0, 0)
             and entity.state_manager.state.is_on_ground
-            and entity.state_manager.state.get_state() not in [StateName.IDLE, StateName.DEATH]
+            and entity.state_manager.state.get_state()
+            not in [StateName.IDLE, StateName.DEATH]
         )
 
     @staticmethod
@@ -256,7 +259,9 @@ class EntityManager:
         :param new_state: The new state name.
         :return: None
         """
-        entity.state_manager.state.change_state(new_state, entity.get_position(), entity.shape.body)
+        entity.state_manager.state.change_state(
+            new_state, entity.get_position(), entity.shape.body
+        )
 
     def update_enemy_action(self, sim):
         """
@@ -303,7 +308,9 @@ class EntityManager:
                 self.settings["particles"]["qty"],
                 self.player.get_position(),
                 self._invert_direction(
-                    self._get_direction_to_entity(self.player.get_position()[0], enemy.get_position()[0])
+                    self._get_direction_to_entity(
+                        self.player.get_position()[0], enemy.get_position()[0]
+                    )
                 ),
                 "player",
             )
@@ -320,7 +327,9 @@ class EntityManager:
         player_pos = self.player.get_position()
         enemy_pos = enemy.get_position()
         attack_dist = self.settings["enemy_info"][enemy.name.value]["attack_distance"]
-        return (player_pos - enemy_pos).length <= attack_dist and self._check_for_aggro(enemy, self.sim)
+        return (player_pos - enemy_pos).length <= attack_dist and self._check_for_aggro(
+            enemy, self.sim
+        )
 
     def _check_for_aggro(self, enemy, sim):
         """
@@ -337,12 +346,15 @@ class EntityManager:
 
         radius = self.settings["physics"]["segment_query_radius"]
         info = sim.segment_query_first(
-            enemy.get_position(), self.player.get_position(), radius=radius, shape_filter=query_filter
+            enemy.get_position(),
+            self.player.get_position(),
+            radius=radius,
+            shape_filter=query_filter,
         )
         shape = info.shape
-        if getattr(shape, "id", None) == self.settings["player_info"]["id"] and self._in_distance(
-            enemy, shape, self.settings
-        ):
+        if getattr(shape, "id", None) == self.settings["player_info"][
+            "id"
+        ] and self._in_distance(enemy, shape, self.settings):
             return True
         return False
 
@@ -356,7 +368,9 @@ class EntityManager:
         :param settings: Dictionary containing game settings.
         :return: True if within distance, False otherwise.
         """
-        return (enemy.get_position() - shape.body.position).length < settings["enemy_info"][enemy.name.value]["sight"]
+        return (enemy.get_position() - shape.body.position).length < settings[
+            "enemy_info"
+        ][enemy.name.value]["sight"]
 
     def _apply_enemy_action(self, enemy: Enemy, sim):
         """
@@ -372,7 +386,9 @@ class EntityManager:
 
         move_dir = enemy.get_movement_direction()
         if current_action in [EnemyAction.AGGRO, EnemyAction.ATTACK]:
-            move_dir = self._get_direction_to_entity(enemy.get_position()[0], self.player.get_position()[0])
+            move_dir = self._get_direction_to_entity(
+                enemy.get_position()[0], self.player.get_position()[0]
+            )
             self._jump_if_gap(enemy, sim)
 
         enemy.state_manager.apply_horizontal_velocity(move_dir)
@@ -390,7 +406,12 @@ class EntityManager:
         for inv in [True, False]:
             # inverted means the point is on the right
             gap_point = self._calc_gap_point(enemy.get_position(), inv)
-            info = sim.segment_query_first(enemy.get_position(), gap_point, radius=radius, shape_filter=query_filter)
+            info = sim.segment_query_first(
+                enemy.get_position(),
+                gap_point,
+                radius=radius,
+                shape_filter=query_filter,
+            )
 
             jump_dir = Direction.LEFT if inv else Direction.RIGHT
             if info is None and jump_dir == enemy.get_movement_direction():
@@ -524,7 +545,9 @@ class EntityManager:
         accuracy = weapon.accuracy
         for _ in range(weapon.multishot):
             info = self._get_basic_bullet_info(weapon, ammo)
-            max_deviation = (1 - accuracy) * 90  # maximum bullet spread angle from arm deg
+            max_deviation = (
+                1 - accuracy
+            ) * 90  # maximum bullet spread angle from arm deg
             deviation = random.uniform(-max_deviation, max_deviation)
             angle = self.player.arm_deg + deviation
             bullet = Bullet(info=info, arm_deg=angle, ammo=ammo, settings=self.settings)
@@ -541,7 +564,11 @@ class EntityManager:
         :return: A BasicBulletInfo dataclass.
         """
         info = BasicBulletInfo(
-            self._get_next_bullet_id(), self.player.get_gun_position(), weapon.reach, ammo.damage, ammo.bullet_name
+            self._get_next_bullet_id(),
+            self.player.get_gun_position(),
+            weapon.reach,
+            ammo.damage,
+            ammo.bullet_name,
         )
         return info
 
@@ -585,7 +612,9 @@ class EntityManager:
                 self.settings["particles"]["qty"],
                 entity.get_position(),
                 self._invert_direction(
-                    self._get_direction_to_entity(entity.get_position()[0], self.player.get_position()[0])
+                    self._get_direction_to_entity(
+                        entity.get_position()[0], self.player.get_position()[0]
+                    )
                 ),
                 entity.name,
             )

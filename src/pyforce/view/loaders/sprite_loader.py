@@ -63,7 +63,9 @@ class SpriteLoader:
             except pygame.error:
                 logger.error(f"Pygame could not load: {settings[i]['background_path']}")
             except Exception as e:
-                logger.error(f"Unexpected error loading {settings[i]['background_path']}: {e}")
+                logger.error(
+                    f"Unexpected error loading {settings[i]['background_path']}: {e}"
+                )
 
         logger.info("Backgrounds loading complete")
 
@@ -105,9 +107,13 @@ class SpriteLoader:
                 except FileNotFoundError:
                     logger.error(f"File not found: {sprite_info['path']} for player")
                 except pygame.error:
-                    logger.error(f"Pygame could not load: {sprite_info['path']} for player")
+                    logger.error(
+                        f"Pygame could not load: {sprite_info['path']} for player"
+                    )
                 except Exception as e:
-                    logger.error(f"Unexpected error loading {sprite_info} for player: {e}")
+                    logger.error(
+                        f"Unexpected error loading {sprite_info} for player: {e}"
+                    )
 
         logger.info("Player sprites loading complete")
         return player
@@ -133,16 +139,24 @@ class SpriteLoader:
                         sprite = Sprite(image, offset)
 
                         delimiter = "\\" if os.name == "nt" else "/"
-                        sprite_name = enemy + "_" + path.split(".")[0].split(delimiter)[-1]
+                        sprite_name = (
+                            enemy + "_" + path.split(".")[0].split(delimiter)[-1]
+                        )
 
                         enemies[sprite_name] = sprite
 
                     except FileNotFoundError:
-                        logger.error(f"File not found: {sprite_info['path']} for {enemy}")
+                        logger.error(
+                            f"File not found: {sprite_info['path']} for {enemy}"
+                        )
                     except pygame.error:
-                        logger.error(f"Pygame could not load: {sprite_info['path']} for {enemy}")
+                        logger.error(
+                            f"Pygame could not load: {sprite_info['path']} for {enemy}"
+                        )
                     except Exception as e:
-                        logger.error(f"Unexpected error loading {sprite_info['path']} for {enemy}: {e}")
+                        logger.error(
+                            f"Unexpected error loading {sprite_info['path']} for {enemy}: {e}"
+                        )
 
             logger.info(f"{enemy} sprites loading complete")
         return enemies

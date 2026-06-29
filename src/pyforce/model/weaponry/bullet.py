@@ -4,7 +4,7 @@ This module contains the Bullet class which represents a projectile in the game.
 
 from math import cos, radians, sin
 from pymunk import Body, Circle, ShapeFilter
-from structures import BasicBulletInfo
+from pyforce.structures import BasicBulletInfo
 
 
 class Bullet:
@@ -108,7 +108,9 @@ class Bullet:
         v = ammo.velocity
         angle = self._un_convert_angle(angle)
 
-        self.body.apply_impulse_at_local_point((v * cos(radians(angle)), -v * sin(radians(angle))))
+        self.body.apply_impulse_at_local_point(
+            (v * cos(radians(angle)), -v * sin(radians(angle)))
+        )
 
     @staticmethod
     def _un_convert_angle(angle):

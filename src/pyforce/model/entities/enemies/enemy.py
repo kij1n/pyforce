@@ -3,9 +3,11 @@ This module contains the Enemy class, which represents an enemy entity in the ga
 """
 
 import weakref
-from model.entities.base import StateManager, prepare_collision_box
+from pyforce.model.entities.base import StateManager, prepare_collision_box
 from loguru import logger
-from constants import EnemyName, StateName, EnemyAction, Direction
+from pyforce.constants import EnemyName, StateName, EnemyAction, Direction
+from pyforce.model.entities.enemies import PatrolPath
+
 
 class Enemy:
     """
@@ -38,23 +40,25 @@ class Enemy:
         :param entity_manager: The EntityManager instance.
         :return: None
         """
-        self.name = name
+        self.name: EnemyName = name
         self.settings = settings
-        self.health = self.settings["enemy_info"][name.value]["health"]
-        self.max_health = self.health
-        self.damage_dealt = self.settings["enemy_info"][name.value]["damage"]
+        self.health: int = self.settings["enemy_info"][name.value]["health"]
+        self.max_health: int = self.health
+        self.damage_dealt: int = self.settings["enemy_info"][name.value]["damage"]
         self.entity_manager = weakref.proxy(entity_manager)
 
-        self.body, self.shape, self.feet = prepare_collision_box(name.value, settings, self, pos=pos, ent_id=ent_id)
-        self.ent_id = ent_id
+        self.body, self.shape, self.feet = prepare_collision_box(
+            name.value, settings, self, pos=pos, ent_id=ent_id
+        )
+        self.ent_id: int = ent_id
 
-        self.state_manager = StateManager(self)
+        self.state_manager: StateManager = StateManager(self)
 
-        self.patrol_path = None
-        self.aggro = False
+        self.patrol_path: PatrolPath | None = None
+        self.aggro: bool = False
 
         # action is not state
-        self.current_action = None
+        self.current_action: EnemyAction | None = None
 
     def __eq__(self, other):
         """
@@ -131,7 +135,10 @@ class Enemy:
         # some enemies don't have jump sprites, they will use run instead
         return len(
             self.settings["enemy_info"][self.name.value]["sprites_paths"].get(
-                state, self.settings["enemy_info"][self.name.value]["sprites_paths"][StateName.RUN.value]
+                state,
+                self.settings["enemy_info"][self.name.value]["sprites_paths"][
+                    StateName.RUN.value
+                ],
             )
         )
 
@@ -167,7 +174,7 @@ class Enemy:
         """
         return self.state_manager.state.movement_direction
 
-    def get_current_action(self) -> EnemyAction:
+    def get_current_action(self) -> EnemyAction | None:
         """
         Retrieves the current high-level action of the enemy.
 
@@ -271,7 +278,10 @@ class Enemy:
         :return: A tuple (min_y, max_y).
         """
         height = self._get_height()
-        return self.shape.body.position.y - height // 2, self.shape.body.position.y + height // 2
+        return (
+            self.shape.body.position.y - height // 2,
+            self.shape.body.position.y + height // 2,
+        )
 
     def _get_height(self):
         """
@@ -294,9 +304,13 @@ class Enemy:
 
         self.current_action = action
         if action in [EnemyAction.AGGRO, EnemyAction.PATROL]:
-            self.state_manager.state.change_state(StateName.RUN, self.get_position(), self.body)
+            self.state_manager.state.change_state(
+                StateName.RUN, self.get_position(), self.body
+            )
         elif action == EnemyAction.ATTACK:
-            self.state_manager.state.change_state(StateName.ATTACK, self.get_position(), self.body)
+            self.state_manager.state.change_state(
+                StateName.ATTACK, self.get_position(), self.body
+            )
 
         self._log_action_change()
 
@@ -309,13 +323,17 @@ class Enemy:
         if self.current_action == EnemyAction.AGGRO:
             logger.debug(f"Enemy {self.name.value} found player")
         elif self.current_action == EnemyAction.PATROL:
-            logger.debug(f"Enemy {self.name.value} found patrol path: {self.patrol_path.id}")
+            logger.debug(
+                f"Enemy {self.name.value} found patrol path: {self.patrol_path.id}"
+            )
         elif self.current_action == EnemyAction.DEATH:
             logger.debug(f"Enemy {self.name.value} lost all hp")
         elif self.current_action == EnemyAction.ATTACK:
             logger.debug(f"Enemy {self.name.value} is attacking player")
         else:
-            logger.debug(f"Enemy {self.name.value} lost player and patrol path, is now idle")
+            logger.debug(
+                f"Enemy {self.name.value} lost player and patrol path, is now idle"
+            )
 
     def get_patrol_coords(self):
         """
@@ -323,7 +341,10 @@ class Enemy:
 
         :return: A tuple containing (x_range, y_position).
         """
-        x_range = (self.shape.body.position.x, self.shape.body.position.x + self.shape.width)
+        x_range = (
+            self.shape.body.position.x,
+            self.shape.body.position.x + self.shape.width,
+        )
         return x_range, self.shape.body.position.y
 
     def take_damage(self, damage):

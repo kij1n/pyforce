@@ -2,15 +2,15 @@ import random
 from math import radians, cos, sin
 
 from pymunk import Vec2d
-
-from shared import Direction, Effect, EnemyName
-from .particle import Particle
+from pyforce.constants import Direction, EnemyName
+from pyforce.structures import Effect
+from pyforce.model.effects import Particle
 
 
 class EffectsManager:
     def __init__(self, settings: dict):
         self.settings = settings
-        self.particles = []
+        self.particles: list[Particle] = []
 
     def update(self, dt):
         alive_particles = []
@@ -20,7 +20,9 @@ class EffectsManager:
                 alive_particles.append(particle)
         self.particles = alive_particles
 
-    def add_particles(self, qty, position: Vec2d, direction: Direction, enemy: EnemyName | str):
+    def add_particles(
+        self, qty, position: Vec2d, direction: Direction, enemy: EnemyName | str
+    ):
         p_settings = self.settings["particles"]
         spawn_offset = p_settings["spawn_offset"]
         speed_min, speed_max = p_settings["speed_range"]
@@ -46,8 +48,11 @@ class EffectsManager:
             y = int(spawn_offset * sin(angle))
 
             vel = Vec2d(
-                random.randint(speed_min, speed_max) * (-1 if direction == Direction.LEFT else 1),
-                random.randint(speed_min, speed_max) * random.uniform(y_vel_min, y_vel_max) * y_vel_multiplier,
+                random.randint(speed_min, speed_max)
+                * (-1 if direction == Direction.LEFT else 1),
+                random.randint(speed_min, speed_max)
+                * random.uniform(y_vel_min, y_vel_max)
+                * y_vel_multiplier,
             )
 
             size = random.randint(size_min, size_max)
